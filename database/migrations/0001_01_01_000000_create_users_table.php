@@ -10,24 +10,34 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('email')->unique();
+
+            // Une même adresse e-mail peut porter plusieurs comptes (1 accès = 1 session).
+            $table->string('email')->index();
             $table->string('login')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'formateur', 'stagiaire_op', 'stagiaire_fpc'])
                 ->default('stagiaire_op');
             $table->string('nom');
             $table->string('prenom');
-            $table->timestamp('email_verified_at')->nullable();
+
+            // Informations formateur (affichées sur l'espace des stagiaires).
+            $table->string('photo_path')->nullable();
+            $table->text('presentation')->nullable();
+            $table->boolean('formateur_fpc')->default(false);
+            $table->boolean('formateur_op')->default(false);
+
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
+        // Jetons de création / réinitialisation de mot de passe (schéma maison).
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('token')->unique();
             $table->dateTime('expiration')->index();
-            $table->tinyInteger('used')->nullable();
+            $table->boolean('used')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
         });
 
@@ -43,8 +53,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };
