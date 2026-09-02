@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class GescofImport extends Model
 {
     protected $fillable = [
-        'user_id', 'fichier_nom', 'applique',
+        'user_id', 'fichier_nom', 'fichier_path', 'applique',
         'lignes_lues', 'lignes_ignorees', 'comptes_crees', 'comptes_reactives',
         'comptes_disparus', 'sessions_creees', 'sessions_maj', 'anomalies',
     ];

@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\FormateurController;
+use App\Http\Controllers\Admin\GescofImportController;
+use App\Http\Controllers\Admin\JournalController;
+use App\Http\Controllers\Admin\SessionFormationController;
+use App\Http\Controllers\Admin\SessionJourController;
+use App\Http\Controllers\Admin\StagiaireController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +33,24 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::view('/', 'dashboard.admin')->name('dashboard');
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('imports', [GescofImportController::class, 'index'])->name('imports.index');
+        Route::post('imports/simuler', [GescofImportController::class, 'simuler'])->name('imports.simuler');
+        Route::post('imports/{import}/appliquer', [GescofImportController::class, 'appliquer'])->name('imports.appliquer');
+        Route::get('imports/{import}', [GescofImportController::class, 'show'])->name('imports.show');
+
+        Route::resource('formateurs', FormateurController::class)->except('show')
+            ->parameters(['formateurs' => 'formateur']);
+
+        Route::resource('sessions', SessionFormationController::class)
+            ->parameters(['sessions' => 'session']);
+        Route::post('sessions/{session}/planning', [SessionJourController::class, 'sync'])->name('sessions.planning.sync');
+
+        Route::get('stagiaires', [StagiaireController::class, 'index'])->name('stagiaires.index');
+        Route::delete('stagiaires/{stagiaire}', [StagiaireController::class, 'destroy'])->name('stagiaires.destroy');
+
+        Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
     });
 
 Route::middleware(['auth', 'role:formateur'])
