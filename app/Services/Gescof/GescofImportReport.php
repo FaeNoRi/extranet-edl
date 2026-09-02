@@ -2,6 +2,8 @@
 
 namespace App\Services\Gescof;
 
+use App\Models\GescofImport;
+
 class GescofImportReport
 {
     public int $lignesLues = 0;
@@ -23,6 +25,11 @@ class GescofImportReport
 
     /** @var list<array{ligne: int|null, type: string, message: string}> */
     public array $anomalies = [];
+
+    /** Enregistrement persistant de cette exécution. */
+    public ?GescofImport $import = null;
+
+    public ?string $fichierPath = null;
 
     public function __construct(
         public string $fichierNom = '',

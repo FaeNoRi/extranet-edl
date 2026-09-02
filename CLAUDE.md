@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phase en cours : 2** (back-office admin) — moteur d'import GESCOF fait ; reste l'UI admin.
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phase en cours : 2** (back-office admin) — import GESCOF + UI admin faits ; reste purges planifiées & téléchargement groupé FPC.
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -86,7 +86,28 @@ Schéma refondu — migrations `2026_09_02_1200xx`. Après `git pull` : `php art
 - Colonnes attendues : `Nom, Prenom, NomClient, CodeProduit, LibelleStage, NumSession,
   Email, ListeItv, AccesPlateforme` (compat. ancien `NomParticipant` unique).
 
+## Back-office admin (phase 2)
+
+Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre latérale) +
+`<x-admin.card>`.
+
+- **Import** (`admin.imports.*`) : upload → simulation (`GescofImportController@simuler`,
+  fichier stocké dans `storage/app/gescof/`) → page rapport → `@appliquer` (réutilise le
+  fichier, le supprime ensuite). Historique = table `gescof_imports`.
+- **Formateurs** (`resource`, sans `show`) : CRUD, photo (`public` disk), `envoyer_acces`,
+  archivage bloqué si rattaché à une session. `FormateurRequest` : FPC ou OP obligatoire.
+- **Sessions** (`resource` complet) : CRUD ; le formulaire réconcilie les formateurs
+  (référent + équipe, le référent est toujours dans le pivot avec `principal=true`) ;
+  `admin.sessions.planning.sync` gère `session_jours` (ajout de dates + cases actif).
+  `SessionFormationRequest` : rythme OP obligatoire si `code_produit=OP`.
+- **Stagiaires** (`admin.stagiaires.index` + `destroy`) : liste filtrable (session,
+  « absents du dernier import »), suppression (soft delete).
+- **Journal** (`admin.journal.index`) : `activity_log` paginé, filtres objet/événement,
+  diff old/new.
+
+`x-primary-button` est thématisé EDL (`bg-edl-bleu`).
+
 ## Structure des espaces
 
 `/tableau-de-bord` redirige vers le tableau de bord du rôle : `/admin`, `/formateur`, `/espace`.
-Ces groupes de routes sont des points d'ancrage à remplir dans les phases suivantes.
+Formateur et stagiaire restent des placeholders (phases 3 et 4).

@@ -53,19 +53,20 @@ class GescofImporter
         private readonly LoginGenerator $logins = new LoginGenerator,
     ) {}
 
-    public function simuler(string $chemin, ?User $auteur = null): GescofImportReport
+    public function simuler(string $chemin, ?User $auteur = null, ?string $fichierPath = null, ?string $nomAffiche = null): GescofImportReport
     {
-        return $this->executer($chemin, false, $auteur, false);
+        return $this->executer($chemin, false, $auteur, false, $fichierPath, $nomAffiche);
     }
 
-    public function appliquer(string $chemin, ?User $auteur = null, bool $envoyerAcces = false): GescofImportReport
+    public function appliquer(string $chemin, ?User $auteur = null, bool $envoyerAcces = false, ?string $fichierPath = null, ?string $nomAffiche = null): GescofImportReport
     {
-        return $this->executer($chemin, true, $auteur, $envoyerAcces);
+        return $this->executer($chemin, true, $auteur, $envoyerAcces, $fichierPath, $nomAffiche);
     }
 
-    private function executer(string $chemin, bool $appliquer, ?User $auteur, bool $envoyerAcces): GescofImportReport
+    private function executer(string $chemin, bool $appliquer, ?User $auteur, bool $envoyerAcces, ?string $fichierPath = null, ?string $nomAffiche = null): GescofImportReport
     {
-        $rapport = new GescofImportReport(basename($chemin), $appliquer);
+        $rapport = new GescofImportReport($nomAffiche ?? basename($chemin), $appliquer);
+        $rapport->fichierPath = $fichierPath;
         $this->vus = [];
         $this->sessionsCreeesIds = [];
         $this->formateursParCle = User::query()->where('role', Role::Formateur->value)->get()
@@ -95,7 +96,7 @@ class GescofImporter
         });
 
         // Le rapport (simulation comprise) est toujours journalisé.
-        $this->enregistrerRapport($rapport, $auteur);
+        $rapport->import = $this->enregistrerRapport($rapport, $auteur);
 
         if ($appliquer && $envoyerAcces) {
             $this->envoyerLiensAcces($rapport);
@@ -331,6 +332,7 @@ class GescofImporter
         return GescofImport::create([
             'user_id' => $auteur?->id,
             'fichier_nom' => $rapport->fichierNom,
+            'fichier_path' => $rapport->fichierPath,
             'applique' => $rapport->applique,
             'lignes_lues' => $rapport->lignesLues,
             'lignes_ignorees' => $rapport->lignesIgnorees,
