@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\PasswordResetToken;
+use App\Models\User;
+use App\Notifications\PasswordSetupLink;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class PasswordResetLinkController extends Controller
 {
     /**
-     * Display the password reset link request view.
+     * Affiche le formulaire de demande de lien.
      */
     public function create(): View
     {
@@ -20,26 +23,35 @@ class PasswordResetLinkController extends Controller
     }
 
     /**
-     * Handle an incoming password reset link request.
+     * Envoie un lien de (ré)initialisation de mot de passe.
+     *
+     * La demande se fait par identifiant : une même adresse e-mail peut être
+     * rattachée à plusieurs comptes (1 accès = 1 session).
      *
      * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
+        $request->validate(['login' => ['required', 'string']]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $key = 'password-reset:'.$request->ip();
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            throw ValidationException::withMessages([
+                'login' => __('passwords.throttled'),
+            ]);
+        }
+
+        RateLimiter::hit($key, 60);
+
+        $user = User::where('login', $request->string('login'))->first();
+
+        if ($user) {
+            $token = PasswordResetToken::issueFor($user);
+            $user->notify(new PasswordSetupLink($token));
+        }
+
+        // Réponse générique : ne pas révéler l'existence d'un compte.
+        return back()->with('status', __('passwords.sent'));
     }
 }
