@@ -14,6 +14,12 @@
                 </p>
             </div>
             <div class="flex gap-2">
+                @if ($session->isFpc())
+                    <a href="{{ route('admin.sessions.archive', $session) }}"
+                       class="rounded-md border border-edl-bleu px-3 py-2 text-sm font-semibold text-edl-bleu hover:bg-edl-bleu/10">
+                        Télécharger (ZIP)
+                    </a>
+                @endif
                 <a href="{{ route('admin.sessions.edit', $session) }}"
                    class="rounded-md bg-edl-bleu px-3 py-2 text-sm font-semibold text-white hover:bg-edl-vert-fonce">Modifier</a>
                 <form method="POST" action="{{ route('admin.sessions.destroy', $session) }}"

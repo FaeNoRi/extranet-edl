@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phase en cours : 2** (back-office admin) — import GESCOF + UI admin faits ; reste purges planifiées & téléchargement groupé FPC.
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phase 2 (back-office admin) terminée.** Prochaine : phase 3 (espace formateur & fiche pédagogique).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -104,6 +104,16 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
   « absents du dernier import »), suppression (soft delete).
 - **Journal** (`admin.journal.index`) : `activity_log` paginé, filtres objet/événement,
   diff old/new.
+- **Purges** (`admin.purges.*`) : `PurgeComptesService` — comptes OP dont les sessions
+  se sont terminées avant le 1er septembre ; comptes FPC terminés en N-1.
+  `SessionFormation::finLe()` estime la fin (jours > séances > dates_planning > import).
+  Soft delete + une entrée `activity_log` (log « Purge »). Commande
+  `edl:purge-comptes [--op] [--fpc] [--appliquer]`, planifiée quotidiennement à 3h
+  (OP appliquée automatiquement, FPC seulement signalée — validée dans l'UI).
+  Config : `config('edl.purges')`.
+- **Archive session FPC** (`admin.sessions.archive`) : `SessionArchiveService` produit un
+  ZIP (un dossier par séance, fiche + ressources `date.RPn`, `MANIFESTE.txt` des fichiers
+  attendus mais absents — fiches PDF en phase 3).
 
 `x-primary-button` est thématisé EDL (`bg-edl-bleu`).
 

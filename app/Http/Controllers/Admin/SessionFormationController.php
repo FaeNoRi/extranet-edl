@@ -9,9 +9,11 @@ use App\Http\Requests\Admin\SessionFormationRequest;
 use App\Models\Client;
 use App\Models\SessionFormation;
 use App\Models\User;
+use App\Services\SessionArchiveService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SessionFormationController extends Controller
 {
@@ -81,6 +83,16 @@ class SessionFormationController extends Controller
 
         return redirect()->route('admin.sessions.index')
             ->with('succes', 'Session supprimée.');
+    }
+
+    /**
+     * Téléchargement groupé (fiches pédagogiques + ressources) d'une session FPC.
+     */
+    public function archive(SessionFormation $session, SessionArchiveService $archive): StreamedResponse
+    {
+        abort_unless($session->isFpc(), 404);
+
+        return $archive->telecharger($session);
     }
 
     private function remplir(SessionFormation $session, SessionFormationRequest $request): void
