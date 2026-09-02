@@ -1,0 +1,12 @@
+| Couleurs EDL   |  Code HEX |
+| -------------- | --------- |
+| Bleu Vert      |  #41B9BF  |
+| Jaune EDL      |  #ECBA03  |
+| Rose EDL       |  #E31E73  |
+| Violet EDL     |  #A52280  |
+| Orange EDL     |  #FF8F43  |
+| Vert EDL       |  #79BD6F  |
+| Bleu EDL       |  #156C93  |
+| Marron EDL     |  #544741  |
+| Gris EDL       |  #58595C  |
+| Vert Foncé EDL |  #22A473  |

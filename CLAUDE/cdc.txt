@@ -1,0 +1,343 @@
+                                                  Cahier des charges
+                                                 Extranet de suivi EDL
+
+  Contexte & objectif
+
+Projet : Développement d'un extranet responsive pour les stagiaires de l'École des Langues Grand Calais
+
+L'objectif : est de concevoir un espace web accessible aux stagiaires, formateurs et à l'administration pour assurer le
+suivi pédagogique des séances, permettre le partage de ressources (sons, vidéos, jeux, cartes OP,...), centraliser les
+documents administratifs (règlement intérieur, livret d'accueil...) et prévoir l'évolution fonctionnelle (émargement,
+notifications, lien avec les familles...). Le site devra être pensé dès le départ pour faciliter l'ajout progressif de
+fonctionnalités. L'idée globale est de faire entrer l'EDL dans les foyers, de rendre le suivi possible et de faciliter la
+communication avec les stagiaires et les familles.
+
+· Commanditaire : École des Langues Grand Calais
+· Cible de mise en service envisagée : Rentrée 2027/2028
+· Publics :
+
+         o Stagiaires FPC
+         o Familles : enfants (différents âges), parents
+
+ 1. Périmètre fonctionnel (vision globale)
+
+Connexion : Lien envoyé par mail au moment de la création du compte + « bouton » à créer sur le site internet
+
+Aucune suppression possible pour personne, sauf pour les admins
+
+1.1 Utilisateurs et rôles
+    · Stagiaire FPC : accès à son espace personnel (nom, session, formateur), documents (convention/contrat,
+         guide d'animation, ...), accéder aux ressources, questionnaire satisfaction, émargements (si distanciel FPC).
+         1 accès = 1 session. Si 2 formations pour 1 stagiaire = 2 accès.
+    · Stagiaire OP : accès à son espace personnel (nom, session, formateur), voir le calendrier de ses séances,
+         accéder aux ressources
+    · Formateur : 1 formateur peut avoir FPC + OP ou OP seulement ou FPC seulement
+             o FPC : déposer ressources FPC (audio, vidéo, pdf), suivre la progression des stagiaires (fiches
+                  pédagogiques)
+             o OP : éditer séances, sélectionner mots-clés depuis le référentiel
+    · Administrateur : gestion des comptes, création référentiel, gestion des droits, exports.
+
+Cahier des charges Extranet EDL ­ 22/05/2026 v4                         Page 1 sur 8
+1.2 Fonctionnalités principales
+
+    · Gestion des comptes & authentification (partie réservée à l'admin) :
+         Connexion par login et mot de passe géré par les admins de l'EDL pour les formateurs (même accès).
+         Connexion par login généré automatiquement pour les stagiaires.
+         Un login par stagiaire attaché à une adresse mail (donc une adresse mail peut générer plusieurs logins) +
+         création et récupération de mot de passe.
+         Possibilité d'import Excel avec : Nom + prénom du stagiaire, nom du client, code produit, libellé stage, n° de
+         la session, nom du formateur, adresse mail client (supprimer les lignes ou accès plateforme (à créer sur
+         Gescof) = Non). Ces infos génèrent automatiquement un login pour chaque stagiaire. Le site envoie un mail
+         automatiquement avec le lien d'accès, le login et invite à créer un mot de passe d'accès.
+         L'EDL importe tous les 15 jours dans l'appli depuis l'export GESCOF en supprimant les doublons (dans
+         l'import, ne pas prendre les OP-ST). Pas de suppression si absent dans l'import
+         Accès uniquement au stagiaire OP inscrit aux trimestres ou à l'année.
+         Ajout dans la partie champ spécifique de GESCOF accès à la plateforme oui ou non.
+         Prévoir la possibilité pour l'administrateur de supprimer un ou plusieurs comptes si désinscription par exemple.
+         Suppression de tous les comptes avec code produit « OP.... » après la fermeture annuelle estivale.
+         Pour les comptes FPC : Suppression des manuellement au 31 décembre de l'année N pour toutes les
+         formations finies en N-1.
+         1 même libellé de stage peut avoir plusieurs sessions différentes
+         1 session = plusieurs séances
+
+    · Tableau de bord
+             o Stagiaire FPC (code produit = « FPC ») :
+                      - « Bienvenue sur votre espace » uniquement et en plus petit
+                      - A côté de la bulle : nom prénom du stagiaire (pourquoi « PRINCIPAL » ?)
+                      - Ajouter le nom de la session (INTITULE DE LA FORMATION) juste en dessous du Bienvenue
+                      - Mettre les informations du formateur juste en dessous du nom de la session
+                      - Documents : Distinguer les documents « propres aux stagiaires » (qui seront personnalisés
+                           et à ajouter manuellement par l'admin pour chaque session) des documents généraux de la
+                           structure (qui sont les mêmes pour tous et qui ne changeront pas). 2 catégories / 2
+                           « rectangles » :
+                                PRESENTATION DE LA STRUCTURE : Présentation des locaux + Registre
+                                    d'accessibilité + Catalogue de formations + Liste du matériel mis à disposition
+                                MES DOCUMENTS : Convention ou contrat + Guide d'animation + Livret d'accueil +
+                                    + Questionnaire d'évaluation à chaud + Questionnaire d'évaluation à froid
+
+                       Accès à la page « Ressources pédagogiques » :
+                           Organisation des documents par dossier (du plus récent au plus ancien).
+                           1 dossier = 1 séance
+                           Nom du dossier = date de la séance
+                           Dans chaque dossier on retrouve les documents que le formateur a importé via son tableau
+                           de bord (SAUF la fiche pédagogique) avec si possible volet de visualisation sur la droite1
+
+                       Si FPC en distanciel : émargements, évaluation des acquis, questionnaire satisfaction à
+                           chaud (documents remplissable en ligne), lien Teams.
+
+Cahier des charges Extranet EDL ­ 22/05/2026 v4  Page 2 sur 8
+          Plug in RS ?
+
+o Stagiaire OP (code produit = « OP ») :
+         Présentation du formateur
+         Planning (jour indiqué dans l'intitulé de la session sauf cases décochées du planning)
+         Accès aux ressources associées aux séances réalisées : Accès aux documents du référentiel
+             en lien avec la thématique de la séance avec le nom : « Date de la séance.contenu »
+
+o Formateur :
+
+Cahier des charges Extranet EDL ­ 22/05/2026 v4  Page 3 sur 8
+Ajouter une séance                               Formulaire « fiche pédagogique »
+
+Prénom NOM Stagiaire (A récupérer automatiquement) - Fiche pédagogique « Libellé de stage et N° de session (A récupérer
+automatiquement) »
+
+Date de la séance :* Jour, Mois, année
+
+Formateur : (A récupérer automatiquement)
+
+Langue : (A récupérer automatiquement)
+
+Objectifs : (case à cocher en choix multiple)
+
+       Identifier et utiliser un vocabulaire adapté au contexte
+       Utiliser les principales structures grammaticales nécessaires pour construire des phrases cohérentes et de complexité
+
+            variée
+       Comprendre un court texte et en dégager le sens global et des détails spécifiques
+       Comprendre un énoncé, des instructions ou les questions d'un interlocuteur
+       Communiquer en situation socioprofessionnelle, professionnelle ou spécifique à son activité en employant les expressions
+
+            adaptées
+       Tenir une discussion sur un sujet professionnel
+       Communiquer de façon naturelle et développer l'interaction orale
+       Se faire comprendre avec une prononciation claire
+       Aller cherche les objectifs complétés par les admins pour chaque session
+       Aller cherche les objectifs complétés par les admins pour chaque session
+       Aller cherche les objectifs complétés par les admins pour chaque session
+       Aller cherche les objectifs complétés par les admins pour chaque session
+       Autre
+Contenu de la séance (vocabulaire spécifique, grammaire, prononciation, révision...) :*
+
+......................................................................................................................................................
+
+Types d'outils et de supports utilisés durant la séance :*
+
+       Livres
+       Magazines
+       Vidéos
+       Sites internet
+       Jeux
+       Autre :
+Sources (nom des livres, magazines, articles ou liens des sites internet, vidéos ...) : *
+
+......................................................................................................................................................
+
+......................................................................................................................................................
+
+Documents utilisés pendant la séance (non transmis au stagiaire)
+
+Documents utilisés pendant la séance (Mis à la disposition du stagiaire)
+
+Indiquer la liste des modules vus pendant la séance : (liste des cases à cocher de tous les modules)
+
+Analyse de la séance (observation, participation, amélioration, difficulté rencontrée...) :*
+......................................................................................................................................................
+......................................................................................................................................................
+......................................................................................................................................................
+
+                                                                                                                                                        Enregistrer
+
+Cahier des charges Extranet EDL ­ 22/05/2026 v4                                                                                                         Page 4 sur 8
+L'enregistrement engendre automatiquement :
+    · Création d'un dossier dont le nom est la date de la séance saisie dans le formulaire
+    · Création d'une fiche pédagogique en PDF qui reprend l'intégralité des informations saisies. Cette fiche
+         pédagogique est retrouvée dans le dossier de la séance correspondante. Uniquement visible par le formateur
+         et l'admin. La fiche est modifiable par le formateur et l'admin via le formulaire. Son nom est : fiche pédagogique
+         ­ date séance
+    · Toutes les ressources importées par le formateur, visibles ou non par le stagiaire seront en regeistrées dans
+         le dossier de la séance correspondante au format : date séance.RP1... RP2. Mais seules ceux importés
+         comme documents mis à disposition du stagiaire seront visibles dans son espace
+    · Les documents du référentiel générés par les modules cochés dans le questionnaire sont ajoutés
+         automatiquement dans le dossier de la séance correspondante (admin, formateur et stagiaire).
+
+    · Création d'un dossier dont le nom est celui de la date de la séance
+    · Les documents du référentiel générés par les modules choisis dans chaque séance sont ajoutés
+
+         automatiquement dans le dossier de la séance correspondante (profils admin et stagiaire).
+
+Cahier des charges Extranet EDL ­ 22/05/2026 v4  Page 5 sur 8
+             o Admin :
+    - Stagiaires :
+
+             o Importer les fichiers Excel de Gescof
+             o Supprimer manuellement des lignes de stagiaires
+             o Case à cocher si formation en distanciel (déclenchement des docs. Spécifiques FPC à distance =
+
+                  émargements, évaluation des acquis, questionnaire satisfaction à chaud (documents remplissable en
+                  ligne), lien Teams. Pour EDL : cocher la case, uniquement s'il s'agit d'une formation réalisée en totalité
+                  à distance. Si distanciel = permanent pour toutes les séances
+             o A voir : possibilité de « fusionner » plann'EDL et extranet sur l'intégration des plannings ? = quand on
+                  importe le plann'EDL, l'import se fait aussi sur l'extranet
+    - Formateurs :
+             o Création des comptes formateurs avec login et mdp + indication FPC et/ou OP : nom + prénom +
+                  « présentation du formateur »
+             o Modification des comptes (FPC / OP / mdp / login)
+             o Suppression des comptes
+             o Ajout des infos sur les formateurs : photo + CV résumé (qu'on trouve sur les pages d'accès des
+                  stagiaires = une phrase de présentation).
+    - Sessions :
+             o Accès à l'ensemble des documents déposés par les formateurs avec possibilité d'ajouter, de modifier
+                  et supprimer les documents avec contrôle de la taille
+             o Possibilité d'ajouter ou supprimer tous les docs :
+
+                       convention/contrat, guide d'animation, livret d'accueil, présentation du formateur, catalogue
+                           de formations, registre d'accessibilité et présentation des locaux
+
+                       Fiches du référentiel
+             o Possibilité de télécharger l'ensemble des documents (fiches pédagogiques + ressources
+
+                  pédagogiques) d'une session de FPC (pour enregistrement sur le Pcloud dossier du stagiaire)
+             o Pour chaque session OP :
+
+                       Intégration des dates de chaque trimestre
+                       Possibilité de « décocher » les jours où il n'y a pas de sessions (fériés + vacances)
+             o Pour chaque session FPC : ajouter les objectifs personnalisés
+
+    - Historique & suivi : journal des actions (qui a modifié quoi) et accès aux versions antérieures si nécessaire.
+
+Sur toutes les pages :
+    - Logos financeurs + qualiopi + CLOE
+    - Coordonnées
+    - Horaires d'ouverture
+    - Lien FB + site internet
+
+Pour EDL : Com' : « en complément de vos séances / pour aller plus loin... »
+
+Nom = « EDL + »
+
+Cahier des charges Extranet EDL ­ 22/05/2026 v4  Page 6 sur 8
+2. Exigences non-fonctionnelles
+
+  · Responsive : support desktop, tablette, mobile (mobile-first recommandé).
+  · Performance : temps de chargement raisonnable, pagination/chargement différé pour listes lourdes.
+  · Scalabilité : architecture permettant d'ajouter fonctions sans refonte majeure.
+  · Sécurité : chiffrement des données sensibles en transit (HTTPS) et au repos selon besoin, protection contre
+
+       XSS/CSRF/SQL Injection.
+  · Conformité RGPD : consentement, droit d'accès/suppression, registre des traitements, durée de
+
+       conservation, mentions légales.
+  · Accessibilité : respecter WCAG 2.1 AA pour l'accès aux personnes en situation de handicap.
+  · Backups & reprise : sauvegardes régulières et procédure de restauration documentée.
+
+ 3. Référentiel
+
+Référentiel en cours de finalisation.
+Trame au 19/01/2026 :
+
+Modules      Contenus                                             Niveaux
+Bases        B-C1 Culture pays anglosaxons                        A1
+             B-C2 Salutations                                     A1
+             B-C3 Se presenter                                    A1
+             B-C4 Chiffres/dates/ heures                          A1
+             B-C5 Construction de phrase                          A1
+             B-C6 Like/dislike                                    A1
+
+Conjugaison  C-C1 BE et HAVE                                      A1
+
+             C-C2 Présent simple / -ING                           A1
+
+             C-C3 Les temps futurs et passés                      A1
+
+             C-C4 Les modaux + niveau A2/B1                       A1
+
+             C-C5 Prétérit simple / -ING                          A1 / A2 / B1
+
+             C-C6 Présent perfect simple/ -ING                    A2 / B1
+
+             C-C7 Les verbes irréguliers                          A2 / B1
+
+             C-C8 Le conditionnel                                 A2 / B1
+
+             C-C9 Les temps complexes (futur antérieur, plus que parfait, B1 / B2
+
+                                                 subjonctif,...)
+
+Grammaire    G-C1 Les pronoms                                     A1
+
+             G-C2 Les adverbes                                    A1
+
+             G-C3 Mots interrogatifs                              A1
+
+             G-C4 Possession                                      A1
+
+             G-C5 Articles (the, a/an)                            A1
+
+Cahier des charges Extranet EDL ­ 22/05/2026 v4                   Page 7 sur 8
+               G-C6                              Le pluriel des noms                                            A1
+               G-C7                              Les adjectifs                                                  A1
+               G-C8                              La quantité                                                    A1
+               G-C9                              Les prépositions                                               A1
+               G-C10                             La fréquence                                                   A2 / B1
+               G-C11                             La comparaison                                                 A2 / B1
+               G-C12                             Les verbes à particules + niveau A2/B1                         A2 / B1
+               G-C13                             La voie passive                                                A2 / B1
+               G-C14                             L'hypothèse                                                    A2 / B1
+               G-C15                             Les pronoms relatifs (auquel, lesquels,...)                    B1 / B2
+               G-C16                             La mise en relief                                              C1 / C2
+               G-C17                             Phrases verbales
+
+Prononciation  P-C1 Phonétique, prononciation, accents + niveau C1/C2                                           A2 / B1 / C1
+Méthodologie   P-C2 Intonation, débit + niveau C1/C2                                                            / C2
+Vocabulaire                                                                                                     B1 / B2 / C1
+Au quotidien                                                                                                    / C2
+
+               M-C1                              Rédaction d'email/lettres/messages                             A2 / B1
+               M-C2                              Donner son avis                                                A2 / B1
+               M-C3                              Commenter                                                      B1 / B2
+               M-C4                              Faire un exposé, un compte rendu, commentaire                  B1 / B2
+               M-C5                              Rédaction CV et lettres                                        C1 / C2
+               M-C6                              Rédiger en s'adaptant aux différents styles                    C1 / C2
+               M-C7                              Rédaction de toutes sortes de documents                        C1 / C2
+               M-C8                              Réaliser des présentations                                     C1 / C2
+               M-C9                              Utiliser différents registres de langage                       C1 / C2
+
+               V-C1 Famille, travail, quotidien, vêtements, nourriture, loisirs, A1
+
+                                                 sentiments
+
+               V-C2 Localisation dans le temps et l'espace, logement, météo, A2 / B1
+
+                                                 pays/villes, argent, moyens de transports, événements, médias
+
+               V-C3 Sujets culturels (cinéma, spectacles, littérature, art, ...) sujets B1 / B2
+
+                                                 d'actualité et faits de société, le système scolaire, les
+
+                                                 événements, psychologie, enrichissement lexical (synonyme,
+
+                                                 antonyme, polysémie)
+
+               V-C4 Expressions idiomatiques, proverbes, faux amis                                              C1 / C2
+
+               A-C1 Animaux
+               A-C2 Météo
+               A-C3 L'heure
+               A-C4 Noël
+               A-C5 Halloween
+               A-C6
+               A-C7
+
+Cahier des charges Extranet EDL ­ 22/05/2026 v4                                                 Page 8 sur 8
+
