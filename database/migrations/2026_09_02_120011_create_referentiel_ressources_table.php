@@ -6,24 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('referentiel_ressources', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('referentiel_id');
-            $table->unsignedInteger('ressources_id');
+            $table->id();
+            $table->foreignId('referentiel_id')->constrained('referentiel')->cascadeOnDelete();
+            $table->foreignId('ressource_id')->constrained('ressources')->cascadeOnDelete();
 
-            $table->foreign('referentiel_id')->references('id')->on('referentiel');
-            $table->foreign('ressources_id')->references('id')->on('ressources');
+            $table->unique(['referentiel_id', 'ressource_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('referentiel_ressources');

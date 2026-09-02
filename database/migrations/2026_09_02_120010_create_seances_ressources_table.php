@@ -7,23 +7,21 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ressources rattachées à une séance. transmis = true : visible dans
+     * l'espace du stagiaire ; false : document de travail du formateur.
      */
     public function up(): void
     {
         Schema::create('seances_ressources', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('seance_id');
-            $table->unsignedInteger('ressource_id');
+            $table->foreignId('seance_id')->constrained('seances')->cascadeOnDelete();
+            $table->foreignId('ressource_id')->constrained('ressources')->cascadeOnDelete();
+            $table->boolean('transmis')->default(false);
 
-            $table->foreign('seance_id')->references('id')->on('seances');
-            $table->foreign('ressource_id')->references('id')->on('ressources');
+            $table->unique(['seance_id', 'ressource_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('seances_ressources');
