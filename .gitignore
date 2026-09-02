@@ -28,3 +28,7 @@ Thumbs.db
 
 # Extraction temporaire du cahier des charges
 /CLAUDE/cdc.txt
+
+# Base SQLite locale (dev = MySQL, tests = :memory:)
+/database/*.sqlite
+/edl_plus

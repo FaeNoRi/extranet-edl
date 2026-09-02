@@ -15,12 +15,14 @@ class RessourceFactory extends Factory
         };
 
         return [
-            'nom' => fake()->sentence(3),
+            'nom' => ucfirst(fake()->words(3, true)),
             'type_fichier' => $type,
             'chemin_fichier' => 'ressources/'.fake()->uuid().'.'.$ext,
-            'nom_fichier_original' => fake()->word().'.'.$ext,
+            'nom_fichier_original' => fake()->slug(2).'.'.$ext,
+            'taille' => fake()->numberBetween(50_000, 25_000_000),
             'nb_telechargement' => fake()->numberBetween(0, 200),
-            'uploader_id' => User::inRandomOrder()->value('id') ?? User::factory(),
+            'uploader_id' => User::factory()->formateur(),
+            'session_formation_id' => null,
         ];
     }
 }

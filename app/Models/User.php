@@ -3,18 +3,25 @@
 namespace App\Models;
 
 use App\Enums\Role;
+use App\Models\Concerns\Journalisable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Journalisable, Notifiable, SoftDeletes;
+
+    /** @var list<string> */
+    protected array $journalAttributs = ['login', 'email', 'role', 'nom', 'prenom', 'formateur_fpc', 'formateur_op', 'deleted_at'];
 
     protected $fillable = [
         'email', 'login', 'password', 'role', 'nom', 'prenom',
+        'photo_path', 'presentation', 'formateur_fpc', 'formateur_op',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -22,19 +29,21 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => Role::class,
+            'formateur_fpc' => 'boolean',
+            'formateur_op' => 'boolean',
         ];
     }
 
-    /**
-     * Nom complet « Prénom NOM ».
-     */
+    // --- Attributs -----------------------------------------------------------
+
     public function getNomCompletAttribute(): string
     {
         return trim($this->prenom.' '.$this->nom);
     }
+
+    // --- Rôles -------------------------------------------------------------
 
     public function hasRole(Role ...$roles): bool
     {
@@ -66,6 +75,18 @@ class User extends Authenticatable
         return $this->role === Role::StagiaireOp;
     }
 
+    public function scopeFormateurs(Builder $query): void
+    {
+        $query->where('role', Role::Formateur->value);
+    }
+
+    public function scopeStagiaires(Builder $query): void
+    {
+        $query->whereIn('role', [Role::StagiaireOp->value, Role::StagiaireFpc->value]);
+    }
+
+    // --- Relations ---------------------------------------------------------
+
     public function passwordResetTokens(): HasMany
     {
         return $this->hasMany(PasswordResetToken::class);
@@ -73,12 +94,43 @@ class User extends Authenticatable
 
     public function sessionFormations(): BelongsToMany
     {
-        return $this->belongsToMany(SessionFormation::class, 'session_formation_user');
+        return $this->belongsToMany(SessionFormation::class, 'session_formation_user')
+            ->withPivot('disparu_import_at')
+            ->withTimestamps();
+    }
+
+    /** Sessions encadrées (formateur). */
+    public function sessionsEncadrees(): HasMany
+    {
+        return $this->hasMany(SessionFormation::class, 'formateur_id');
+    }
+
+    public function seancesAnimees(): HasMany
+    {
+        return $this->hasMany(Seance::class, 'formateur_id');
+    }
+
+    /** Fiches pédagogiques individuelles (stagiaire FPC). */
+    public function fichesPedagogiques(): HasMany
+    {
+        return $this->hasMany(Seance::class, 'user_id');
+    }
+
+    public function emargements(): HasMany
+    {
+        return $this->hasMany(Emargement::class);
+    }
+
+    public function ressourcesUploadees(): HasMany
+    {
+        return $this->hasMany(Ressource::class, 'uploader_id');
     }
 
     public function referentiels(): BelongsToMany
     {
-        return $this->belongsToMany(Referentiel::class, 'user_ressources', 'user_id', 'referentiel_id');
+        return $this->belongsToMany(Referentiel::class, 'user_referentiel', 'user_id', 'referentiel_id')
+            ->withPivot('consulte_at')
+            ->withTimestamps();
     }
 
     public function documents(): BelongsToMany
@@ -86,8 +138,8 @@ class User extends Authenticatable
         return $this->belongsToMany(Document::class, 'user_documents');
     }
 
-    public function ressourcesUploadees(): HasMany
+    public function questionnaireReponses(): HasMany
     {
-        return $this->hasMany(Ressource::class, 'uploader_id');
+        return $this->hasMany(QuestionnaireReponse::class);
     }
 }
