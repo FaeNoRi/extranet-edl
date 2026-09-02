@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use App\Casts\SetCast;
+use App\Models\Concerns\Journalisable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Referentiel extends Model
 {
-    use HasFactory;
+    use HasFactory, Journalisable;
 
     protected $table = 'referentiel';
 
@@ -22,13 +24,25 @@ class Referentiel extends Model
         ];
     }
 
-    public function ressources(): BelongsToMany
+    public function scopeModule(Builder $query, string $module): void
     {
-        return $this->belongsToMany(Ressource::class, 'referentiel_ressources', 'referentiel_id', 'ressources_id');
+        $query->where('module', $module);
     }
 
-    public function users(): BelongsToMany
+    public function ressources(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'user_ressources', 'referentiel_id', 'user_id');
+        return $this->belongsToMany(Ressource::class, 'referentiel_ressources', 'referentiel_id', 'ressource_id');
+    }
+
+    public function seances(): BelongsToMany
+    {
+        return $this->belongsToMany(Seance::class, 'seances_referentiel', 'referentiel_id', 'seance_id');
+    }
+
+    public function stagiaires(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_referentiel', 'referentiel_id', 'user_id')
+            ->withPivot('consulte_at')
+            ->withTimestamps();
     }
 }

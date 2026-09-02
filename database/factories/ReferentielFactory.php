@@ -13,8 +13,8 @@ class ReferentielFactory extends Factory
 
         return [
             'module' => fake()->randomElement($modules),
-            'code' => strtoupper(fake()->unique()->bothify('REF-###??')),
-            'contenu' => fake()->paragraphs(3, true),
+            'code' => mb_strtoupper(fake()->unique()->bothify('REF-C##')),
+            'contenu' => fake()->sentence(6),
             'niveaux' => fake()->randomElements($niveaux, fake()->numberBetween(1, 3)),
         ];
     }
