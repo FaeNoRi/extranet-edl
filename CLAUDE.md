@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phase en cours : 2** (back-office admin).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phase en cours : 2** (back-office admin) — moteur d'import GESCOF fait ; reste l'UI admin.
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -66,6 +66,25 @@ Schéma refondu — migrations `2026_09_02_1200xx`. Après `git pull` : `php art
 - `emargements` (FPC distanciel), `questionnaires` + `questionnaire_questions` +
   `questionnaire_reponses` (formulaires en ligne — UI en phase 4).
 - `referentiel` : trame réelle du CDC §3 chargée par `ReferentielSeeder` (52 entrées, idempotent).
+
+## Import GESCOF (phase 2)
+
+- Lecteur `App\Support\SpreadsheetReader` : `.xlsx` (sans dépendance) et `.csv`, en-têtes
+  normalisées (sans accents/casse).
+- `App\Support\CodeStage::analyser()` : dérive langue + FPC/OP + « stage -ST » depuis le
+  code (`AN-OP-8-9`, `ES-FPC-AIS`, `AN-CLSH`…).
+- `App\Services\Gescof\GescofImporter` : `simuler()` / `appliquer()` (transaction +
+  rollback en simulation). Règles : exclut `AccesPlateforme≠Oui`, codes `-ST`, hors
+  FPC/OP ; 1 login par (stagiaire, session) ; e-mail non unique ; « pas de suppression »
+  → `session_formation_user.disparu_import_at`.
+- Formateurs : `session_formations.formateur_id` (référent) + pivot
+  `session_formation_formateur` (équipe). Appariement souple par nom ; non-reconnus =
+  anomalie, à compléter dans le formulaire admin. `intervenants_import` conserve la
+  chaîne brute (colonne libre, saisie humaine).
+- Chaque exécution (simulation comprise) est tracée dans `gescof_imports` (rapport JSON).
+- Commande : `php artisan edl:import-gescof <fichier> [--appliquer] [--envoyer-acces]`.
+- Colonnes attendues : `Nom, Prenom, NomClient, CodeProduit, LibelleStage, NumSession,
+  Email, ListeItv, AccesPlateforme` (compat. ancien `NomParticipant` unique).
 
 ## Structure des espaces
 

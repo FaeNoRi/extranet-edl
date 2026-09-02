@@ -17,8 +17,9 @@ class SessionFormation extends Model
     protected $table = 'session_formations';
 
     protected $fillable = [
-        'num_GESCOF', 'nom', 'code_produit', 'langue', 'client_id', 'formateur_id',
-        'objectifs', 'distanciel', 'lien_teams', 'rythme_op', 'dates_planning',
+        'num_GESCOF', 'nom', 'code_stage', 'code_produit', 'langue', 'client_id',
+        'formateur_id', 'intervenants_import', 'objectifs', 'distanciel', 'lien_teams',
+        'rythme_op', 'dates_planning', 'gescof_importe_at',
     ];
 
     protected function casts(): array
@@ -26,6 +27,7 @@ class SessionFormation extends Model
         return [
             'code_produit' => CodeProduit::class,
             'distanciel' => 'boolean',
+            'gescof_importe_at' => 'datetime',
         ];
     }
 
@@ -46,9 +48,18 @@ class SessionFormation extends Model
         return $this->belongsTo(Client::class);
     }
 
+    /** Formateur référent. */
     public function formateur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'formateur_id');
+    }
+
+    /** Équipe pédagogique (co-animation). */
+    public function formateurs(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'session_formation_formateur')
+            ->withPivot('principal')
+            ->withTimestamps();
     }
 
     public function stagiaires(): BelongsToMany
