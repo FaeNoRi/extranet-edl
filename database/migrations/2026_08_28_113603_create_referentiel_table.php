@@ -19,7 +19,9 @@ return new class extends Migration
             ])->index();
             $table->string('code');
             $table->text('contenu');
-            $table->set('niveaux', ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])->nullable();
+            // Liste de niveaux CECRL séparés par des virgules (cf. App\Casts\SetCast).
+            // Stockée en VARCHAR pour rester portable (SQLite en test, MySQL en prod).
+            $table->string('niveaux')->nullable();
             $table->timestamps();
         });
     }

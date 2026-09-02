@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('login')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'formateur', 'stagiaire_op', 'stagiaire_fpc'])
-                  ->default('stagiaire_op');
+                ->default('stagiaire_op');
             $table->string('nom');
             $table->string('prenom');
             $table->timestamp('email_verified_at')->nullable();
