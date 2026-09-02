@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class SessionFormation extends Model
 {
@@ -39,6 +40,49 @@ class SessionFormation extends Model
     public function isOp(): bool
     {
         return $this->code_produit === CodeProduit::Op;
+    }
+
+    /**
+     * Date de fin estimée de la session. On privilégie les dates réelles
+     * d'activité (jours de planning, séances) ; à défaut on retombe sur la
+     * dernière date de `dates_planning`, puis sur la date d'import / création
+     * (session récente sans activité → considérée en cours). Sert aux purges.
+     */
+    public function finLe(): ?Carbon
+    {
+        $activite = array_filter([
+            $this->jours()->max('date'),
+            $this->seances()->max('date'),
+        ]);
+
+        if ($activite !== []) {
+            return Carbon::parse(max($activite));
+        }
+
+        $dernierePlanning = $this->dernieresDatesPlanning();
+        if ($dernierePlanning) {
+            return $dernierePlanning;
+        }
+
+        return $this->gescof_importe_at ?? $this->created_at;
+    }
+
+    private function dernieresDatesPlanning(): ?Carbon
+    {
+        $max = null;
+        foreach (preg_split('/[\s,;]+/', (string) $this->dates_planning) ?: [] as $brut) {
+            foreach (['d/m/Y', 'd-m-Y', 'Y-m-d'] as $format) {
+                try {
+                    $date = Carbon::createFromFormat($format, $brut)->startOfDay();
+                    $max = $max === null || $date->gt($max) ? $date : $max;
+                    break;
+                } catch (\Throwable) {
+                    continue;
+                }
+            }
+        }
+
+        return $max;
     }
 
     // --- Relations ---------------------------------------------------------

@@ -21,6 +21,7 @@ class AdminAccessTest extends TestCase
             ['admin.formateurs.index'],
             ['admin.formateurs.create'],
             ['admin.stagiaires.index'],
+            ['admin.purges.index'],
             ['admin.journal.index'],
         ];
     }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\FormateurController;
 use App\Http\Controllers\Admin\GescofImportController;
 use App\Http\Controllers\Admin\JournalController;
+use App\Http\Controllers\Admin\PurgeController;
 use App\Http\Controllers\Admin\SessionFormationController;
 use App\Http\Controllers\Admin\SessionJourController;
 use App\Http\Controllers\Admin\StagiaireController;
@@ -46,9 +47,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('sessions', SessionFormationController::class)
             ->parameters(['sessions' => 'session']);
         Route::post('sessions/{session}/planning', [SessionJourController::class, 'sync'])->name('sessions.planning.sync');
+        Route::get('sessions/{session}/archive', [SessionFormationController::class, 'archive'])->name('sessions.archive');
 
         Route::get('stagiaires', [StagiaireController::class, 'index'])->name('stagiaires.index');
         Route::delete('stagiaires/{stagiaire}', [StagiaireController::class, 'destroy'])->name('stagiaires.destroy');
+
+        Route::get('purges', [PurgeController::class, 'index'])->name('purges.index');
+        Route::post('purges', [PurgeController::class, 'executer'])->name('purges.executer');
 
         Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
     });

@@ -44,4 +44,24 @@ return [
         // 'Région Hauts-de-France', 'France Travail', ...
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Purges de comptes (cahier des charges §1.2)
+    |--------------------------------------------------------------------------
+    |
+    | - OP : suppression des comptes après la fermeture annuelle estivale.
+    |   `op_apres` = jour à partir duquel la purge OP peut s'exécuter (MM-JJ) ;
+    |   sont supprimés les comptes OP dont toutes les sessions se sont terminées
+    |   avant le 1er septembre de l'année en cours.
+    | - FPC : suppression au 31/12 de l'année N des comptes dont les formations
+    |   se sont terminées en N-1 (déclenchement manuel par l'admin ; une tâche
+    |   planifiée le propose aussi au 31/12).
+    |
+    */
+
+    'purges' => [
+        'op_apres' => env('EDL_PURGE_OP_APRES', '08-01'),
+        'fpc_le' => env('EDL_PURGE_FPC_LE', '12-31'),
+    ],
+
 ];
