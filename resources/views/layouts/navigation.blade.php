@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('formateur.*') || request()->routeIs('stagiaire.*')">
                         {{ __('Tableau de bord') }}
                     </x-nav-link>
                     @if ($user->isAdmin())
@@ -68,7 +68,7 @@
 
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="space-y-1 pb-3 pt-2">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('formateur.*') || request()->routeIs('stagiaire.*')">
                 {{ __('Tableau de bord') }}
             </x-responsive-nav-link>
             @if ($user->isAdmin())

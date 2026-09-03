@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -99,10 +100,31 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    /** Sessions encadrées (formateur). */
+    /** Sessions dont le formateur est le référent. */
     public function sessionsEncadrees(): HasMany
     {
         return $this->hasMany(SessionFormation::class, 'formateur_id');
+    }
+
+    /** Sessions où le formateur intervient (co-animation). */
+    public function sessionsCoAnimees(): BelongsToMany
+    {
+        return $this->belongsToMany(SessionFormation::class, 'session_formation_formateur')
+            ->withPivot('principal')
+            ->withTimestamps();
+    }
+
+    /**
+     * Toutes les sessions encadrées (référent ou équipe).
+     *
+     * @return Collection<int, SessionFormation>
+     */
+    public function sessionsPourFormateur(): Collection
+    {
+        return $this->sessionsEncadrees()->get()
+            ->concat($this->sessionsCoAnimees()->get())
+            ->unique('id')
+            ->values();
     }
 
     public function seancesAnimees(): HasMany
