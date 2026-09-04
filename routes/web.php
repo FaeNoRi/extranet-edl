@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\FormateurController;
 use App\Http\Controllers\Admin\GescofImportController;
 use App\Http\Controllers\Admin\JournalController;
@@ -14,6 +15,10 @@ use App\Http\Controllers\Formateur\RessourceController as FormateurRessourceCont
 use App\Http\Controllers\Formateur\SeanceController as FormateurSeanceController;
 use App\Http\Controllers\Formateur\SessionController as FormateurSessionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Stagiaire\DashboardController as StagiaireDashboardController;
+use App\Http\Controllers\Stagiaire\EmargementController as StagiaireEmargementController;
+use App\Http\Controllers\Stagiaire\RessourcePedagogiqueController;
+use App\Http\Controllers\Stagiaire\TelechargementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -59,6 +64,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('purges', [PurgeController::class, 'index'])->name('purges.index');
         Route::post('purges', [PurgeController::class, 'executer'])->name('purges.executer');
 
+        Route::get('documents', [DocumentController::class, 'index'])->name('documents.index');
+        Route::post('documents', [DocumentController::class, 'store'])->name('documents.store');
+        Route::get('documents/{document}', [DocumentController::class, 'download'])->name('documents.download');
+        Route::delete('documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
+
         Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
     });
 
@@ -88,7 +98,15 @@ Route::middleware(['auth', 'role:stagiaire_op,stagiaire_fpc'])
     ->prefix('espace')
     ->name('stagiaire.')
     ->group(function () {
-        Route::view('/', 'dashboard.stagiaire')->name('dashboard');
+        Route::get('/', StagiaireDashboardController::class)->name('dashboard');
+
+        Route::get('ressources', [RessourcePedagogiqueController::class, 'index'])->name('ressources.index');
+        Route::get('ressources/{seance}', [RessourcePedagogiqueController::class, 'show'])->name('ressources.show');
+
+        Route::get('documents/{document}', [TelechargementController::class, 'document'])->name('documents.download');
+        Route::get('fichiers/{ressource}', [TelechargementController::class, 'ressource'])->name('ressources.download');
+
+        Route::post('seances/{seance}/emargement', [StagiaireEmargementController::class, 'sign'])->name('emargement');
     });
 
 require __DIR__.'/auth.php';
