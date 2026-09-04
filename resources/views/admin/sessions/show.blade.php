@@ -118,5 +118,48 @@
                 </div>
             @endif
         </x-admin.card>
+
+        <x-admin.card titre="Documents de la session (« Mes documents »)">
+            <form method="POST" action="{{ route('admin.documents.store') }}" enctype="multipart/form-data"
+                  class="mb-4 flex flex-wrap items-end gap-3">
+                @csrf
+                <input type="hidden" name="categorie" value="mes_documents">
+                <input type="hidden" name="session_formation_id" value="{{ $session->id }}">
+                <div>
+                    <x-input-label for="nom" :value="__('Intitulé')" />
+                    <select id="nom" name="nom"
+                            class="mt-1 block rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                        @foreach (\App\Http\Controllers\Admin\DocumentController::typesMesDocuments() as $type)
+                            <option value="{{ $type }}">{{ $type }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <input name="fichier" type="file" required
+                       class="text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">
+                <x-primary-button>Ajouter</x-primary-button>
+            </form>
+            <x-input-error :messages="$errors->get('fichier')" class="mb-2" />
+
+            @php $docs = \App\Models\Document::where('session_formation_id', $session->id)->orderBy('nom')->get(); @endphp
+            @if ($docs->isEmpty())
+                <p class="text-sm text-gray-500">Aucun document.</p>
+            @else
+                <ul class="divide-y divide-gray-100 text-sm">
+                    @foreach ($docs as $doc)
+                        <li class="flex items-center justify-between py-2">
+                            <span>{{ $doc->nom }}</span>
+                            <span class="flex gap-3">
+                                <a href="{{ route('admin.documents.download', $doc) }}" class="text-edl-bleu hover:underline">Télécharger</a>
+                                <form method="POST" action="{{ route('admin.documents.destroy', $doc) }}"
+                                      onsubmit="return confirm('Supprimer ?')">
+                                    @csrf @method('DELETE')
+                                    <button class="text-edl-rose hover:underline">Suppr.</button>
+                                </form>
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </x-admin.card>
     </x-admin.shell>
 </x-app-layout>

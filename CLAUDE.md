@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 3 terminées.** Prochaine : phase 4 (espaces stagiaires FPC & OP).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées** (hors questionnaires, reportés). Prochaine : phase 5 (conformité & durcissement).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -137,7 +137,38 @@ Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU éq
 - Le **dossier de séance** (page show) réunit résumé, ressources (transmis/travail) et
   fiches du référentiel des modules cochés.
 
+## Espace stagiaire (phase 4)
+
+Sous `/espace` (`role:stagiaire_op,stagiaire_fpc`), `<x-stagiaire.shell>` (accent rose).
+Tout est cadré à `User::sessionStagiaire()` (1 accès = 1 session).
+
+- **Tableau de bord** : bienvenue + nom, intitulé de session, formateur (+ présentation),
+  bouton Teams si distanciel, **2 blocs documents** (`presentation_structure` communs /
+  `mes_documents` de la session), planning (`session_jours` actifs).
+- **Ressources pédagogiques** (`stagiaire.ressources.*`) : un dossier par séance
+  **réalisée** (`date <= today`), FPC = ses séances individuelles + les séances de groupe.
+  Le dossier montre les ressources **transmises** et les fiches du référentiel des modules
+  vus (nommées `date.contenu`) ; jamais la fiche pédagogique PDF. Volet de visualisation
+  (iframe, `?apercu=1` → `Storage::response`).
+- **Téléchargements** : `TelechargementController` vérifie que le document/la ressource
+  appartient bien à la session du stagiaire (ou est un document commun structure).
+- **Émargement** (`stagiaire.emargement`) : FPC distanciel uniquement, une séance réalisée
+  → `Emargement` (present + signe_at).
+
+## Documents (admin, complément phase 2)
+
+`Admin\DocumentController` : `/admin/documents` gère les documents communs
+(`presentation_structure`, `session_formation_id` nul) ; la fiche d'une session gère ses
+`mes_documents`. Stockage disque privé, `typesStructure()` / `typesMesDocuments()`.
+
 ## Structure des espaces
 
 `/tableau-de-bord` redirige vers le tableau de bord du rôle : `/admin`, `/formateur`, `/espace`.
-L'espace stagiaire (`/espace`) reste un placeholder (phase 4).
+
+## Reste à faire
+
+- **Questionnaires** (satisfaction chaud/froid, évaluation des acquis) : schéma prêt
+  (`questionnaires`, `questionnaire_questions`, `questionnaire_reponses`), UI à construire
+  (constructeur admin + formulaire stagiaire). Reporté en fin de phase 4 / phase 5.
+- Phase 5 : RGPD (mentions, registre, purges de données), accessibilité WCAG 2.1 AA,
+  perf, sécurité, sauvegardes.
