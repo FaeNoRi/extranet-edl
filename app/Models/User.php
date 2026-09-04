@@ -100,6 +100,12 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    /** Session du stagiaire (1 accès = 1 session). */
+    public function sessionStagiaire(): ?SessionFormation
+    {
+        return $this->sessionFormations()->first();
+    }
+
     /** Sessions dont le formateur est le référent. */
     public function sessionsEncadrees(): HasMany
     {
