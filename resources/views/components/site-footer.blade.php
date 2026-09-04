@@ -45,8 +45,13 @@
             </div>
         </div>
 
-        <p class="mt-8 text-xs text-gray-400">
-            &copy; {{ date('Y') }} {{ $edl['structure']['nom'] }}. Tous droits réservés.
-        </p>
+        <div class="mt-8 flex flex-col gap-2 border-t border-gray-100 pt-4 text-xs text-gray-400 sm:flex-row sm:items-center sm:justify-between">
+            <p>&copy; {{ date('Y') }} {{ $edl['structure']['nom'] }}. Tous droits réservés.</p>
+            <nav class="flex flex-wrap gap-x-4 gap-y-1">
+                <a class="hover:text-edl-bleu" href="{{ route('legal.mentions') }}">Mentions légales</a>
+                <a class="hover:text-edl-bleu" href="{{ route('legal.confidentialite') }}">Confidentialité</a>
+                <a class="hover:text-edl-bleu" href="{{ route('legal.accessibilite') }}">Accessibilité</a>
+            </nav>
+        </div>
     </div>
 </footer>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Document;
+use App\Rules\FichierAutorise;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +28,7 @@ class DocumentController extends Controller
             'categorie' => ['required', 'in:presentation_structure,mes_documents'],
             'type_document' => ['nullable', 'string', 'max:255'],
             'session_formation_id' => ['nullable', 'exists:session_formations,id'],
-            'fichier' => ['required', 'file', 'max:20480'],
+            'fichier' => FichierAutorise::regles(),
         ], [], ['fichier' => 'fichier']);
 
         $sessionId = $data['session_formation_id'] ?? null;

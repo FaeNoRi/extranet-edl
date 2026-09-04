@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Formateur;
 
 use App\Models\SessionFormation;
+use App\Rules\FichierAutorise;
 use App\Support\OptionsSeance;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -51,9 +52,9 @@ class SeanceRequest extends FormRequest
             'ressources' => ['array'],
             'ressources.*' => ['exists:ressources,id'],
             'fichiers_transmis' => ['array'],
-            'fichiers_transmis.*' => ['file', 'max:51200'],
+            'fichiers_transmis.*' => FichierAutorise::regles(),
             'fichiers_internes' => ['array'],
-            'fichiers_internes.*' => ['file', 'max:51200'],
+            'fichiers_internes.*' => FichierAutorise::regles(),
         ];
     }
 

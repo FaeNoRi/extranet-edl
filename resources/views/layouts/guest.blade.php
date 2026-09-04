@@ -25,6 +25,11 @@
             <p class="mt-6 text-xs text-gray-500">
                 {{ config('edl.structure.nom') }}
             </p>
+            <nav class="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-400">
+                <a class="hover:text-edl-bleu" href="{{ route('legal.mentions') }}">Mentions légales</a>
+                <a class="hover:text-edl-bleu" href="{{ route('legal.confidentialite') }}">Confidentialité</a>
+                <a class="hover:text-edl-bleu" href="{{ route('legal.accessibilite') }}">Accessibilité</a>
+            </nav>
         </div>
     </body>
 </html>

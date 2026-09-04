@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Formateur;
 use App\Http\Controllers\Controller;
 use App\Models\Ressource;
 use App\Models\SessionFormation;
+use App\Rules\FichierAutorise;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +19,7 @@ class RessourceController extends Controller
 
         $data = $request->validate([
             'fichiers' => ['required', 'array'],
-            'fichiers.*' => ['file', 'max:51200'],
+            'fichiers.*' => FichierAutorise::regles(),
         ], [], ['fichiers.*' => 'fichier']);
 
         foreach ($data['fichiers'] as $fichier) {

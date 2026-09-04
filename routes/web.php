@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\FormateurController;
 use App\Http\Controllers\Admin\GescofImportController;
 use App\Http\Controllers\Admin\JournalController;
 use App\Http\Controllers\Admin\PurgeController;
+use App\Http\Controllers\Admin\QuestionnaireController as AdminQuestionnaireController;
 use App\Http\Controllers\Admin\SessionFormationController;
 use App\Http\Controllers\Admin\SessionJourController;
 use App\Http\Controllers\Admin\StagiaireController;
@@ -14,9 +15,11 @@ use App\Http\Controllers\Formateur\DashboardController as FormateurDashboardCont
 use App\Http\Controllers\Formateur\RessourceController as FormateurRessourceController;
 use App\Http\Controllers\Formateur\SeanceController as FormateurSeanceController;
 use App\Http\Controllers\Formateur\SessionController as FormateurSessionController;
+use App\Http\Controllers\PageLegaleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Stagiaire\DashboardController as StagiaireDashboardController;
 use App\Http\Controllers\Stagiaire\EmargementController as StagiaireEmargementController;
+use App\Http\Controllers\Stagiaire\QuestionnaireController as StagiaireQuestionnaireController;
 use App\Http\Controllers\Stagiaire\RessourcePedagogiqueController;
 use App\Http\Controllers\Stagiaire\TelechargementController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +27,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->name('accueil');
+
+Route::get('/mentions-legales', [PageLegaleController::class, 'mentions'])->name('legal.mentions');
+Route::get('/politique-de-confidentialite', [PageLegaleController::class, 'confidentialite'])->name('legal.confidentialite');
+Route::get('/accessibilite', [PageLegaleController::class, 'accessibilite'])->name('legal.accessibilite');
 
 Route::middleware('auth')->group(function () {
     // Point d'entrée unique : redirige vers le tableau de bord du rôle.
@@ -69,6 +76,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('documents/{document}', [DocumentController::class, 'download'])->name('documents.download');
         Route::delete('documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
 
+        Route::get('questionnaires/{questionnaire}/resultats', [AdminQuestionnaireController::class, 'resultats'])->name('questionnaires.resultats');
+        Route::resource('questionnaires', AdminQuestionnaireController::class)->except('show');
+
         Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
     });
 
@@ -105,6 +115,10 @@ Route::middleware(['auth', 'role:stagiaire_op,stagiaire_fpc'])
 
         Route::get('documents/{document}', [TelechargementController::class, 'document'])->name('documents.download');
         Route::get('fichiers/{ressource}', [TelechargementController::class, 'ressource'])->name('ressources.download');
+
+        Route::get('questionnaires', [StagiaireQuestionnaireController::class, 'index'])->name('questionnaires.index');
+        Route::get('questionnaires/{questionnaire}', [StagiaireQuestionnaireController::class, 'show'])->name('questionnaires.show');
+        Route::post('questionnaires/{questionnaire}', [StagiaireQuestionnaireController::class, 'store'])->name('questionnaires.store');
 
         Route::post('seances/{seance}/emargement', [StagiaireEmargementController::class, 'sign'])->name('emargement');
     });

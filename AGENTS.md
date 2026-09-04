@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées** (hors questionnaires, reportés). Prochaine : phase 5 (conformité & durcissement).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; reste audit accessibilité, RGPD export/effacement, sauvegardes).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -165,10 +165,34 @@ Tout est cadré à `User::sessionStagiaire()` (1 accès = 1 session).
 
 `/tableau-de-bord` redirige vers le tableau de bord du rôle : `/admin`, `/formateur`, `/espace`.
 
-## Reste à faire
+## Questionnaires (phase 5)
 
-- **Questionnaires** (satisfaction chaud/froid, évaluation des acquis) : schéma prêt
-  (`questionnaires`, `questionnaire_questions`, `questionnaire_reponses`), UI à construire
-  (constructeur admin + formulaire stagiaire). Reporté en fin de phase 4 / phase 5.
-- Phase 5 : RGPD (mentions, registre, purges de données), accessibilité WCAG 2.1 AA,
-  perf, sécurité, sauvegardes.
+Enums `TypeQuestionnaire` (satisfaction_chaud/froid, evaluation_acquis) et `TypeQuestion`
+(texte, choix_unique, choix_multiple, echelle).
+
+- **Admin** (`admin.questionnaires.*`) : constructeur (form + repeater de questions Alpine,
+  `QuestionnaireRequest::questionsNormalisees()`), portée = session précise ou toutes
+  (`session_formation_id` nul), page **résultats** agrégés (moyenne/histogramme échelle,
+  comptes choix, liste textes).
+- **Stagiaire** (`stagiaire.questionnaires.*`) : `Questionnaire::scopePourSession()`,
+  formulaire, un seul envoi (`questionnaire_soumissions`, unique (questionnaire, user)),
+  validation par question (obligatoire, échelle 1-5, options).
+
+## Conformité (phase 5, socle)
+
+- **En-têtes de sécurité** : `App\Http\Middleware\SecurityHeaders` (append au groupe web) —
+  X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, HSTS en prod.
+- **Pages légales** publiques : `/mentions-legales`, `/politique-de-confidentialite`,
+  `/accessibilite` (`PageLegaleController`, `<x-legal.page>`), liens en pied de page.
+  Contenu piloté par `config('edl.structure')` + `config('edl.legal')` — **à compléter par
+  l'EDL** (SIRET, hébergeur, DPO…).
+- **Uploads** : `App\Rules\FichierAutorise::regles()` (allowlist d'extensions +
+  `config('edl.uploads')`), appliqué aux documents et ressources.
+
+## Reste (phase 5-6)
+
+- RGPD : export des données d'un utilisateur, effacement/anonymisation définitive,
+  registre des traitements.
+- Accessibilité : audit WCAG 2.1 AA complet.
+- Perf (index, chargement différé), sauvegardes + procédure de restauration.
+- Phase 6 : mise en production, évolutions (familles, fusion plann'EDL, notifications).

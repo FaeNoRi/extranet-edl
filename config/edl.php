@@ -15,9 +15,27 @@ return [
 
     'structure' => [
         'nom' => 'École des Langues Grand Calais',
+        'forme_juridique' => env('EDL_FORME_JURIDIQUE', ''),
         'adresse' => env('EDL_ADRESSE', ''),
         'telephone' => env('EDL_TELEPHONE', ''),
         'email' => env('EDL_EMAIL', 'contact@edl-grandcalais.fr'),
+        'siret' => env('EDL_SIRET', ''),
+        'nda' => env('EDL_NDA', ''), // numéro de déclaration d'activité formation
+        'directeur_publication' => env('EDL_DIRECTEUR_PUBLICATION', ''),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mentions légales & RGPD (à compléter par l'EDL)
+    |--------------------------------------------------------------------------
+    */
+
+    'legal' => [
+        'hebergeur' => env('EDL_HEBERGEUR', ''),          // nom + adresse de l'hébergeur
+        'dpo_contact' => env('EDL_DPO_CONTACT', ''),      // e-mail du délégué / référent RGPD
+        'conservation_op' => 'Comptes supprimés après la fermeture annuelle estivale.',
+        'conservation_fpc' => 'Comptes supprimés au 31 décembre de l\'année suivant la fin de la formation.',
+        'conservation_journal' => 'Journal des actions conservé 3 ans.',
     ],
 
     'horaires' => env('EDL_HORAIRES', 'Du lundi au vendredi, 9h00 – 17h00'),
@@ -62,6 +80,29 @@ return [
     'purges' => [
         'op_apres' => env('EDL_PURGE_OP_APRES', '08-01'),
         'fpc_le' => env('EDL_PURGE_FPC_LE', '12-31'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Téléversements
+    |--------------------------------------------------------------------------
+    |
+    | Extensions autorisées et taille maximale (Ko) pour les documents
+    | administratifs et les ressources pédagogiques. Les fichiers exécutables
+    | ou scripts sont refusés.
+    |
+    */
+
+    'uploads' => [
+        'extensions' => [
+            'pdf', 'doc', 'docx', 'odt', 'rtf', 'txt',
+            'ppt', 'pptx', 'odp', 'xls', 'xlsx', 'ods', 'csv',
+            'jpg', 'jpeg', 'png', 'gif', 'webp',
+            'mp3', 'wav', 'm4a', 'ogg',
+            'mp4', 'webm', 'mov', 'avi',
+            'zip',
+        ],
+        'taille_max_ko' => (int) env('EDL_UPLOAD_MAX_KO', 51200),
     ],
 
 ];

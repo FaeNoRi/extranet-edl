@@ -4,6 +4,7 @@
     $liens = [
         'dashboard'  => ['route' => 'stagiaire.dashboard',       'label' => 'Mon espace'],
         'ressources' => ['route' => 'stagiaire.ressources.index', 'label' => 'Ressources pédagogiques'],
+        'questionnaires' => ['route' => 'stagiaire.questionnaires.index', 'label' => 'Questionnaires'],
     ];
 @endphp
 
