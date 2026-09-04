@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phase en cours : 2** (back-office admin) — import GESCOF + UI admin faits ; reste purges planifiées & téléchargement groupé FPC.
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 3 terminées.** Prochaine : phase 4 (espaces stagiaires FPC & OP).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -104,10 +104,40 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
   « absents du dernier import »), suppression (soft delete).
 - **Journal** (`admin.journal.index`) : `activity_log` paginé, filtres objet/événement,
   diff old/new.
+- **Purges** (`admin.purges.*`) : `PurgeComptesService` — comptes OP dont les sessions
+  se sont terminées avant le 1er septembre ; comptes FPC terminés en N-1.
+  `SessionFormation::finLe()` estime la fin (jours > séances > dates_planning > import).
+  Soft delete + une entrée `activity_log` (log « Purge »). Commande
+  `edl:purge-comptes [--op] [--fpc] [--appliquer]`, planifiée quotidiennement à 3h
+  (OP appliquée automatiquement, FPC seulement signalée — validée dans l'UI).
+  Config : `config('edl.purges')`.
+- **Archive session FPC** (`admin.sessions.archive`) : `SessionArchiveService` produit un
+  ZIP (un dossier par séance, fiche + ressources `date.RPn`, `MANIFESTE.txt` des fichiers
+  attendus mais absents — fiches PDF en phase 3).
 
 `x-primary-button` est thématisé EDL (`bg-edl-bleu`).
+
+## Espace formateur (phase 3)
+
+Sous `/formateur` (`role:formateur`), layout `<x-formateur.shell>` (accent orange).
+Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU équipe).
+
+- **Tableau de bord** : cartes des sessions, séances récentes/à venir.
+- **Sessions** (`formateur.sessions.*`) : liste + fiche. Pour une session FPC, la fiche
+  affiche le **suivi de progression** (séances regroupées par stagiaire). Dépôt de
+  ressources de session (`formateur.sessions.ressources.store`).
+- **Fiche pédagogique = séance** (`formateur.seances.*`) : formulaire complet (champs
+  auto : stage, formateur, langue ; date, stagiaire si FPC, objectifs `OptionsSeance`
+  + objectifs perso de la session, contenu, outils, sources, modules du référentiel,
+  analyse). Fichiers déposés en `fichiers_transmis[]` / `fichiers_internes[]`
+  → `Ressource` + pivot `seances_ressources.transmis`.
+- À l'enregistrement : `FichePedagogiqueService` génère le **PDF** (`barryvdh/laravel-dompdf`,
+  vue `pdf.fiche-pedagogique`) rangé dans `storage/app/private/seances/{id}/`. Régénéré
+  à chaque modification. Téléchargement : `formateur.seances.fiche`.
+- Le **dossier de séance** (page show) réunit résumé, ressources (transmis/travail) et
+  fiches du référentiel des modules cochés.
 
 ## Structure des espaces
 
 `/tableau-de-bord` redirige vers le tableau de bord du rôle : `/admin`, `/formateur`, `/espace`.
-Formateur et stagiaire restent des placeholders (phases 3 et 4).
+L'espace stagiaire (`/espace`) reste un placeholder (phase 4).
