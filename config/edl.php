@@ -67,17 +67,17 @@ return [
     |
     */
 
-    'certifications' => [
-        ['nom' => 'Qualiopi', 'logo' => 'img/partenaires/qualiopi.png'],
-        ['nom' => 'CLOE', 'logo' => 'img/partenaires/cloe.png'],
+    'financeurs' => [
+        ['nom' => 'Ville de Calais', 'logo' => 'img/partenaires/ville-de-calais.png', 'url' => 'https://www.calais.fr/'],
+        ['nom' => 'Agglomération Grand Calais Terres et Mers', 'logo' => 'img/partenaires/grand-calais.png', 'url' => 'https://www.grandcalais.fr/'],
+        ['nom' => 'Dispositif Cités Éducatives', 'logo' => 'img/partenaires/cites-educatives.png', 'url' => 'https://anct.gouv.fr/programmes-dispositifs/politique-de-la-ville/dispositifs/cites-educatives'],
+        ['nom' => 'Engagement Quartiers 2030', 'logo' => 'img/partenaires/quartiers-2030.png', 'url' => 'https://www.pas-de-calais.gouv.fr/Actions-de-l-Etat/Cohesion-Sociale-Politique-de-la-Ville/Politique-de-la-Ville/La-politique-de-la-ville-dans-le-Pas-de-Calais/2024-2030-Contrats-de-Ville-engagements-2030'],
+        ['nom' => 'Préfecture du Pas-de-Calais', 'logo' => 'img/partenaires/prefet-pas-de-calais.png', 'url' => 'https://www.pas-de-calais.gouv.fr/'],
     ],
 
-    'financeurs' => [
-        ['nom' => 'Préfet du Pas-de-Calais', 'logo' => 'img/partenaires/prefet-pas-de-calais.png'],
-        ['nom' => 'Grand Calais', 'logo' => 'img/partenaires/grand-calais.png'],
-        ['nom' => 'Ville de Calais', 'logo' => 'img/partenaires/ville-de-calais.png'],
-        ['nom' => 'Cités éducatives', 'logo' => 'img/partenaires/cites-educatives.png'],
-        ['nom' => 'Quartiers 2030', 'logo' => 'img/partenaires/quartiers-2030.png'],
+    'certifications' => [
+        ['nom' => 'Qualiopi', 'logo' => 'img/partenaires/qualiopi.png', 'url' => 'https://travail-emploi.gouv.fr/qualiopi-marque-de-certification-qualite-des-prestataires-de-formation'],
+        ['nom' => 'CLOE', 'logo' => 'img/partenaires/cloe.png', 'url' => 'https://certifications-cloe.com/'],
     ],
 
     'logo' => 'img/logo-edl.png',
