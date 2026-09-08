@@ -26,8 +26,14 @@ Commandes types :
 > À faire : régler le PHP par défaut de Laragon sur 8.4 pour pouvoir utiliser `php` et les
 > scripts Composer (`composer test`, `composer dev`) directement.
 
-Base de données : MySQL `edl_plus` (dev). Les tests tournent sur SQLite `:memory:` — garder
-les migrations **portables** (pas de `->set()`, pas de type spécifique MySQL non émulé).
+Base de données : MySQL `edl_plus` (dev) — **démarrer MySQL via Laragon** (« Démarrer tout »)
+avant d'utiliser l'appli. Les tests tournent sur SQLite `:memory:` — garder les migrations
+**portables** (pas de `->set()`, pas de type spécifique MySQL non émulé).
+
+> Le `.env` local est en `SESSION_DRIVER=file` / `CACHE_STORE=file` : la page d'accueil, la
+> connexion et les pages légales s'affichent même si MySQL est arrêté (utile après un crash
+> Laragon). `.env.example` garde `database` (recommandation production). Toute page de données
+> a quand même besoin de MySQL.
 
 ## Conventions
 
