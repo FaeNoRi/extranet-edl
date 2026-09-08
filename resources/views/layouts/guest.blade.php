@@ -16,7 +16,7 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-4 py-10">
             <a href="{{ route('accueil') }}" class="flex items-center gap-3">
-                <img src="{{ asset(config('edl.logo')) }}" alt="" class="h-11 w-11 rounded-xl">
+                <img src="{{ asset(config('edl.logo')) }}" alt="" class="h-12 w-auto">
                 <span class="text-2xl font-semibold text-edl-bleu">Extranet <span class="text-edl-rose">EDL+</span></span>
             </a>
 

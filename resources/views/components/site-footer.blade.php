@@ -7,7 +7,7 @@
         <div class="grid gap-8 text-sm text-gray-600 sm:grid-cols-2">
             <div>
                 <div class="flex items-center gap-2">
-                    <img src="{{ asset($edl['logo']) }}" alt="" class="h-8 w-8 rounded-lg">
+                    <img src="{{ asset($edl['logo']) }}" alt="" class="h-9 w-auto">
                     <p class="font-semibold text-edl-marron">{{ $edl['structure']['nom'] }}</p>
                 </div>
                 @if ($edl['structure']['adresse'])
@@ -42,11 +42,11 @@
 
         <div class="mt-8 grid gap-8 border-t border-gray-100 pt-6 sm:grid-cols-[2fr_1fr]">
             <div>
-                <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Avec le soutien de</p>
+                <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Nos financeurs</p>
                 <x-logos-partenaires :logos="$edl['financeurs']" />
             </div>
             <div>
-                <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Certifications</p>
+                <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Nos certifications</p>
                 <x-logos-partenaires :logos="$edl['certifications']" />
             </div>
         </div>

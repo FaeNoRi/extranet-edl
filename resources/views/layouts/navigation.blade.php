@@ -8,7 +8,7 @@
             <div class="flex">
                 <div class="flex shrink-0 items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-lg font-semibold text-edl-bleu">
-                        <img src="{{ asset(config('edl.logo')) }}" alt="" class="h-8 w-8 rounded-lg">
+                        <img src="{{ asset(config('edl.logo')) }}" alt="" class="h-9 w-auto">
                         Extranet <span class="text-edl-rose">EDL+</span>
                     </a>
                 </div>
