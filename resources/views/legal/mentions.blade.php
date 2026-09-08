@@ -11,9 +11,10 @@
         @if ($s['nda'])Numéro de déclaration d'activité de formation : {{ $s['nda'] }}<br>@endif
         @if ($s['directeur_publication'])Directeur de la publication : {{ $s['directeur_publication'] }}@endif
     </p>
-    @unless ($s['adresse'] && $s['siret'])
-        <p class="text-edl-rose">⚠ Informations à compléter par l'École des Langues (voir <code>config/edl.php</code> / variables d'environnement).</p>
-    @endunless
+    @php $manquants = collect(['numéro de déclaration d\'activité' => $s['nda'], 'directeur de la publication' => $s['directeur_publication']])->filter(fn ($v) => ! $v)->keys(); @endphp
+    @if ($manquants->isNotEmpty())
+        <p class="text-edl-rose">⚠ Reste à renseigner : {{ $manquants->implode(', ') }}.</p>
+    @endif
 
     <h2>Hébergement</h2>
     <p>{{ $l['hebergeur'] ?: 'Hébergeur à préciser.' }}</p>

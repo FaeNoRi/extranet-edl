@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Extranet EDL+') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset(config('edl.favicon')) }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -14,7 +15,8 @@
     <div class="flex min-h-screen flex-col bg-gray-100">
         <main class="flex flex-1 items-center justify-center px-4 py-16">
             <div class="w-full max-w-lg text-center">
-                <p class="text-3xl font-semibold text-edl-bleu">
+                <img src="{{ asset(config('edl.logo')) }}" alt="" class="mx-auto h-16 w-auto">
+                <p class="mt-3 text-3xl font-semibold text-edl-bleu">
                     Extranet <span class="text-edl-rose">EDL+</span>
                 </p>
                 <p class="mt-3 text-gray-600">
