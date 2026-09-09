@@ -5,20 +5,23 @@
 
     <x-admin.shell active="journal">
         <x-admin.card>
-            <form method="GET" class="mb-4 flex flex-wrap gap-3">
-                <select name="type" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+            <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
+                <select name="type" onchange="this.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                     <option value="">Tous les objets</option>
                     @foreach ($types as $t)
                         <option value="{{ $t }}" @selected(request('type') === $t)>{{ $t }}</option>
                     @endforeach
                 </select>
-                <select name="evenement" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                <select name="evenement" onchange="this.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                     <option value="">Tous les événements</option>
                     @foreach (['created' => 'Création', 'updated' => 'Modification', 'deleted' => 'Suppression'] as $val => $lib)
                         <option value="{{ $val }}" @selected(request('evenement') === $val)>{{ $lib }}</option>
                     @endforeach
                 </select>
-                <x-secondary-button>Filtrer</x-secondary-button>
+                <x-secondary-button type="submit">Filtrer</x-secondary-button>
+                @if (request()->filled('type') || request()->filled('evenement'))
+                    <a href="{{ route('admin.journal.index') }}" class="text-sm text-gray-500 hover:text-edl-bleu hover:underline">Réinitialiser</a>
+                @endif
             </form>
 
             <div class="space-y-2">
