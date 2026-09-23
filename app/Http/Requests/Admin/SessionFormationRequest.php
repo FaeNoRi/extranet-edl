@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Enums\CodeProduit;
 use App\Models\SessionFormation;
+use App\Support\CodeStage;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
@@ -22,7 +23,7 @@ class SessionFormationRequest extends FormRequest
             'nom' => ['required', 'string', 'max:255'],
             'code_stage' => ['nullable', 'string', 'max:255'],
             'code_produit' => ['required', new Enum(CodeProduit::class)],
-            'langue' => ['required', 'string', 'max:255'],
+            'langue' => ['required', Rule::in(CodeStage::langues())],
             'client_id' => ['nullable', 'exists:clients,id'],
             'nouveau_client' => ['nullable', 'string', 'max:255'],
             'formateur_id' => ['nullable', 'exists:users,id'],

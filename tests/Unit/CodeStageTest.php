@@ -33,4 +33,12 @@ class CodeStageTest extends TestCase
             'RE-F indéterminé' => ['RE-F', null, null, false],
         ];
     }
+
+    public function test_langues_liste_les_libelles_sans_les_indetermines(): void
+    {
+        $this->assertSame(
+            ['Anglais', 'Espagnol', 'Mandarin', 'Langue des signes française', 'Français'],
+            CodeStage::langues(),
+        );
+    }
 }

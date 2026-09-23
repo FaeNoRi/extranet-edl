@@ -44,8 +44,13 @@
                     </div>
                     <div>
                         <x-input-label for="langue" :value="__('Langue')" />
-                        <x-text-input id="langue" name="langue" class="mt-1 block w-full"
-                                      :value="old('langue', $session->langue ?: 'Anglais')" required />
+                        <select id="langue" name="langue" required
+                                class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                            @foreach ($langues as $l)
+                                <option value="{{ $l }}" @selected(old('langue', $session->langue ?: 'Anglais') === $l)>{{ $l }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('langue')" class="mt-1" />
                     </div>
                 </div>
 

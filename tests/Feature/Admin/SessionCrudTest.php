@@ -25,6 +25,15 @@ class SessionCrudTest extends TestCase
         ])->assertSessionHasErrors('rythme_op');
     }
 
+    public function test_langue_doit_faire_partie_de_la_liste_autorisee(): void
+    {
+        $this->post(route('admin.sessions.store'), [
+            'num_GESCOF' => '260999A', 'nom' => 'Test', 'code_produit' => 'FPC', 'langue' => 'Klingon',
+        ])->assertSessionHasErrors('langue');
+
+        $this->assertDatabaseMissing('session_formations', ['num_GESCOF' => '260999A']);
+    }
+
     public function test_creation_session_avec_nouveau_client_et_equipe(): void
     {
         $ref = User::factory()->formateur()->create();
