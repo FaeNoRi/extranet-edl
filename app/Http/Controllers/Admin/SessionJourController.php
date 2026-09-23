@@ -31,7 +31,14 @@ class SessionJourController extends Controller
         }
 
         // Mise à jour de l'état actif.
-        $actifs = collect($data['actifs'] ?? [])->map('intval');
+        //
+        // Attention : ne PAS utiliser ->map('intval') ici. Collection::map() appelle
+        // le callback avec (valeur, clé), donc la clé (0, 1, 2…) atterrit dans le
+        // paramètre $base d'intval() — ce qui corrompt silencieusement tous les
+        // éléments sauf le premier (intval('98', 1) === 0). Les valeurs de cases à
+        // cocher arrivant toujours en chaînes de caractères, ce bug ne se voyait
+        // pas avec des ids déjà typés int (ex. dans les tests via pluck('id')).
+        $actifs = collect($data['actifs'] ?? [])->map(fn ($id) => (int) $id);
         foreach ($session->jours as $jour) {
             $jour->update(['actif' => $actifs->contains($jour->id)]);
         }

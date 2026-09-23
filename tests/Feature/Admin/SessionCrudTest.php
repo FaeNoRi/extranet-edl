@@ -70,13 +70,47 @@ class SessionCrudTest extends TestCase
 
         $jours = $session->jours()->orderBy('date')->get();
         $premier = $jours->first();
-        // Décoche le premier jour, garde les deux autres.
-        $autres = $jours->skip(1)->pluck('id')->all();
+        // Décoche le premier jour, garde les deux autres. Les ids sont envoyés en
+        // chaînes de caractères, comme le fait un vrai formulaire HTML (cases à
+        // cocher) — un tableau d'ids déjà typés int masquerait un bug de conversion.
+        $autres = $jours->skip(1)->pluck('id')->map(fn ($id) => (string) $id)->all();
 
         $this->post(route('admin.sessions.planning.sync', $session), ['actifs' => $autres]);
 
         $this->assertFalse($premier->fresh()->actif);
         $this->assertSame(2, $session->jours()->actifs()->count());
+        foreach ($jours->skip(1) as $jour) {
+            $this->assertTrue($jour->fresh()->actif, "Le jour #{$jour->id} coché doit être actif.");
+        }
+    }
+
+    public function test_reproduction_cocher_des_jours_inactifs(): void
+    {
+        // Reproduit le cas signalé : une session avec plusieurs jours déjà en base,
+        // un seul actif, sur laquelle on coche des jours supplémentaires.
+        $session = SessionFormation::factory()->op()->create();
+        $this->post(route('admin.sessions.planning.sync', $session), [
+            'nouvelles_dates' => implode(' ', [
+                '01/09/2026', '08/09/2026', '15/09/2026', '22/09/2026', '29/09/2026',
+                '06/10/2026', '13/10/2026', '20/10/2026', '27/10/2026', '03/11/2026', '10/11/2026',
+            ]),
+        ])->assertRedirect();
+
+        $jours = $session->jours()->orderBy('date')->get();
+        // Ne garde que le premier actif, comme sur la copie d'écran.
+        $this->post(route('admin.sessions.planning.sync', $session), ['actifs' => [(string) $jours->first()->id]]);
+        $this->assertSame(1, $session->jours()->actifs()->count());
+
+        // On coche 3 jours de plus en plus du premier, en chaînes de caractères
+        // (comme le fait un vrai navigateur avec des cases à cocher).
+        $nouveauxActifs = $jours->take(4)->pluck('id')->map(fn ($id) => (string) $id)->all();
+        $this->post(route('admin.sessions.planning.sync', $session), ['actifs' => $nouveauxActifs])
+            ->assertRedirect();
+
+        $this->assertSame(4, $session->jours()->actifs()->count(), 'Les jours nouvellement cochés doivent être actifs.');
+        foreach ($jours->take(4) as $jour) {
+            $this->assertTrue($jour->fresh()->actif, "Le jour #{$jour->id} coché doit être actif.");
+        }
     }
 
     public function test_suppression_session(): void
