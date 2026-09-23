@@ -56,7 +56,7 @@
 
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div>
-                        <x-input-label for="client_id" :value="__('Client')" />
+                        <x-input-label for="client_id" :value="__('Client (facultatif)')" />
                         <select id="client_id" name="client_id"
                                 class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                             <option value="">— Aucun —</option>

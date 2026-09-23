@@ -34,6 +34,17 @@ class SessionCrudTest extends TestCase
         $this->assertDatabaseMissing('session_formations', ['num_GESCOF' => '260999A']);
     }
 
+    public function test_creation_session_op_sans_client(): void
+    {
+        $this->post(route('admin.sessions.store'), [
+            'num_GESCOF' => '260998A', 'nom' => 'OP sans client',
+            'code_produit' => 'OP', 'langue' => 'Anglais', 'rythme_op' => 'trimestre',
+        ])->assertRedirect();
+
+        $session = SessionFormation::where('num_GESCOF', '260998A')->firstOrFail();
+        $this->assertNull($session->client_id);
+    }
+
     public function test_creation_session_avec_nouveau_client_et_equipe(): void
     {
         $ref = User::factory()->formateur()->create();
