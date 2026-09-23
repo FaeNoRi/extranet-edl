@@ -6,8 +6,8 @@
     <x-admin.shell active="purges" titre="Purges de comptes">
         <p class="text-sm text-gray-600">
             Suppression (récupérable) des comptes stagiaires selon le cahier des charges.
-            La purge OP s'exécute aussi automatiquement chaque nuit après la fermeture estivale
-            (<code>{{ config('edl.purges.op_apres') }}</code>) ; la purge FPC se déclenche ici.
+            Aucune purge n'est automatique : OP et FPC sont uniquement signalées ici
+            une fois la date atteinte et doivent être déclenchées manuellement.
         </p>
 
         @foreach ([

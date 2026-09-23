@@ -85,4 +85,21 @@ class PurgeComptesTest extends TestCase
 
         Carbon::setTestNow();
     }
+
+    public function test_l_execution_planifiee_ne_purge_jamais_automatiquement(): void
+    {
+        // Date calendaire atteinte pour OP (après le 1er septembre) et FPC (31/12) :
+        // sans --op/--fpc explicite (cas de la tâche planifiée), rien ne doit être
+        // supprimé même avec --appliquer — OP et FPC sont seulement signalées.
+        Carbon::setTestNow('2026-12-31');
+        $op = $this->stagiaire('stagiaire_op', $this->sessionTerminee('op', '2026-06-20'));
+        $fpc = $this->stagiaire('stagiaire_fpc', $this->sessionTerminee('fpc', '2025-11-10'));
+
+        $this->artisan('edl:purge-comptes --appliquer')->assertSuccessful();
+
+        $this->assertNull($op->fresh()->deleted_at);
+        $this->assertNull($fpc->fresh()->deleted_at);
+
+        Carbon::setTestNow();
+    }
 }
