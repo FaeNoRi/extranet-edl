@@ -108,6 +108,10 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
   `SessionFormationRequest` : rythme OP obligatoire si `code_produit=OP`.
 - **Stagiaires** (`admin.stagiaires.index` + `destroy`) : liste filtrable (session,
   « absents du dernier import »), suppression (soft delete).
+- **Référentiel** (`admin.referentiel.*`, `resource` sans `show`) : CRUD, liste groupée
+  par module (filtrable), niveaux CECRL en cases à cocher (`App\Casts\SetCast`).
+  Suppression bloquée si l'entrée est utilisée dans une séance (`cascadeOnDelete` sur
+  `seances_referentiel`, on ne veut pas casser l'historique des fiches pédagogiques).
 - **Journal** (`admin.journal.index`) : `activity_log` paginé, filtres objet/événement,
   diff old/new.
 - **Purges** (`admin.purges.*`) : `PurgeComptesService` — comptes OP dont les sessions
