@@ -23,7 +23,7 @@
                         <x-input-error :messages="$errors->get('num_GESCOF')" class="mt-1" />
                     </div>
                     <div>
-                        <x-input-label for="code_stage" :value="__('Code stage (facultatif)')" />
+                        <x-input-label for="code_stage" :value="__('Code produit (facultatif)')" />
                         <x-text-input id="code_stage" name="code_stage" class="mt-1 block w-full"
                                       :value="old('code_stage', $session->code_stage)" />
                     </div>
