@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\GescofImportController;
 use App\Http\Controllers\Admin\JournalController;
 use App\Http\Controllers\Admin\PurgeController;
 use App\Http\Controllers\Admin\QuestionnaireController as AdminQuestionnaireController;
+use App\Http\Controllers\Admin\ReferentielController;
 use App\Http\Controllers\Admin\SessionFormationController;
 use App\Http\Controllers\Admin\SessionJourController;
 use App\Http\Controllers\Admin\StagiaireController;
@@ -67,6 +68,8 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::get('stagiaires', [StagiaireController::class, 'index'])->name('stagiaires.index');
         Route::delete('stagiaires/{stagiaire}', [StagiaireController::class, 'destroy'])->name('stagiaires.destroy');
+
+        Route::resource('referentiel', ReferentielController::class)->except('show');
 
         Route::get('purges', [PurgeController::class, 'index'])->name('purges.index');
         Route::post('purges', [PurgeController::class, 'executer'])->name('purges.executer');
