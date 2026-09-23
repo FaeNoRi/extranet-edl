@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\JournalController;
 use App\Http\Controllers\Admin\PurgeController;
 use App\Http\Controllers\Admin\QuestionnaireController as AdminQuestionnaireController;
 use App\Http\Controllers\Admin\ReferentielController;
+use App\Http\Controllers\Admin\SeanceController as AdminSeanceController;
 use App\Http\Controllers\Admin\SessionFormationController;
 use App\Http\Controllers\Admin\SessionJourController;
 use App\Http\Controllers\Admin\StagiaireController;
@@ -65,6 +66,15 @@ Route::middleware(['auth', 'role:admin'])
             ->parameters(['sessions' => 'session']);
         Route::post('sessions/{session}/planning', [SessionJourController::class, 'sync'])->name('sessions.planning.sync');
         Route::get('sessions/{session}/archive', [SessionFormationController::class, 'archive'])->name('sessions.archive');
+
+        // Fiche pédagogique (séance) : consultation/modification depuis l'administration.
+        // Création réservée au formateur (attribution automatique de l'auteur).
+        Route::get('seances/{seance}', [AdminSeanceController::class, 'show'])->name('seances.show');
+        Route::get('seances/{seance}/modifier', [AdminSeanceController::class, 'edit'])->name('seances.edit');
+        Route::put('seances/{seance}', [AdminSeanceController::class, 'update'])->name('seances.update');
+        Route::delete('seances/{seance}', [AdminSeanceController::class, 'destroy'])->name('seances.destroy');
+        Route::get('seances/{seance}/fiche', [AdminSeanceController::class, 'fiche'])->name('seances.fiche');
+        Route::get('ressources/{ressource}', [FormateurRessourceController::class, 'download'])->name('ressources.download');
 
         Route::get('stagiaires', [StagiaireController::class, 'index'])->name('stagiaires.index');
         Route::delete('stagiaires/{stagiaire}', [StagiaireController::class, 'destroy'])->name('stagiaires.destroy');

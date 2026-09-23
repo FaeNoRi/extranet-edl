@@ -7,7 +7,7 @@
         </h2>
     </x-slot>
 
-    <x-formateur.shell active="sessions">
-        @include('seances._form', ['prefix' => 'formateur'])
-    </x-formateur.shell>
+    <x-admin.shell active="sessions">
+        @include('seances._form', ['prefix' => 'admin'])
+    </x-admin.shell>
 </x-app-layout>

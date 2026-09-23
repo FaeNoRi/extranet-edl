@@ -119,6 +119,33 @@
             @endif
         </x-admin.card>
 
+        <x-admin.card>
+            <x-slot name="titre">Séances ({{ $session->seances->count() }})</x-slot>
+            @if ($session->seances->isEmpty())
+                <p class="text-sm text-gray-500">Aucune séance enregistrée.</p>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
+                            <tr><th class="py-2 pr-3">Date</th><th class="py-2 pr-3">Formateur</th><th class="py-2 pr-3">Stagiaire</th><th class="py-2"></th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach ($session->seances as $seance)
+                                <tr>
+                                    <td class="py-2 pr-3 font-medium">{{ $seance->date->format('d/m/Y') }}</td>
+                                    <td class="py-2 pr-3">{{ $seance->formateur?->nom_complet ?? '—' }}</td>
+                                    <td class="py-2 pr-3">{{ $seance->stagiaire?->nom_complet ?? '—' }}</td>
+                                    <td class="py-2 text-right">
+                                        <a href="{{ route('admin.seances.show', $seance) }}" class="text-edl-bleu hover:underline">Consulter</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </x-admin.card>
+
         <x-admin.card titre="Documents de la session (« Mes documents »)">
             <form method="POST" action="{{ route('admin.documents.store') }}" enctype="multipart/form-data"
                   class="mb-4 flex flex-wrap items-end gap-3">

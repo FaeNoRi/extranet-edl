@@ -57,7 +57,8 @@ class SessionFormationController extends Controller
             'client', 'formateur', 'formateurs',
             'stagiaires' => fn ($q) => $q->orderBy('nom'),
             'jours' => fn ($q) => $q->orderBy('date'),
-            'seances',
+            'seances' => fn ($q) => $q->orderByDesc('date'),
+            'seances.formateur', 'seances.stagiaire',
         ]);
 
         return view('admin.sessions.show', compact('session'));

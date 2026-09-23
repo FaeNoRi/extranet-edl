@@ -124,6 +124,13 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
 - **Archive session FPC** (`admin.sessions.archive`) : `SessionArchiveService` produit un
   ZIP (un dossier par séance, fiche + ressources `date.RPn`, `MANIFESTE.txt` des fichiers
   attendus mais absents — fiches PDF en phase 3).
+- **Séances** (`admin.seances.*`) : consultation/modification d'une fiche pédagogique
+  depuis la fiche de session (liste dans une carte « Séances »). Réutilise les mêmes vues
+  que l'espace formateur via des partials communs (`resources/views/seances/_show.blade.php`,
+  `_form.blade.php`, paramétrées par un `$prefix` de route) et la même logique d'écriture
+  (`App\Services\SeanceService`). Pas de création côté admin — la création reste réservée
+  au formateur (`formateur.seances.create/store`), qui s'attribue la séance à l'enregistrement ;
+  l'admin ne modifie donc jamais le `formateur_id` d'une séance existante.
 
 `x-primary-button` est thématisé EDL (`bg-edl-bleu`).
 

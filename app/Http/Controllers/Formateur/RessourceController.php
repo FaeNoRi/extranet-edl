@@ -75,8 +75,15 @@ class RessourceController extends Controller
 
     private function encadre(?SessionFormation $session): bool
     {
-        return $session && ($session->formateur_id === auth()->id()
-            || $session->formateurs()->whereKey(auth()->id())->exists());
+        if (! $session) {
+            return false;
+        }
+
+        // L'admin peut aussi télécharger/supprimer une ressource, notamment
+        // depuis la vue Séance exposée dans l'administration.
+        return auth()->user()->isAdmin()
+            || $session->formateur_id === auth()->id()
+            || $session->formateurs()->whereKey(auth()->id())->exists();
     }
 
     private function autoriser(SessionFormation $session): void
