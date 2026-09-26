@@ -26,6 +26,10 @@
                     </select>
                 </div>
                 <div>
+                    <x-input-label for="intitule" :value="__('Intitulé libre (facultatif, remplace le type)')" />
+                    <x-text-input id="intitule" name="intitule" class="mt-1 block" maxlength="255" />
+                </div>
+                <div>
                     <x-input-label for="fichier" :value="__('Fichier')" />
                     <input id="fichier" name="fichier" type="file" required
                            class="mt-1 block text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">

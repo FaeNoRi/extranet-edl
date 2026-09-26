@@ -161,6 +161,10 @@
                         @endforeach
                     </select>
                 </div>
+                <div>
+                    <x-input-label for="intitule-session" :value="__('Intitulé libre (facultatif, remplace le type)')" />
+                    <x-text-input id="intitule-session" name="intitule" class="mt-1 block" maxlength="255" />
+                </div>
                 <input name="fichier" type="file" required
                        class="text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">
                 <x-primary-button>Ajouter</x-primary-button>
