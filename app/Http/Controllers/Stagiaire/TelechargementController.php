@@ -9,6 +9,7 @@ use App\Models\Seance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TelechargementController extends Controller
@@ -25,7 +26,31 @@ class TelechargementController extends Controller
         );
         abort_unless(Storage::exists($document->chemin_fichier), 404);
 
+        // Un stagiaire OP n'a jamais le droit de télécharger : consultation à
+        // l'écran uniquement (cf. lecteur durci), quel que soit le paramètre reçu.
+        if (auth()->user()->isStagiaireOp()) {
+            return Storage::response($document->chemin_fichier);
+        }
+
         return Storage::download($document->chemin_fichier, $document->nom_fichier_original);
+    }
+
+    public function apercuDocument(Document $document): View
+    {
+        $session = auth()->user()->sessionStagiaire();
+
+        abort_unless(
+            is_null($document->session_formation_id)
+            || ($session && $document->session_formation_id === $session->id),
+            403,
+        );
+        abort_unless(Storage::exists($document->chemin_fichier), 404);
+
+        return view('stagiaire.documents.apercu', [
+            'document' => $document,
+            'url' => route('stagiaire.documents.download', $document),
+            'type' => $this->typeDepuisExtension($document->nom_fichier_original),
+        ]);
     }
 
     public function ressource(Request $request, Ressource $ressource): StreamedResponse
@@ -39,13 +64,26 @@ class TelechargementController extends Controller
         abort_unless($this->ressourceAutorisee($ressource, $session->id), 403);
         abort_unless(Storage::exists($ressource->chemin_fichier), 404);
 
-        if ($request->boolean('apercu')) {
+        // Un stagiaire OP n'a jamais le droit de télécharger, même en forçant
+        // l'URL : consultation à l'écran uniquement.
+        if ($request->boolean('apercu') || auth()->user()->isStagiaireOp()) {
             return Storage::response($ressource->chemin_fichier);
         }
 
         $ressource->increment('nb_telechargement');
 
         return Storage::download($ressource->chemin_fichier, $ressource->nom_fichier_original);
+    }
+
+    private function typeDepuisExtension(string $nomFichier): string
+    {
+        return match (strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION))) {
+            'pdf' => 'pdf',
+            'mp4', 'mov', 'avi', 'webm', 'mkv' => 'video',
+            'mp3', 'wav', 'ogg' => 'audio',
+            'jpg', 'jpeg', 'png', 'gif', 'webp' => 'image',
+            default => 'autre',
+        };
     }
 
     private function ressourceAutorisee(Ressource $ressource, int $sessionId): bool
@@ -56,8 +94,12 @@ class TelechargementController extends Controller
             ->whereDate('date', '<=', Carbon::today())
             ->where(fn ($q) => $q->whereNull('user_id')->orWhere('user_id', $stagiaireId));
 
+        // NB : wherePivot() n'existe pas sur le query builder reçu par whereHas()
+        // (il est propre à l'instance de relation) ; il faut qualifier la
+        // colonne de la table pivot directement, sous peine d'une colonne
+        // "pivot" inconnue en SQL.
         $transmise = (clone $seances)
-            ->whereHas('ressources', fn ($q) => $q->whereKey($ressource->id)->wherePivot('transmis', true))
+            ->whereHas('ressources', fn ($q) => $q->whereKey($ressource->id)->where('seances_ressources.transmis', true))
             ->exists();
 
         $referentiel = (clone $seances)
