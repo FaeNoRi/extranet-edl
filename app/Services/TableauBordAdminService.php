@@ -55,13 +55,14 @@ class TableauBordAdminService
     }
 
     /**
-     * Avancement des sessions FPC en cours : jours de planning actifs déjà
-     * couverts par au moins une séance, vs total de jours actifs. Trié du
-     * plus en retard au plus avancé.
+     * Avancement de TOUTES les sessions FPC en cours (jours de planning actifs
+     * déjà couverts par au moins une séance, vs total de jours actifs), triées
+     * du plus en retard au plus avancé. Pas de limite ici : à la vue de
+     * n'afficher que les plus pertinentes et de donner le total.
      *
      * @return Collection<int, array{session: SessionFormation, realises: int, planifies: int, taux: ?int}>
      */
-    public function avancementSessionsFpc(int $limite = 5): Collection
+    public function avancementSessionsFpc(): Collection
     {
         return SessionFormation::where('code_produit', CodeProduit::Fpc->value)
             ->with('formateur', 'jours', 'seances')
@@ -79,17 +80,17 @@ class TableauBordAdminService
                 ];
             })
             ->sortBy(fn ($ligne) => $ligne['taux'] ?? -1)
-            ->take($limite)
             ->values();
     }
 
     /**
-     * Questionnaires actifs et leur taux de réponse (répondants vs stagiaires
-     * éligibles). Triés du taux le plus faible au plus élevé.
+     * TOUS les questionnaires actifs et leur taux de réponse (répondants vs
+     * stagiaires éligibles), triés du taux le plus faible au plus élevé. Pas
+     * de limite ici, même logique que ci-dessus.
      *
      * @return Collection<int, array{questionnaire: Questionnaire, reponses: int, eligibles: int, taux: ?int}>
      */
-    public function questionnairesTauxReponse(int $limite = 5): Collection
+    public function questionnairesTauxReponse(): Collection
     {
         return Questionnaire::where('actif', true)
             ->with('sessionFormation')
@@ -108,7 +109,6 @@ class TableauBordAdminService
                 ];
             })
             ->sortBy(fn ($ligne) => $ligne['taux'] ?? -1)
-            ->take($limite)
             ->values();
     }
 }

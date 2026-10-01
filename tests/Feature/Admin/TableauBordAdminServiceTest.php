@@ -92,6 +92,19 @@ class TableauBordAdminServiceTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_avancement_fpc_ne_tronque_pas_au_niveau_du_service(): void
+    {
+        // La troncature à l'affichage (les plus en retard d'abord) est de la
+        // responsabilité de la vue, pas du service, pour que le total reste
+        // disponible pour le résumé.
+        foreach (range(1, 6) as $i) {
+            $session = SessionFormation::factory()->fpc()->create();
+            SessionJour::factory()->create(['session_formation_id' => $session->id, 'date' => now()->addMonth(), 'actif' => true]);
+        }
+
+        $this->assertCount(6, app(TableauBordAdminService::class)->avancementSessionsFpc());
+    }
+
     public function test_taux_de_reponse_aux_questionnaires_actifs(): void
     {
         $session = SessionFormation::factory()->fpc()->create();

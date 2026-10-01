@@ -33,6 +33,7 @@ class AdminDashboardController extends Controller
             'avancementFpc' => $tableauBord->avancementSessionsFpc(),
             'questionnairesTaux' => $tableauBord->questionnairesTauxReponse(),
             'dernieresRessources' => Ressource::with('uploader', 'sessionFormation')->latest()->take(15)->get(),
+            'nbRessourcesTotal' => Ressource::count(),
         ]);
     }
 }

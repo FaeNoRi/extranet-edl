@@ -50,6 +50,12 @@
                     @if ($dernieresRessources->isEmpty())
                         <p class="text-sm text-gray-500">Aucune ressource déposée pour le moment.</p>
                     @else
+                        <p class="mb-2 text-xs text-gray-400">
+                            {{ $nbRessourcesTotal }} ressource(s) au total
+                            @if ($nbRessourcesTotal > $dernieresRessources->count())
+                                — {{ $dernieresRessources->count() }} plus récente(s) affichée(s)
+                            @endif
+                        </p>
                         <ul class="divide-y divide-gray-100 text-sm">
                             <template x-for="ressource in ressources" :key="ressource.id">
                                 <li class="flex items-center justify-between py-2">
@@ -146,14 +152,18 @@
                             @endif
                         </div>
                         @if ($sessionsDecrochees->isNotEmpty())
+                            @php $sessionsDecrocheesAffichees = $sessionsDecrochees->take(5); @endphp
                             <ul class="mt-1 space-y-0.5 pl-3 text-xs text-gray-500">
-                                @foreach ($sessionsDecrochees as $session)
+                                @foreach ($sessionsDecrocheesAffichees as $session)
                                     <li>
                                         <a href="{{ route('admin.sessions.show', $session) }}" class="hover:underline">
                                             {{ $session->nom }}@if ($session->formateur) · {{ $session->formateur->nom_complet }} @endif
                                         </a>
                                     </li>
                                 @endforeach
+                                @if ($sessionsDecrochees->count() > 5)
+                                    <li class="text-gray-400">+ {{ $sessionsDecrochees->count() - 5 }} autre(s)</li>
+                                @endif
                             </ul>
                         @endif
                     </li>
@@ -166,8 +176,15 @@
                 @if ($avancementFpc->isEmpty())
                     <p class="text-sm text-gray-500">Aucune session FPC en cours.</p>
                 @else
+                    @php $avancementAffiche = $avancementFpc->take(5); @endphp
+                    <p class="mb-2 text-xs text-gray-400">
+                        {{ $avancementFpc->count() }} session(s) FPC en cours
+                        @if ($avancementFpc->count() > 5)
+                            — 5 plus en retard affichées
+                        @endif
+                    </p>
                     <ul class="divide-y divide-gray-100 text-sm">
-                        @foreach ($avancementFpc as $ligne)
+                        @foreach ($avancementAffiche as $ligne)
                             <li class="py-2">
                                 <div class="flex items-center justify-between gap-2">
                                     <a href="{{ route('admin.sessions.show', $ligne['session']) }}" class="font-medium text-edl-bleu hover:underline">
@@ -195,8 +212,15 @@
                 @if ($questionnairesTaux->isEmpty())
                     <p class="text-sm text-gray-500">Aucun questionnaire actif.</p>
                 @else
+                    @php $questionnairesAffiches = $questionnairesTaux->take(5); @endphp
+                    <p class="mb-2 text-xs text-gray-400">
+                        {{ $questionnairesTaux->count() }} questionnaire(s) actif(s)
+                        @if ($questionnairesTaux->count() > 5)
+                            — 5 taux de réponse les plus faibles affichés
+                        @endif
+                    </p>
                     <ul class="divide-y divide-gray-100 text-sm">
-                        @foreach ($questionnairesTaux as $ligne)
+                        @foreach ($questionnairesAffiches as $ligne)
                             <li class="flex items-center justify-between py-2">
                                 <a href="{{ route('admin.questionnaires.resultats', $ligne['questionnaire']) }}" class="text-edl-bleu hover:underline">
                                     {{ $ligne['questionnaire']->titre }}
