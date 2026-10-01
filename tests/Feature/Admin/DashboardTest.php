@@ -35,7 +35,7 @@ class DashboardTest extends TestCase
             ->assertSee('Fiche exercices semaine 3');
     }
 
-    public function test_l_accordeon_avancement_resume_les_listes_trop_longues_au_lieu_de_tout_lister(): void
+    public function test_avancement_limite_l_affichage_a_cinq_et_propose_voir_plus(): void
     {
         foreach (range(1, 6) as $i) {
             $session = SessionFormation::factory()->fpc()->create();
@@ -46,7 +46,18 @@ class DashboardTest extends TestCase
             ->get(route('admin.dashboard'))
             ->assertOk()
             ->assertSee('6 session(s) FPC en cours')
-            ->assertSee('5 plus en retard affichées');
+            ->assertSee('Voir 1 de plus');
+    }
+
+    public function test_ressources_importees_plafonne_a_quinze_avec_voir_plus(): void
+    {
+        Ressource::factory()->count(20)->create();
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('20 ressource(s) au total')
+            ->assertSee('Voir 10 de plus');
     }
 
     public function test_un_admin_peut_supprimer_une_ressource_depuis_le_tableau_de_bord(): void
