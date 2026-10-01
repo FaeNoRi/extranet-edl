@@ -25,119 +25,6 @@
             @endforeach
         </div>
 
-        <x-admin.card titre="Import GESCOF">
-            @if ($dernierImport)
-                <p class="text-sm text-gray-600">
-                    Dernier import appliqué le
-                    <strong>{{ $dernierImport->created_at->translatedFormat('d/m/Y à H\hi') }}</strong>
-                    ({{ $dernierImport->fichier_nom }}) —
-                    {{ $dernierImport->comptes_crees }} compte(s) créé(s),
-                    {{ $dernierImport->sessions_creees }} session(s) créée(s).
-                </p>
-            @else
-                <p class="text-sm text-gray-500">Aucun import appliqué pour le moment.</p>
-            @endif
-
-            <div class="mt-4">
-                <a href="{{ route('admin.imports.index') }}"
-                   class="inline-flex rounded-md bg-edl-bleu px-4 py-2 text-sm font-semibold text-white hover:bg-edl-vert-fonce">
-                    Nouvel import
-                </a>
-            </div>
-        </x-admin.card>
-
-        <div class="grid gap-4 lg:grid-cols-2">
-            <x-admin.card titre="Alertes">
-                <ul class="divide-y divide-gray-100 text-sm">
-                    <li class="flex items-center justify-between py-2">
-                        <span>Purges OP en attente de validation</span>
-                        @if ($purgesOpEnAttente > 0)
-                            <a href="{{ route('admin.purges.index') }}" class="font-semibold text-edl-rose hover:underline">{{ $purgesOpEnAttente }}</a>
-                        @else
-                            <span class="text-gray-400">Aucune</span>
-                        @endif
-                    </li>
-                    <li class="flex items-center justify-between py-2">
-                        <span>Purges FPC en attente de validation</span>
-                        @if ($purgesFpcEnAttente > 0)
-                            <a href="{{ route('admin.purges.index') }}" class="font-semibold text-edl-rose hover:underline">{{ $purgesFpcEnAttente }}</a>
-                        @else
-                            <span class="text-gray-400">Aucune</span>
-                        @endif
-                    </li>
-                    <li class="py-2">
-                        <div class="flex items-center justify-between">
-                            <span>Sessions FPC sans séance depuis 3 semaines</span>
-                            @if ($sessionsDecrochees->isEmpty())
-                                <span class="text-gray-400">Aucune</span>
-                            @else
-                                <span class="font-semibold text-edl-rose">{{ $sessionsDecrochees->count() }}</span>
-                            @endif
-                        </div>
-                        @if ($sessionsDecrochees->isNotEmpty())
-                            <ul class="mt-1 space-y-0.5 pl-3 text-xs text-gray-500">
-                                @foreach ($sessionsDecrochees as $session)
-                                    <li>
-                                        <a href="{{ route('admin.sessions.show', $session) }}" class="hover:underline">
-                                            {{ $session->nom }}@if ($session->formateur) · {{ $session->formateur->nom_complet }} @endif
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
-                    </li>
-                </ul>
-            </x-admin.card>
-
-            <x-admin.card titre="Avancement des sessions FPC en cours">
-                @if ($avancementFpc->isEmpty())
-                    <p class="text-sm text-gray-500">Aucune session FPC en cours.</p>
-                @else
-                    <ul class="divide-y divide-gray-100 text-sm">
-                        @foreach ($avancementFpc as $ligne)
-                            <li class="py-2">
-                                <div class="flex items-center justify-between gap-2">
-                                    <a href="{{ route('admin.sessions.show', $ligne['session']) }}" class="font-medium text-edl-bleu hover:underline">
-                                        {{ $ligne['session']->nom }}
-                                    </a>
-                                    <span class="whitespace-nowrap text-xs text-gray-500">
-                                        {{ $ligne['realises'] }}/{{ $ligne['planifies'] }} jour(s)
-                                        @if ($ligne['taux'] !== null) · {{ $ligne['taux'] }}% @endif
-                                    </span>
-                                </div>
-                                @if ($ligne['taux'] !== null)
-                                    <div class="mt-1 h-1.5 w-full rounded-full bg-gray-100">
-                                        <div class="h-1.5 rounded-full bg-edl-vert-fonce" style="width: {{ min(100, $ligne['taux']) }}%"></div>
-                                    </div>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
-            </x-admin.card>
-        </div>
-
-        <x-admin.card titre="Questionnaires actifs — taux de réponse">
-            @if ($questionnairesTaux->isEmpty())
-                <p class="text-sm text-gray-500">Aucun questionnaire actif.</p>
-            @else
-                <ul class="divide-y divide-gray-100 text-sm">
-                    @foreach ($questionnairesTaux as $ligne)
-                        <li class="flex items-center justify-between py-2">
-                            <a href="{{ route('admin.questionnaires.resultats', $ligne['questionnaire']) }}" class="text-edl-bleu hover:underline">
-                                {{ $ligne['questionnaire']->titre }}
-                                <span class="text-xs text-gray-400">· {{ $ligne['questionnaire']->sessionFormation?->nom ?? 'commun' }}</span>
-                            </a>
-                            <span class="whitespace-nowrap text-xs text-gray-500">
-                                {{ $ligne['reponses'] }}/{{ $ligne['eligibles'] }}
-                                @if ($ligne['taux'] !== null) · {{ $ligne['taux'] }}% @endif
-                            </span>
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
-        </x-admin.card>
-
         <x-admin.card>
             <div x-data="{
                     ouvert: false,
@@ -207,6 +94,123 @@
                     </div>
                 </x-modal>
             </div>
+        </x-admin.card>
+
+        <x-admin.card titre="Import GESCOF">
+            @if ($dernierImport)
+                <p class="text-sm text-gray-600">
+                    Dernier import appliqué le
+                    <strong>{{ $dernierImport->created_at->translatedFormat('d/m/Y à H\hi') }}</strong>
+                    ({{ $dernierImport->fichier_nom }}) —
+                    {{ $dernierImport->comptes_crees }} compte(s) créé(s),
+                    {{ $dernierImport->sessions_creees }} session(s) créée(s).
+                </p>
+            @else
+                <p class="text-sm text-gray-500">Aucun import appliqué pour le moment.</p>
+            @endif
+
+            <div class="mt-4">
+                <a href="{{ route('admin.imports.index') }}"
+                   class="inline-flex rounded-md bg-edl-bleu px-4 py-2 text-sm font-semibold text-white hover:bg-edl-vert-fonce">
+                    Nouvel import
+                </a>
+            </div>
+        </x-admin.card>
+
+        <x-admin.card>
+            <x-admin.accordion titre="Alertes">
+                <ul class="divide-y divide-gray-100 text-sm">
+                    <li class="flex items-center justify-between py-2">
+                        <span>Purges OP en attente de validation</span>
+                        @if ($purgesOpEnAttente > 0)
+                            <a href="{{ route('admin.purges.index') }}" class="font-semibold text-edl-rose hover:underline">{{ $purgesOpEnAttente }}</a>
+                        @else
+                            <span class="text-gray-400">Aucune</span>
+                        @endif
+                    </li>
+                    <li class="flex items-center justify-between py-2">
+                        <span>Purges FPC en attente de validation</span>
+                        @if ($purgesFpcEnAttente > 0)
+                            <a href="{{ route('admin.purges.index') }}" class="font-semibold text-edl-rose hover:underline">{{ $purgesFpcEnAttente }}</a>
+                        @else
+                            <span class="text-gray-400">Aucune</span>
+                        @endif
+                    </li>
+                    <li class="py-2">
+                        <div class="flex items-center justify-between">
+                            <span>Sessions FPC sans séance depuis 3 semaines</span>
+                            @if ($sessionsDecrochees->isEmpty())
+                                <span class="text-gray-400">Aucune</span>
+                            @else
+                                <span class="font-semibold text-edl-rose">{{ $sessionsDecrochees->count() }}</span>
+                            @endif
+                        </div>
+                        @if ($sessionsDecrochees->isNotEmpty())
+                            <ul class="mt-1 space-y-0.5 pl-3 text-xs text-gray-500">
+                                @foreach ($sessionsDecrochees as $session)
+                                    <li>
+                                        <a href="{{ route('admin.sessions.show', $session) }}" class="hover:underline">
+                                            {{ $session->nom }}@if ($session->formateur) · {{ $session->formateur->nom_complet }} @endif
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </li>
+                </ul>
+            </x-admin.accordion>
+        </x-admin.card>
+
+        <x-admin.card>
+            <x-admin.accordion titre="Avancement des sessions FPC en cours">
+                @if ($avancementFpc->isEmpty())
+                    <p class="text-sm text-gray-500">Aucune session FPC en cours.</p>
+                @else
+                    <ul class="divide-y divide-gray-100 text-sm">
+                        @foreach ($avancementFpc as $ligne)
+                            <li class="py-2">
+                                <div class="flex items-center justify-between gap-2">
+                                    <a href="{{ route('admin.sessions.show', $ligne['session']) }}" class="font-medium text-edl-bleu hover:underline">
+                                        {{ $ligne['session']->nom }}
+                                    </a>
+                                    <span class="whitespace-nowrap text-xs text-gray-500">
+                                        {{ $ligne['realises'] }}/{{ $ligne['planifies'] }} jour(s)
+                                        @if ($ligne['taux'] !== null) · {{ $ligne['taux'] }}% @endif
+                                    </span>
+                                </div>
+                                @if ($ligne['taux'] !== null)
+                                    <div class="mt-1 h-1.5 w-full rounded-full bg-gray-100">
+                                        <div class="h-1.5 rounded-full bg-edl-vert-fonce" style="width: {{ min(100, $ligne['taux']) }}%"></div>
+                                    </div>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-admin.accordion>
+        </x-admin.card>
+
+        <x-admin.card>
+            <x-admin.accordion titre="Questionnaires actifs — taux de réponse">
+                @if ($questionnairesTaux->isEmpty())
+                    <p class="text-sm text-gray-500">Aucun questionnaire actif.</p>
+                @else
+                    <ul class="divide-y divide-gray-100 text-sm">
+                        @foreach ($questionnairesTaux as $ligne)
+                            <li class="flex items-center justify-between py-2">
+                                <a href="{{ route('admin.questionnaires.resultats', $ligne['questionnaire']) }}" class="text-edl-bleu hover:underline">
+                                    {{ $ligne['questionnaire']->titre }}
+                                    <span class="text-xs text-gray-400">· {{ $ligne['questionnaire']->sessionFormation?->nom ?? 'commun' }}</span>
+                                </a>
+                                <span class="whitespace-nowrap text-xs text-gray-500">
+                                    {{ $ligne['reponses'] }}/{{ $ligne['eligibles'] }}
+                                    @if ($ligne['taux'] !== null) · {{ $ligne['taux'] }}% @endif
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-admin.accordion>
         </x-admin.card>
     </x-admin.shell>
 </x-app-layout>
