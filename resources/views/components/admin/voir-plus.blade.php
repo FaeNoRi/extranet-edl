@@ -1,13 +1,18 @@
 @props(['restant' => 0])
 
 @if ($restant > 0)
-    <div x-data="{ ouvert: false }" class="mt-2">
-        <button type="button" @click="ouvert = !ouvert" class="text-xs font-medium text-edl-bleu hover:underline">
-            <span x-show="!ouvert">Voir {{ $restant }} de plus</span>
-            <span x-show="ouvert">Réduire</span>
+    <div x-data="{ ouvert: false }">
+        <button type="button" x-show="!ouvert" @click="ouvert = true"
+                class="mt-2 text-xs font-medium text-edl-bleu hover:underline">
+            Voir {{ $restant }} de plus
         </button>
-        <div x-show="ouvert" class="mt-2">
+
+        <div x-show="ouvert">
             {{ $plus }}
+            <button type="button" @click="ouvert = false"
+                    class="mt-2 text-xs font-medium text-edl-bleu hover:underline">
+                Réduire
+            </button>
         </div>
     </div>
 @endif
