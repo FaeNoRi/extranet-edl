@@ -75,6 +75,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::delete('seances/{seance}', [AdminSeanceController::class, 'destroy'])->name('seances.destroy');
         Route::get('seances/{seance}/fiche', [AdminSeanceController::class, 'fiche'])->name('seances.fiche');
         Route::get('ressources/{ressource}', [FormateurRessourceController::class, 'download'])->name('ressources.download');
+        Route::delete('ressources/{ressource}', [FormateurRessourceController::class, 'destroy'])->name('ressources.destroy');
 
         Route::get('stagiaires', [StagiaireController::class, 'index'])->name('stagiaires.index');
         Route::delete('stagiaires/{stagiaire}', [StagiaireController::class, 'destroy'])->name('stagiaires.destroy');
