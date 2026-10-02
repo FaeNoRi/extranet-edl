@@ -23,6 +23,10 @@ Commandes types :
 "C:\laragon\bin\php\php-8.4.7-nts-Win32-vs17-x64\php.exe" vendor/bin/pint
 ```
 
+Front : `public/build` est **ignoré par git** et servi tel quel par `php artisan serve` (pas de
+`vite dev` lancé). Après tout ajout de classes Tailwind dans les vues, relancer
+`npm run build`, sinon les nouvelles classes n'existent pas dans le CSS servi.
+
 > À faire : régler le PHP par défaut de Laragon sur 8.4 pour pouvoir utiliser `php` et les
 > scripts Composer (`composer test`, `composer dev`) directement.
 
