@@ -126,7 +126,11 @@ class RegistreTraitements
                     'donnees' => 'Nom, prénom, adresse e-mail, client, code et libellé du stage, intervenants ; rapport d\'import (anomalies).',
                     'origine' => 'Fichier exporté de GESCOF par l\'administration.',
                     'destinataires' => 'Administrateurs.',
-                    'conservation' => ['Fichier importé supprimé après application de l\'import ; rapport d\'import conservé.'],
+                    'conservation' => [
+                        'Fichier importé supprimé après application de l\'import, ou au bout de '
+                            .config('edl.imports.conservation_fichier_jours').' jours s\'il n\'est pas appliqué.',
+                        'Rapport d\'import conservé.',
+                    ],
                     'points_attention' => [
                         'Durée de conservation du rapport d\'import à fixer (il peut citer des noms dans les anomalies).',
                     ],

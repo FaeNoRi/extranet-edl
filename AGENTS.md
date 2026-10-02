@@ -233,6 +233,13 @@ Sous `/admin/rgpd` (`Admin\RgpdController`, entrée « RGPD » de la barre laté
   **À étendre** à chaque nouvelle table portant une donnée personnelle.
 - **Journal des actions** : purgé après 3 ans (`activitylog.clean_after_days` = 1095, commande
   `activitylog:clean` planifiée à 3h30) — c'est ce que promet la politique de confidentialité.
+- **Référent RGPD** : `EDL_DPO_NOM` / `EDL_DPO_EMAIL` dans le `.env` de **chaque environnement**
+  (volontairement absents du dépôt public) ; sans eux, la politique de confidentialité renvoie
+  vers l'adresse générale de la structure. Les tests utilisent un référent fictif.
+- **Imports GESCOF non appliqués** : `edl:purge-imports` (planifiée à 3h15) supprime les fichiers
+  téléversés de plus de `edl.imports.conservation_fichier_jours` (7) jours, y compris orphelins ;
+  la simulation reste consultable mais ne peut plus être appliquée.
+- **Police** : Abel hébergée dans `resources/fonts` (aucun service tiers appelé par les pages).
 - Reste (non fait) : effacement/anonymisation **définitifs** (la purge actuelle est un soft delete).
 
 ## Reste (phase 5-6)

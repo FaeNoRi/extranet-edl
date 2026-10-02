@@ -39,7 +39,7 @@ class RgpdTest extends TestCase
 
     public function test_le_registre_presente_chaque_traitement_et_signale_le_projet(): void
     {
-        config(['edl.legal.registre_valide_le' => '']);
+        config(['edl.legal.registre_valide_le' => '', 'edl.legal.dpo_nom' => 'Camille REFERENT', 'edl.legal.dpo_email' => 'referent@example.test']);
 
         $this->actingAs($this->admin)->get(route('admin.rgpd.registre'))
             ->assertOk()
@@ -48,17 +48,29 @@ class RgpdTest extends TestCase
             ->assertSee('Émargement')
             ->assertSee('Journal des actions')
             ->assertSee('Connexions techniques')
-            ->assertSee('Meggie HEMBERT')
-            ->assertSee('mhembert@edl-grandcalais.com')
+            ->assertSee('Camille REFERENT')
+            ->assertSee('referent@example.test')
             ->assertDontSee('Bunny Fonts');
     }
 
     public function test_la_politique_de_confidentialite_nomme_le_referent_rgpd(): void
     {
+        config(['edl.legal.dpo_nom' => 'Camille REFERENT', 'edl.legal.dpo_email' => 'referent@example.test']);
+
         $this->get(route('legal.confidentialite'))
             ->assertOk()
-            ->assertSee('Meggie HEMBERT')
-            ->assertSee('mailto:mhembert@edl-grandcalais.com', false);
+            ->assertSee('Camille REFERENT')
+            ->assertSee('mailto:referent@example.test', false);
+    }
+
+    public function test_sans_referent_configure_la_politique_renvoie_vers_l_administration(): void
+    {
+        config(['edl.legal.dpo_nom' => '', 'edl.legal.dpo_email' => '']);
+
+        $this->get(route('legal.confidentialite'))
+            ->assertOk()
+            ->assertSee('mailto:'.config('edl.structure.email'), false)
+            ->assertDontSee('référent RGPD,');
     }
 
     public function test_aucune_page_n_appelle_un_service_de_polices_externe(): void
