@@ -26,8 +26,8 @@ class GescofImportTest extends TestCase
 
     private function seedFormateurs(): void
     {
-        User::factory()->formateur()->create(['prenom' => 'Christopher', 'nom' => 'LEBON']);
-        User::factory()->formateur()->create(['prenom' => 'Juliette', 'nom' => 'MARTIN']);
+        User::factory()->formateur()->create(['prenom' => 'Nicolas', 'nom' => 'ROUSSEL']);
+        User::factory()->formateur()->create(['prenom' => 'Camille', 'nom' => 'FONTAINE']);
     }
 
     public function test_la_simulation_n_ecrit_rien(): void
@@ -66,10 +66,10 @@ class GescofImportTest extends TestCase
         $this->seedFormateurs();
         app(GescofImporter::class)->appliquer($this->fixture);
 
-        $comptes = User::where('email', 'famille.martin@sfr.fr')->get();
+        $comptes = User::where('email', 'famille.dubois@example.test')->get();
         $this->assertCount(3, $comptes);
         $this->assertSame(3, $comptes->pluck('login')->unique()->count());
-        $this->assertSame(1, Client::where('nom', 'DUMONT-MARTIN')->count());
+        $this->assertSame(1, Client::where('nom', 'DUBOIS-LEROY')->count());
     }
 
     public function test_regles_d_exclusion(): void
@@ -81,7 +81,7 @@ class GescofImportTest extends TestCase
         $this->assertTrue($types->contains('hors_perimetre'));      // AN-OP-ST
         $this->assertTrue($types->contains('acces_refuse'));        // AccesPlateforme = Non
         $this->assertTrue($types->contains('participant_absent'));  // A Définir
-        $this->assertTrue($types->contains('email_invalide'));      // CHARLET sans e-mail
+        $this->assertTrue($types->contains('email_invalide'));      // GAUTHIER sans e-mail
     }
 
     public function test_affectation_des_formateurs(): void
@@ -90,9 +90,9 @@ class GescofImportTest extends TestCase
         app(GescofImporter::class)->appliquer($this->fixture);
 
         $session = SessionFormation::where('num_GESCOF', '260070A')->firstOrFail();
-        $this->assertSame('Christopher', $session->formateur->prenom);
-        $this->assertTrue($session->formateurs->contains(fn ($f) => $f->nom === 'LEBON'));
-        $this->assertStringContainsString('Christopher LEBON', $session->intervenants_import);
+        $this->assertSame('Nicolas', $session->formateur->prenom);
+        $this->assertTrue($session->formateurs->contains(fn ($f) => $f->nom === 'ROUSSEL'));
+        $this->assertStringContainsString('Nicolas ROUSSEL', $session->intervenants_import);
 
         $fpc = SessionFormation::where('num_GESCOF', '260350A')->firstOrFail();
         $this->assertCount(2, $fpc->formateurs);
@@ -100,7 +100,7 @@ class GescofImportTest extends TestCase
         // Le suffixe « Thème de la séance » n'est pas pris pour un formateur.
         $rapport = app(GescofImporter::class)->simuler($this->fixture);
         $anomalies = collect($rapport->anomalies)->where('type', 'formateur_non_reconnu');
-        $this->assertTrue($anomalies->contains(fn ($a) => str_contains($a['message'], 'Charles MURRAY')));
+        $this->assertTrue($anomalies->contains(fn ($a) => str_contains($a['message'], 'Antoine LEGRAND')));
         $this->assertFalse($anomalies->contains(fn ($a) => str_contains($a['message'], 'Thème')));
     }
 
@@ -119,8 +119,8 @@ class GescofImportTest extends TestCase
 
         // Retirer un stagiaire de la session 260070A (qui garde Julie) : il est
         // marqué disparu, pas supprimé.
-        $robert = User::where('nom', 'MARTIN')->where('prenom', 'Robert')->firstOrFail();
-        $importer->appliquer($this->fixtureSans('MARTIN;Robert;'));
+        $robert = User::where('nom', 'DUBOIS')->where('prenom', 'Robert')->firstOrFail();
+        $importer->appliquer($this->fixtureSans('DUBOIS;Robert;'));
 
         $session = SessionFormation::where('num_GESCOF', '260070A')->firstOrFail();
         $pivot = $session->stagiaires()->where('users.id', $robert->id)->firstOrFail()->pivot;
@@ -143,12 +143,12 @@ class GescofImportTest extends TestCase
         app(GescofImporter::class)->appliquer($this->fixture, envoyerAcces: true);
 
         Notification::assertSentTo(
-            User::where('email', 'famille.martin@sfr.fr')->get(),
+            User::where('email', 'famille.dubois@example.test')->get(),
             PasswordSetupLink::class,
         );
-        // CHARLET n'a pas d'e-mail : aucun lien.
+        // GAUTHIER n'a pas d'e-mail : aucun lien.
         Notification::assertNotSentTo(
-            User::where('nom', 'CHARLET')->get(),
+            User::where('nom', 'GAUTHIER')->get(),
             PasswordSetupLink::class,
         );
     }

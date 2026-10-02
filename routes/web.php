@@ -6,6 +6,9 @@ use App\Http\Controllers\Admin\FormateurController;
 use App\Http\Controllers\Admin\GescofImportController;
 use App\Http\Controllers\Admin\JournalController;
 use App\Http\Controllers\Admin\PurgeController;
+use App\Http\Controllers\Admin\QuestionnaireController as AdminQuestionnaireController;
+use App\Http\Controllers\Admin\ReferentielController;
+use App\Http\Controllers\Admin\SeanceController as AdminSeanceController;
 use App\Http\Controllers\Admin\SessionFormationController;
 use App\Http\Controllers\Admin\SessionJourController;
 use App\Http\Controllers\Admin\StagiaireController;
@@ -14,9 +17,11 @@ use App\Http\Controllers\Formateur\DashboardController as FormateurDashboardCont
 use App\Http\Controllers\Formateur\RessourceController as FormateurRessourceController;
 use App\Http\Controllers\Formateur\SeanceController as FormateurSeanceController;
 use App\Http\Controllers\Formateur\SessionController as FormateurSessionController;
+use App\Http\Controllers\PageLegaleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Stagiaire\DashboardController as StagiaireDashboardController;
 use App\Http\Controllers\Stagiaire\EmargementController as StagiaireEmargementController;
+use App\Http\Controllers\Stagiaire\QuestionnaireController as StagiaireQuestionnaireController;
 use App\Http\Controllers\Stagiaire\RessourcePedagogiqueController;
 use App\Http\Controllers\Stagiaire\TelechargementController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +29,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->name('accueil');
+
+Route::get('/mentions-legales', [PageLegaleController::class, 'mentions'])->name('legal.mentions');
+Route::get('/politique-de-confidentialite', [PageLegaleController::class, 'confidentialite'])->name('legal.confidentialite');
+Route::get('/accessibilite', [PageLegaleController::class, 'accessibilite'])->name('legal.accessibilite');
 
 Route::middleware('auth')->group(function () {
     // Point d'entrée unique : redirige vers le tableau de bord du rôle.
@@ -58,8 +67,20 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('sessions/{session}/planning', [SessionJourController::class, 'sync'])->name('sessions.planning.sync');
         Route::get('sessions/{session}/archive', [SessionFormationController::class, 'archive'])->name('sessions.archive');
 
+        // Fiche pédagogique (séance) : consultation/modification depuis l'administration.
+        // Création réservée au formateur (attribution automatique de l'auteur).
+        Route::get('seances/{seance}', [AdminSeanceController::class, 'show'])->name('seances.show');
+        Route::get('seances/{seance}/modifier', [AdminSeanceController::class, 'edit'])->name('seances.edit');
+        Route::put('seances/{seance}', [AdminSeanceController::class, 'update'])->name('seances.update');
+        Route::delete('seances/{seance}', [AdminSeanceController::class, 'destroy'])->name('seances.destroy');
+        Route::get('seances/{seance}/fiche', [AdminSeanceController::class, 'fiche'])->name('seances.fiche');
+        Route::get('ressources/{ressource}', [FormateurRessourceController::class, 'download'])->name('ressources.download');
+        Route::delete('ressources/{ressource}', [FormateurRessourceController::class, 'destroy'])->name('ressources.destroy');
+
         Route::get('stagiaires', [StagiaireController::class, 'index'])->name('stagiaires.index');
         Route::delete('stagiaires/{stagiaire}', [StagiaireController::class, 'destroy'])->name('stagiaires.destroy');
+
+        Route::resource('referentiel', ReferentielController::class)->except('show');
 
         Route::get('purges', [PurgeController::class, 'index'])->name('purges.index');
         Route::post('purges', [PurgeController::class, 'executer'])->name('purges.executer');
@@ -68,6 +89,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('documents', [DocumentController::class, 'store'])->name('documents.store');
         Route::get('documents/{document}', [DocumentController::class, 'download'])->name('documents.download');
         Route::delete('documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
+
+        Route::get('questionnaires/{questionnaire}/resultats', [AdminQuestionnaireController::class, 'resultats'])->name('questionnaires.resultats');
+        Route::resource('questionnaires', AdminQuestionnaireController::class)->except('show');
 
         Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
     });
@@ -80,7 +104,6 @@ Route::middleware(['auth', 'role:formateur'])
 
         Route::get('sessions', [FormateurSessionController::class, 'index'])->name('sessions.index');
         Route::get('sessions/{session}', [FormateurSessionController::class, 'show'])->name('sessions.show');
-        Route::post('sessions/{session}/ressources', [FormateurRessourceController::class, 'store'])->name('sessions.ressources.store');
 
         Route::get('sessions/{session}/seances/creer', [FormateurSeanceController::class, 'create'])->name('seances.create');
         Route::post('seances', [FormateurSeanceController::class, 'store'])->name('seances.store');
@@ -104,7 +127,13 @@ Route::middleware(['auth', 'role:stagiaire_op,stagiaire_fpc'])
         Route::get('ressources/{seance}', [RessourcePedagogiqueController::class, 'show'])->name('ressources.show');
 
         Route::get('documents/{document}', [TelechargementController::class, 'document'])->name('documents.download');
+        Route::get('documents/{document}/apercu', [TelechargementController::class, 'apercuDocument'])->name('documents.apercu');
         Route::get('fichiers/{ressource}', [TelechargementController::class, 'ressource'])->name('ressources.download');
+        Route::get('fichiers/{ressource}/apercu', [TelechargementController::class, 'apercuRessource'])->name('ressources.apercu');
+
+        Route::get('questionnaires', [StagiaireQuestionnaireController::class, 'index'])->name('questionnaires.index');
+        Route::get('questionnaires/{questionnaire}', [StagiaireQuestionnaireController::class, 'show'])->name('questionnaires.show');
+        Route::post('questionnaires/{questionnaire}', [StagiaireQuestionnaireController::class, 'store'])->name('questionnaires.store');
 
         Route::post('seances/{seance}/emargement', [StagiaireEmargementController::class, 'sign'])->name('emargement');
     });

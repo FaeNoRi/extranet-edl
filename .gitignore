@@ -26,8 +26,12 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# Extraction temporaire du cahier des charges
-/CLAUDE/cdc.txt
+# Dossier CLAUDE : transfert temporaire entre l'utilisateur et Claude
+# (cahier des charges, médias, informations de configuration, documents de
+# référence…), supprimé avant la mise en production. Ne doit jamais être
+# envoyé au dépôt : tout contenu utile est recopié dans la structure du
+# projet (config/, public/, etc.) au moment où il est exploité.
+/CLAUDE/
 
 # Base SQLite locale (dev = MySQL, tests = :memory:)
 /database/*.sqlite

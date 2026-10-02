@@ -29,8 +29,11 @@
             </x-admin.card>
         @endif
 
-        <div class="grid gap-4 lg:grid-cols-2"
-             x-data="{ apercu: null, titre: null }">
+        {{-- OP : consultation seule dans le lecteur durci plein page (aucun volet, aucun téléchargement). --}}
+        @php $op = auth()->user()->isStagiaireOp(); @endphp
+
+        <div @class(['grid gap-4', 'lg:grid-cols-2' => ! $op])
+             x-data="{ apercu: null, titre: null, type: null }">
 
             <div class="space-y-4">
                 <x-admin.card titre="Documents de la séance">
@@ -40,13 +43,21 @@
                         <ul class="divide-y divide-gray-100 text-sm">
                             @foreach ($ressourcesTransmises as $ressource)
                                 <li class="flex items-center justify-between py-2">
-                                    <button type="button"
-                                            @click="apercu='{{ route('stagiaire.ressources.download', $ressource) }}?apercu=1'; titre='{{ addslashes($ressource->nom) }}'"
-                                            class="text-left text-edl-bleu hover:underline">
-                                        {{ $ressource->nom }}
-                                        <span class="text-xs text-gray-400">· {{ $ressource->type_fichier }}</span>
-                                    </button>
-                                    <a href="{{ route('stagiaire.ressources.download', $ressource) }}" class="text-xs text-gray-400 hover:text-edl-bleu">↓</a>
+                                    @if ($op)
+                                        <a href="{{ route('stagiaire.ressources.apercu', $ressource) }}"
+                                           class="text-left text-edl-bleu hover:underline">
+                                            {{ $ressource->nom }}
+                                            <span class="text-xs text-gray-400">· {{ $ressource->type_fichier }}</span>
+                                        </a>
+                                    @else
+                                        <button type="button"
+                                                @click="apercu='{{ route('stagiaire.ressources.download', $ressource) }}?apercu=1'; titre='{{ addslashes($ressource->nom) }}'; type='{{ $ressource->type_fichier }}'"
+                                                class="text-left text-edl-bleu hover:underline">
+                                            {{ $ressource->nom }}
+                                            <span class="text-xs text-gray-400">· {{ $ressource->type_fichier }}</span>
+                                        </button>
+                                        <a href="{{ route('stagiaire.ressources.download', $ressource) }}" class="text-xs text-gray-400 hover:text-edl-bleu">↓</a>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>
@@ -65,11 +76,18 @@
                                     </p>
                                     <p class="text-xs text-gray-400">{{ $referentiel->module }} — {{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }}</p>
                                     @foreach ($referentiel->ressources as $ressource)
-                                        <button type="button"
-                                                @click="apercu='{{ route('stagiaire.ressources.download', $ressource) }}?apercu=1'; titre='{{ addslashes($ressource->nom) }}'"
-                                                class="mt-0.5 block text-left text-xs text-edl-bleu hover:underline">
-                                            ↳ {{ $ressource->nom }}
-                                        </button>
+                                        @if ($op)
+                                            <a href="{{ route('stagiaire.ressources.apercu', $ressource) }}"
+                                               class="mt-0.5 block text-left text-xs text-edl-bleu hover:underline">
+                                                ↳ {{ $ressource->nom }}
+                                            </a>
+                                        @else
+                                            <button type="button"
+                                                    @click="apercu='{{ route('stagiaire.ressources.download', $ressource) }}?apercu=1'; titre='{{ addslashes($ressource->nom) }}'; type='{{ $ressource->type_fichier }}'"
+                                                    class="mt-0.5 block text-left text-xs text-edl-bleu hover:underline">
+                                                ↳ {{ $ressource->nom }}
+                                            </button>
+                                        @endif
                                     @endforeach
                                 </li>
                             @endforeach
@@ -78,13 +96,25 @@
                 </x-admin.card>
             </div>
 
-            {{-- Volet de visualisation --}}
+            {{-- Volet de visualisation (hors OP) --}}
+            @unless ($op)
             <div class="lg:sticky lg:top-6 lg:h-[70vh]">
-                <div class="flex h-full flex-col rounded-lg bg-white shadow-sm">
+                <div class="flex h-full flex-col rounded-lg bg-white shadow-sm"
+                     oncontextmenu="return false" onselectstart="return false">
                     <p class="border-b border-gray-100 px-4 py-2 text-sm font-medium text-gray-600"
                        x-text="titre || 'Aperçu'"></p>
-                    <template x-if="apercu">
-                        <iframe :src="apercu" class="min-h-[300px] flex-1 rounded-b-lg" title="Aperçu du document"></iframe>
+                    <template x-if="apercu && (type === 'video' || type === 'audio')">
+                        <div class="relative min-h-[300px] flex-1">
+                            <video :src="apercu" controls controlsList="nodownload noremoteplayback" disablepictureinpicture
+                                   oncontextmenu="return false" class="h-full w-full rounded-b-lg bg-black"></video>
+                            <x-stagiaire.filigrane :nombre="12" couleur="text-white" />
+                        </div>
+                    </template>
+                    <template x-if="apercu && type !== 'video' && type !== 'audio'">
+                        <div class="relative min-h-[300px] flex-1">
+                            <iframe :src="apercu + '#toolbar=0&navpanes=0'" class="h-full w-full rounded-b-lg" title="Aperçu du document"></iframe>
+                            <x-stagiaire.filigrane :nombre="12" />
+                        </div>
                     </template>
                     <template x-if="!apercu">
                         <div class="flex flex-1 items-center justify-center p-6 text-center text-sm text-gray-400">
@@ -93,6 +123,7 @@
                     </template>
                 </div>
             </div>
+            @endunless
         </div>
     </x-stagiaire.shell>
 </x-app-layout>

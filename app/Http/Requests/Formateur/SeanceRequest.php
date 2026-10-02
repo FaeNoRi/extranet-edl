@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Formateur;
 
 use App\Models\SessionFormation;
+use App\Rules\FichierAutorise;
 use App\Support\OptionsSeance;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -16,12 +17,21 @@ class SeanceRequest extends FormRequest
         $session = $this->sessionFormation();
         $user = $this->user();
 
-        if (! $session || ! $user?->isFormateur()) {
+        if (! $session || ! $user) {
             return false;
         }
 
-        return $session->formateur_id === $user->id
-            || $session->formateurs()->whereKey($user->id)->exists();
+        // L'admin peut modifier la fiche de n'importe quelle séance (aussi
+        // exposé via App\Http\Controllers\Admin\SeanceController) ; un
+        // formateur reste cantonné aux sessions qu'il encadre.
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        return $user->isFormateur() && (
+            $session->formateur_id === $user->id
+            || $session->formateurs()->whereKey($user->id)->exists()
+        );
     }
 
     public function rules(): array
@@ -51,9 +61,9 @@ class SeanceRequest extends FormRequest
             'ressources' => ['array'],
             'ressources.*' => ['exists:ressources,id'],
             'fichiers_transmis' => ['array'],
-            'fichiers_transmis.*' => ['file', 'max:51200'],
+            'fichiers_transmis.*' => FichierAutorise::regles(),
             'fichiers_internes' => ['array'],
-            'fichiers_internes.*' => ['file', 'max:51200'],
+            'fichiers_internes.*' => FichierAutorise::regles(),
         ];
     }
 

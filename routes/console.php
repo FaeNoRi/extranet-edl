@@ -8,5 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Purge des comptes selon les règles calendaires (OP appliquée, FPC signalée).
-Schedule::command('edl:purge-comptes --appliquer')->dailyAt('03:00');
+// Signalement quotidien des comptes à purger (OP et FPC) selon les règles
+// calendaires — aucune suppression automatique, validation manuelle dans
+// l'administration (Purges).
+Schedule::command('edl:purge-comptes')->dailyAt('03:00');

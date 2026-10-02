@@ -11,7 +11,7 @@ class PurgeComptes extends Command
     protected $signature = 'edl:purge-comptes
                             {--op : Purge les comptes OP (fermeture estivale)}
                             {--fpc : Purge les comptes FPC (formations terminées en N-1)}
-                            {--appliquer : Exécute la suppression (sinon simulation)}';
+                            {--appliquer : Exécute la suppression (sinon simulation ; ignoré en mode calendaire, voir ci-dessous)}';
 
     protected $description = 'Purge les comptes stagiaires selon les règles du cahier des charges';
 
@@ -22,9 +22,9 @@ class PurgeComptes extends Command
         $appliquer = (bool) $this->option('appliquer');
         $calendaire = ! $op && ! $fpc;
 
-        // Sans option : règles calendaires. La purge OP peut s'appliquer
-        // automatiquement ; la purge FPC est seulement signalée (le CDC la
-        // veut déclenchée manuellement par l'admin).
+        // Sans option (exécution planifiée) : règles calendaires, mais aucune
+        // suppression automatique — OP comme FPC sont seulement signalées et
+        // doivent être validées manuellement par l'admin dans l'écran Purges.
         if ($calendaire) {
             $op = $this->dateAtteinte(config('edl.purges.op_apres'));
             $fpc = $this->dateAtteinte(config('edl.purges.fpc_le'));
@@ -39,7 +39,12 @@ class PurgeComptes extends Command
         $total = 0;
 
         if ($op) {
-            $total += $this->traiter('OP', $service->comptesOpAPurger(), 'fermeture estivale (comptes OP)', $appliquer, $service);
+            $appliquerOp = $appliquer && ! $calendaire;
+            $total += $this->traiter('OP', $service->comptesOpAPurger(), 'fermeture estivale (comptes OP)', $appliquerOp, $service);
+
+            if ($calendaire && $service->comptesOpAPurger()->isNotEmpty()) {
+                $this->warn('Purge OP à valider manuellement dans l\'administration (Purges).');
+            }
         }
 
         if ($fpc) {

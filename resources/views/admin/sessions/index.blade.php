@@ -13,15 +13,18 @@
                 </a>
             </x-slot>
 
-            <form method="GET" class="mb-4 flex flex-wrap gap-3">
+            <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
                 <input type="search" name="q" value="{{ request('q') }}" placeholder="Libellé, n° GESCOF…"
                        class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
-                <select name="produit" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                <select name="produit" onchange="this.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                     <option value="">Tous produits</option>
                     <option value="FPC" @selected(request('produit') === 'FPC')>FPC</option>
                     <option value="OP" @selected(request('produit') === 'OP')>OP</option>
                 </select>
-                <x-secondary-button>Filtrer</x-secondary-button>
+                <x-secondary-button type="submit">Filtrer</x-secondary-button>
+                @if (request()->filled('q') || request()->filled('produit'))
+                    <a href="{{ route('admin.sessions.index') }}" class="text-sm text-gray-500 hover:text-edl-bleu hover:underline">Réinitialiser</a>
+                @endif
             </form>
 
             @if ($sessions->isEmpty())

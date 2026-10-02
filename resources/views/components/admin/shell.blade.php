@@ -7,7 +7,9 @@
         'sessions'   => ['route' => 'admin.sessions.index',   'label' => 'Sessions'],
         'formateurs' => ['route' => 'admin.formateurs.index', 'label' => 'Formateurs'],
         'stagiaires' => ['route' => 'admin.stagiaires.index', 'label' => 'Stagiaires'],
+        'referentiel' => ['route' => 'admin.referentiel.index', 'label' => 'Référentiel'],
         'documents'  => ['route' => 'admin.documents.index',  'label' => 'Documents'],
+        'questionnaires' => ['route' => 'admin.questionnaires.index', 'label' => 'Questionnaires'],
         'purges'     => ['route' => 'admin.purges.index',     'label' => 'Purges'],
         'journal'    => ['route' => 'admin.journal.index',    'label' => 'Journal des actions'],
     ];

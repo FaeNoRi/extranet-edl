@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Document;
+use App\Rules\FichierAutorise;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -24,10 +25,11 @@ class DocumentController extends Controller
     {
         $data = $request->validate([
             'nom' => ['required', 'string', 'max:255'],
+            'intitule' => ['nullable', 'string', 'max:255'],
             'categorie' => ['required', 'in:presentation_structure,mes_documents'],
             'type_document' => ['nullable', 'string', 'max:255'],
             'session_formation_id' => ['nullable', 'exists:session_formations,id'],
-            'fichier' => ['required', 'file', 'max:20480'],
+            'fichier' => FichierAutorise::regles(),
         ], [], ['fichier' => 'fichier']);
 
         $sessionId = $data['session_formation_id'] ?? null;
@@ -35,7 +37,9 @@ class DocumentController extends Controller
         $dossier = $sessionId ? "sessions/{$sessionId}/documents" : 'documents/structure';
 
         Document::create([
-            'nom' => $data['nom'],
+            // L'intitulé libre, s'il est renseigné, prend le dessus sur le type choisi
+            // dans la liste (le type reste conservé dans type_document).
+            'nom' => filled($data['intitule'] ?? null) ? $data['intitule'] : $data['nom'],
             'categorie' => $data['categorie'],
             'type_document' => $data['type_document'] ?? $data['nom'],
             'session_formation_id' => $sessionId,

@@ -23,7 +23,7 @@
                         <x-input-error :messages="$errors->get('num_GESCOF')" class="mt-1" />
                     </div>
                     <div>
-                        <x-input-label for="code_stage" :value="__('Code stage (facultatif)')" />
+                        <x-input-label for="code_stage" :value="__('Code produit (facultatif)')" />
                         <x-text-input id="code_stage" name="code_stage" class="mt-1 block w-full"
                                       :value="old('code_stage', $session->code_stage)" />
                     </div>
@@ -44,14 +44,19 @@
                     </div>
                     <div>
                         <x-input-label for="langue" :value="__('Langue')" />
-                        <x-text-input id="langue" name="langue" class="mt-1 block w-full"
-                                      :value="old('langue', $session->langue ?: 'Anglais')" required />
+                        <select id="langue" name="langue" required
+                                class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                            @foreach ($langues as $l)
+                                <option value="{{ $l }}" @selected(old('langue', $session->langue ?: 'Anglais') === $l)>{{ $l }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('langue')" class="mt-1" />
                     </div>
                 </div>
 
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div>
-                        <x-input-label for="client_id" :value="__('Client')" />
+                        <x-input-label for="client_id" :value="__('Client (facultatif)')" />
                         <select id="client_id" name="client_id"
                                 class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                             <option value="">— Aucun —</option>

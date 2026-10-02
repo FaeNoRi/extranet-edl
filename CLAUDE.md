@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées** (hors questionnaires, reportés). Prochaine : phase 5 (conformité & durcissement).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; reste audit accessibilité, RGPD export/effacement, sauvegardes).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -23,11 +23,21 @@ Commandes types :
 "C:\laragon\bin\php\php-8.4.7-nts-Win32-vs17-x64\php.exe" vendor/bin/pint
 ```
 
+Front : `public/build` est **ignoré par git** et servi tel quel par `php artisan serve` (pas de
+`vite dev` lancé). Après tout ajout de classes Tailwind dans les vues, relancer
+`npm run build`, sinon les nouvelles classes n'existent pas dans le CSS servi.
+
 > À faire : régler le PHP par défaut de Laragon sur 8.4 pour pouvoir utiliser `php` et les
 > scripts Composer (`composer test`, `composer dev`) directement.
 
-Base de données : MySQL `edl_plus` (dev). Les tests tournent sur SQLite `:memory:` — garder
-les migrations **portables** (pas de `->set()`, pas de type spécifique MySQL non émulé).
+Base de données : MySQL `edl_plus` (dev) — **démarrer MySQL via Laragon** (« Démarrer tout »)
+avant d'utiliser l'appli. Les tests tournent sur SQLite `:memory:` — garder les migrations
+**portables** (pas de `->set()`, pas de type spécifique MySQL non émulé).
+
+> Le `.env` local est en `SESSION_DRIVER=file` / `CACHE_STORE=file` : la page d'accueil, la
+> connexion et les pages légales s'affichent même si MySQL est arrêté (utile après un crash
+> Laragon). `.env.example` garde `database` (recommandation production). Toute page de données
+> a quand même besoin de MySQL.
 
 ## Conventions
 
@@ -102,6 +112,10 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
   `SessionFormationRequest` : rythme OP obligatoire si `code_produit=OP`.
 - **Stagiaires** (`admin.stagiaires.index` + `destroy`) : liste filtrable (session,
   « absents du dernier import »), suppression (soft delete).
+- **Référentiel** (`admin.referentiel.*`, `resource` sans `show`) : CRUD, liste groupée
+  par module (filtrable), niveaux CECRL en cases à cocher (`App\Casts\SetCast`).
+  Suppression bloquée si l'entrée est utilisée dans une séance (`cascadeOnDelete` sur
+  `seances_referentiel`, on ne veut pas casser l'historique des fiches pédagogiques).
 - **Journal** (`admin.journal.index`) : `activity_log` paginé, filtres objet/événement,
   diff old/new.
 - **Purges** (`admin.purges.*`) : `PurgeComptesService` — comptes OP dont les sessions
@@ -114,6 +128,13 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
 - **Archive session FPC** (`admin.sessions.archive`) : `SessionArchiveService` produit un
   ZIP (un dossier par séance, fiche + ressources `date.RPn`, `MANIFESTE.txt` des fichiers
   attendus mais absents — fiches PDF en phase 3).
+- **Séances** (`admin.seances.*`) : consultation/modification d'une fiche pédagogique
+  depuis la fiche de session (liste dans une carte « Séances »). Réutilise les mêmes vues
+  que l'espace formateur via des partials communs (`resources/views/seances/_show.blade.php`,
+  `_form.blade.php`, paramétrées par un `$prefix` de route) et la même logique d'écriture
+  (`App\Services\SeanceService`). Pas de création côté admin — la création reste réservée
+  au formateur (`formateur.seances.create/store`), qui s'attribue la séance à l'enregistrement ;
+  l'admin ne modifie donc jamais le `formateur_id` d'une séance existante.
 
 `x-primary-button` est thématisé EDL (`bg-edl-bleu`).
 
@@ -124,8 +145,9 @@ Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU éq
 
 - **Tableau de bord** : cartes des sessions, séances récentes/à venir.
 - **Sessions** (`formateur.sessions.*`) : liste + fiche. Pour une session FPC, la fiche
-  affiche le **suivi de progression** (séances regroupées par stagiaire). Dépôt de
-  ressources de session (`formateur.sessions.ressources.store`).
+  affiche le **suivi de progression** (séances regroupées par stagiaire). Pas de dépôt de
+  ressources au niveau session : les fichiers se déposent uniquement depuis la fiche
+  pédagogique (séance) ; la carte « Ressources de la session » reste en lecture/suppression.
 - **Fiche pédagogique = séance** (`formateur.seances.*`) : formulaire complet (champs
   auto : stage, formateur, langue ; date, stagiaire si FPC, objectifs `OptionsSeance`
   + objectifs perso de la session, contenu, outils, sources, modules du référentiel,
@@ -152,6 +174,21 @@ Tout est cadré à `User::sessionStagiaire()` (1 accès = 1 session).
   (iframe, `?apercu=1` → `Storage::response`).
 - **Téléchargements** : `TelechargementController` vérifie que le document/la ressource
   appartient bien à la session du stagiaire (ou est un document commun structure).
+- **Stagiaire OP : consultation seule** (dissuasion, pas un verrou). `TelechargementController`
+  ne sert jamais un OP en pièce jointe (même en forçant l'URL) et refuse la navigation directe
+  vers le fichier (`Sec-Fetch-Dest` document/iframe/embed/object → 403, `Cache-Control: no-store`) :
+  seuls les appels du lecteur passent (fetch, `<video>`, `<img>`). Lecteur
+  `<x-stagiaire.apercu-durci>` (pages `stagiaire.documents.apercu` et `stagiaire.ressources.apercu`,
+  shell `large`) : les PDF ne passent **pas** par le lecteur natif du navigateur (barre d'outils
+  avec enregistrer/imprimer) mais sont dessinés sur canvas par PDF.js
+  (`resources/js/lecteur-pdf.js`, entrée Vite dédiée, chargée uniquement sur ces pages), avec
+  le filigrane `config('edl.structure.nom')` **incrusté dans le canvas** (jamais le nom de
+  l'utilisateur). Durcissement : clic droit/sélection/copie bloqués, Ctrl+S/Ctrl+P bloqués,
+  `print:hidden`, contenu flouté si la fenêtre perd le focus ou sur « Impr. écran ». Vidéo :
+  `controlsList="nodownload"` ; types non affichables : message. Le volet de visualisation de
+  `stagiaire.ressources.show` n'existe plus que pour les FPC (qui peuvent télécharger). Limites
+  assumées : rien n'empêche une capture d'écran/photo, et les outils de développement du
+  navigateur permettent de récupérer les octets.
 - **Émargement** (`stagiaire.emargement`) : FPC distanciel uniquement, une séance réalisée
   → `Emargement` (present + signe_at).
 
@@ -165,10 +202,34 @@ Tout est cadré à `User::sessionStagiaire()` (1 accès = 1 session).
 
 `/tableau-de-bord` redirige vers le tableau de bord du rôle : `/admin`, `/formateur`, `/espace`.
 
-## Reste à faire
+## Questionnaires (phase 5)
 
-- **Questionnaires** (satisfaction chaud/froid, évaluation des acquis) : schéma prêt
-  (`questionnaires`, `questionnaire_questions`, `questionnaire_reponses`), UI à construire
-  (constructeur admin + formulaire stagiaire). Reporté en fin de phase 4 / phase 5.
-- Phase 5 : RGPD (mentions, registre, purges de données), accessibilité WCAG 2.1 AA,
-  perf, sécurité, sauvegardes.
+Enums `TypeQuestionnaire` (satisfaction_chaud/froid, evaluation_acquis) et `TypeQuestion`
+(texte, choix_unique, choix_multiple, echelle).
+
+- **Admin** (`admin.questionnaires.*`) : constructeur (form + repeater de questions Alpine,
+  `QuestionnaireRequest::questionsNormalisees()`), portée = session précise ou toutes
+  (`session_formation_id` nul), page **résultats** agrégés (moyenne/histogramme échelle,
+  comptes choix, liste textes).
+- **Stagiaire** (`stagiaire.questionnaires.*`) : `Questionnaire::scopePourSession()`,
+  formulaire, un seul envoi (`questionnaire_soumissions`, unique (questionnaire, user)),
+  validation par question (obligatoire, échelle 1-5, options).
+
+## Conformité (phase 5, socle)
+
+- **En-têtes de sécurité** : `App\Http\Middleware\SecurityHeaders` (append au groupe web) —
+  X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, HSTS en prod.
+- **Pages légales** publiques : `/mentions-legales`, `/politique-de-confidentialite`,
+  `/accessibilite` (`PageLegaleController`, `<x-legal.page>`), liens en pied de page.
+  Contenu piloté par `config('edl.structure')` + `config('edl.legal')` — **à compléter par
+  l'EDL** (SIRET, hébergeur, DPO…).
+- **Uploads** : `App\Rules\FichierAutorise::regles()` (allowlist d'extensions +
+  `config('edl.uploads')`), appliqué aux documents et ressources.
+
+## Reste (phase 5-6)
+
+- RGPD : export des données d'un utilisateur, effacement/anonymisation définitive,
+  registre des traitements.
+- Accessibilité : audit WCAG 2.1 AA complet.
+- Perf (index, chargement différé), sauvegardes + procédure de restauration.
+- Phase 6 : mise en production, évolutions (familles, fusion plann'EDL, notifications).

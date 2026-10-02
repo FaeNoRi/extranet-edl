@@ -16,6 +16,7 @@ use App\Models\SessionJour;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Jeu de données de démonstration cohérent (sessions, séances, ressources,
@@ -134,13 +135,24 @@ class DemoSeeder extends Seeder
 
     private function documentsStructure(): void
     {
+        // Les PDF réels, s'ils sont déposés dans storage/app/private/documents/structure/
+        // (non versionnés), rendent ces documents consultables en local ; sinon le
+        // chemin reste valide en base mais le fichier est absent (404 au téléchargement).
         foreach ([
-            'Présentation des locaux',
-            "Registre d'accessibilité",
-            'Catalogue de formations',
-            'Liste du matériel mis à disposition',
-        ] as $nom) {
-            Document::factory()->structure()->create(['nom' => $nom, 'type_document' => $nom]);
+            'Présentation des locaux' => ['presentation-des-locaux.pdf', 'Présentation des locaux.pdf'],
+            "Registre d'accessibilité" => ['registre-accessibilite.pdf', "Registre d'accessibilité.pdf"],
+            'Catalogue de formations' => ['catalogue-de-formations.pdf', 'Catalogue de formations.pdf'],
+            'Liste du matériel mis à disposition' => ['liste-du-materiel.pdf', 'Liste du matériel.pdf'],
+        ] as $nom => [$fichier, $original]) {
+            $chemin = "documents/structure/{$fichier}";
+
+            Document::factory()->structure()->create([
+                'nom' => $nom,
+                'type_document' => $nom,
+                'chemin_fichier' => $chemin,
+                'nom_fichier_original' => $original,
+                'taille' => Storage::exists($chemin) ? Storage::size($chemin) : 0,
+            ]);
         }
     }
 

@@ -22,21 +22,26 @@ readonly class CodeStage
         public bool $estStage,
     ) {}
 
+    /**
+     * Préfixes de langue des codes stage GESCOF, vers le libellé affiché.
+     * Sert aussi de référentiel pour les listes déroulantes « Langue »
+     * (formulaire session admin) — voir self::langues().
+     */
+    private const LANGUES = [
+        'AN' => 'Anglais',
+        'ES' => 'Espagnol',
+        'MA' => 'Mandarin',
+        'LSF' => 'Langue des signes française',
+        'FR' => 'Français',
+        'RE' => null, // « RE-F » : non déterminé
+    ];
+
     public static function analyser(string $code): self
     {
         $code = trim($code);
         $segments = array_map('strtoupper', preg_split('/[-\s]+/', $code) ?: []);
 
-        $langues = [
-            'AN' => 'Anglais',
-            'ES' => 'Espagnol',
-            'MA' => 'Mandarin',
-            'LSF' => 'Langue des signes française',
-            'FR' => 'Français',
-            'RE' => null, // « RE-F » : non déterminé
-        ];
-
-        $langue = $langues[$segments[0] ?? ''] ?? null;
+        $langue = self::LANGUES[$segments[0] ?? ''] ?? null;
 
         $estStage = in_array('ST', $segments, true);
 
@@ -65,5 +70,15 @@ readonly class CodeStage
             $this->produit === null => 'hors périmètre plateforme (CLSH, immersion scolaire, autre)',
             default => null,
         };
+    }
+
+    /**
+     * Langues enseignées par l'EDL (libellés), pour les listes déroulantes.
+     *
+     * @return list<string>
+     */
+    public static function langues(): array
+    {
+        return array_values(array_filter(self::LANGUES));
     }
 }

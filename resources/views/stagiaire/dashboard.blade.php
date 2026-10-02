@@ -41,7 +41,7 @@
                     <ul class="divide-y divide-gray-100 text-sm">
                         @foreach ($documentsStructure as $doc)
                             <li class="py-2">
-                                <a href="{{ route('stagiaire.documents.download', $doc) }}" class="text-edl-bleu hover:underline">
+                                <a href="{{ route(auth()->user()->isStagiaireOp() ? 'stagiaire.documents.apercu' : 'stagiaire.documents.download', $doc) }}" class="text-edl-bleu hover:underline">
                                     {{ $doc->nom }}
                                 </a>
                             </li>
@@ -57,7 +57,7 @@
                     <ul class="divide-y divide-gray-100 text-sm">
                         @foreach ($mesDocuments as $doc)
                             <li class="py-2">
-                                <a href="{{ route('stagiaire.documents.download', $doc) }}" class="text-edl-bleu hover:underline">
+                                <a href="{{ route(auth()->user()->isStagiaireOp() ? 'stagiaire.documents.apercu' : 'stagiaire.documents.download', $doc) }}" class="text-edl-bleu hover:underline">
                                     {{ $doc->nom }}
                                 </a>
                             </li>

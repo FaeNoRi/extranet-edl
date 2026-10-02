@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\SessionFormation;
 use App\Models\User;
 use App\Services\SessionArchiveService;
+use App\Support\CodeStage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -56,7 +57,8 @@ class SessionFormationController extends Controller
             'client', 'formateur', 'formateurs',
             'stagiaires' => fn ($q) => $q->orderBy('nom'),
             'jours' => fn ($q) => $q->orderBy('date'),
-            'seances',
+            'seances' => fn ($q) => $q->orderByDesc('date'),
+            'seances.formateur', 'seances.stagiaire',
         ]);
 
         return view('admin.sessions.show', compact('session'));
@@ -132,6 +134,7 @@ class SessionFormationController extends Controller
             'clients' => Client::orderBy('nom')->get(),
             'formateurs' => User::where('role', Role::Formateur->value)->orderBy('nom')->get(),
             'produits' => CodeProduit::cases(),
+            'langues' => CodeStage::langues(),
         ];
     }
 }

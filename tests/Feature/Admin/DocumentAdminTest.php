@@ -52,6 +52,32 @@ class DocumentAdminTest extends TestCase
         ]);
     }
 
+    public function test_l_intitule_libre_prend_le_dessus_sur_le_type(): void
+    {
+        $this->post(route('admin.documents.store'), [
+            'nom' => 'Livret d\'accueil',
+            'intitule' => 'Livret d\'accueil 2026-2027',
+            'categorie' => 'presentation_structure',
+            'fichier' => UploadedFile::fake()->create('livret.pdf', 10, 'application/pdf'),
+        ])->assertRedirect();
+
+        $document = Document::firstOrFail();
+        $this->assertSame('Livret d\'accueil 2026-2027', $document->nom);
+        $this->assertSame('Livret d\'accueil', $document->type_document);
+    }
+
+    public function test_un_intitule_vide_conserve_le_type_choisi(): void
+    {
+        $this->post(route('admin.documents.store'), [
+            'nom' => 'Catalogue de formations',
+            'intitule' => '',
+            'categorie' => 'presentation_structure',
+            'fichier' => UploadedFile::fake()->create('cat.pdf', 10, 'application/pdf'),
+        ])->assertRedirect();
+
+        $this->assertSame('Catalogue de formations', Document::firstOrFail()->nom);
+    }
+
     public function test_suppression(): void
     {
         $this->post(route('admin.documents.store'), [

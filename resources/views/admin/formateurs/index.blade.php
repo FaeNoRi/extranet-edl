@@ -13,9 +13,13 @@
                 </a>
             </x-slot>
 
-            <form method="GET" class="mb-4">
+            <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
                 <input type="search" name="q" value="{{ request('q') }}" placeholder="Rechercher un nom, un identifiant…"
                        class="w-full max-w-sm rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                <x-secondary-button type="submit">Rechercher</x-secondary-button>
+                @if (request()->filled('q'))
+                    <a href="{{ route('admin.formateurs.index') }}" class="text-sm text-gray-500 hover:text-edl-bleu hover:underline">Réinitialiser</a>
+                @endif
             </form>
 
             @if ($formateurs->isEmpty())
