@@ -102,6 +102,19 @@ class LecteurDurciTest extends TestCase
             ->assertSee('Livret d\'accueil');
     }
 
+    public function test_le_filigrane_est_toujours_le_nom_de_la_structure(): void
+    {
+        Storage::fake('local');
+        $document = Document::factory()->structure()->create();
+        Storage::put($document->chemin_fichier, 'contenu');
+        $stagiaire = User::factory()->stagiaireOp()->create(['nom' => 'ROYER', 'prenom' => 'Daniel', 'login' => 'droyer-op']);
+
+        $this->actingAs($stagiaire)->get(route('stagiaire.documents.apercu', $document))
+            ->assertOk()
+            ->assertSee(config('edl.structure.nom'))
+            ->assertDontSee('droyer-op');
+    }
+
     public function test_apercu_document_refuse_pour_une_autre_session(): void
     {
         Storage::fake('local');

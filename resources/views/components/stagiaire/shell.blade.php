@@ -1,4 +1,4 @@
-@props(['active' => null])
+@props(['active' => null, 'large' => false])
 
 @php
     $liens = [
@@ -9,7 +9,11 @@
 @endphp
 
 <div class="py-8">
-    <div class="mx-auto flex max-w-5xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:px-8">
+    <div @class([
+        'mx-auto flex flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:px-8',
+        'max-w-5xl' => ! $large,
+        'max-w-7xl' => $large,
+    ])>
         <aside class="lg:w-52 lg:flex-shrink-0">
             <nav class="flex gap-1 overflow-x-auto rounded-lg bg-white p-2 shadow-sm lg:flex-col">
                 @foreach ($liens as $cle => $lien)

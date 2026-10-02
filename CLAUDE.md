@@ -174,6 +174,13 @@ Tout est cadré à `User::sessionStagiaire()` (1 accès = 1 session).
   (iframe, `?apercu=1` → `Storage::response`).
 - **Téléchargements** : `TelechargementController` vérifie que le document/la ressource
   appartient bien à la session du stagiaire (ou est un document commun structure).
+- **Stagiaire OP : consultation seule** : `TelechargementController` sert toujours en inline
+  (jamais de téléchargement, même en forçant l'URL). Lecteur « durci »
+  `<x-stagiaire.apercu-durci>` (page `stagiaire.documents.apercu`, shell `large`) : clic droit
+  et sélection bloqués, `#toolbar=0` pour le PDF, `controlsList="nodownload"` pour la vidéo,
+  filigrane `<x-stagiaire.filigrane>` = `config('edl.structure.nom')` (jamais le nom de
+  l'utilisateur). Dissuasion seulement : un navigateur peut ignorer `#toolbar=0` (Edge
+  affiche sa barre d'outils) et rien n'empêche une capture d'écran.
 - **Émargement** (`stagiaire.emargement`) : FPC distanciel uniquement, une séance réalisée
   → `Emargement` (present + signe_at).
 

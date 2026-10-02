@@ -90,25 +90,13 @@
                         <div class="relative min-h-[300px] flex-1">
                             <video :src="apercu" controls controlsList="nodownload noremoteplayback" disablepictureinpicture
                                    oncontextmenu="return false" class="h-full w-full rounded-b-lg bg-black"></video>
-                            @if (auth()->user()->isStagiaireOp())
-                                <div class="pointer-events-none absolute inset-0 z-10 flex select-none flex-wrap content-around justify-around overflow-hidden opacity-10">
-                                    @for ($i = 0; $i < 12; $i++)
-                                        <span class="rotate-[-25deg] whitespace-nowrap text-sm font-semibold text-white">{{ auth()->user()->nom_complet }} · {{ auth()->user()->login }}</span>
-                                    @endfor
-                                </div>
-                            @endif
+                            <x-stagiaire.filigrane :nombre="12" couleur="text-white" />
                         </div>
                     </template>
                     <template x-if="apercu && type !== 'video' && type !== 'audio'">
                         <div class="relative min-h-[300px] flex-1">
                             <iframe :src="apercu + '#toolbar=0&navpanes=0'" class="h-full w-full rounded-b-lg" title="Aperçu du document"></iframe>
-                            @if (auth()->user()->isStagiaireOp())
-                                <div class="pointer-events-none absolute inset-0 z-10 flex select-none flex-wrap content-around justify-around overflow-hidden opacity-10">
-                                    @for ($i = 0; $i < 12; $i++)
-                                        <span class="rotate-[-25deg] whitespace-nowrap text-sm font-semibold text-edl-marron">{{ auth()->user()->nom_complet }} · {{ auth()->user()->login }}</span>
-                                    @endfor
-                                </div>
-                            @endif
+                            <x-stagiaire.filigrane :nombre="12" />
                         </div>
                     </template>
                     <template x-if="!apercu">
