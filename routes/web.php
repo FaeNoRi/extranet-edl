@@ -129,6 +129,7 @@ Route::middleware(['auth', 'role:stagiaire_op,stagiaire_fpc'])
         Route::get('documents/{document}', [TelechargementController::class, 'document'])->name('documents.download');
         Route::get('documents/{document}/apercu', [TelechargementController::class, 'apercuDocument'])->name('documents.apercu');
         Route::get('fichiers/{ressource}', [TelechargementController::class, 'ressource'])->name('ressources.download');
+        Route::get('fichiers/{ressource}/apercu', [TelechargementController::class, 'apercuRessource'])->name('ressources.apercu');
 
         Route::get('questionnaires', [StagiaireQuestionnaireController::class, 'index'])->name('questionnaires.index');
         Route::get('questionnaires/{questionnaire}', [StagiaireQuestionnaireController::class, 'show'])->name('questionnaires.show');

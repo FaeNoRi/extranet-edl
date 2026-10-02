@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TelechargementController extends Controller
 {
-    public function document(Document $document): StreamedResponse
+    public function document(Request $request, Document $document): StreamedResponse
     {
         $session = auth()->user()->sessionStagiaire();
 
@@ -29,7 +29,7 @@ class TelechargementController extends Controller
         // Un stagiaire OP n'a jamais le droit de télécharger : consultation à
         // l'écran uniquement (cf. lecteur durci), quel que soit le paramètre reçu.
         if (auth()->user()->isStagiaireOp()) {
-            return Storage::response($document->chemin_fichier);
+            return $this->lectureSeule($request, $document->chemin_fichier);
         }
 
         return Storage::download($document->chemin_fichier, $document->nom_fichier_original);
@@ -53,26 +53,68 @@ class TelechargementController extends Controller
         ]);
     }
 
+    public function apercuRessource(Ressource $ressource): View
+    {
+        $this->autoriserRessource($ressource);
+
+        return view('stagiaire.ressources.apercu', [
+            'ressource' => $ressource,
+            'url' => route('stagiaire.ressources.download', $ressource),
+            'type' => $ressource->type_fichier,
+        ]);
+    }
+
     public function ressource(Request $request, Ressource $ressource): StreamedResponse
     {
-        $session = auth()->user()->sessionStagiaire();
-        abort_unless($session, 403);
-
-        // La ressource doit être transmise via une séance réalisée de la
-        // session du stagiaire, ou rattachée à un module du référentiel d'une
-        // telle séance.
-        abort_unless($this->ressourceAutorisee($ressource, $session->id), 403);
-        abort_unless(Storage::exists($ressource->chemin_fichier), 404);
+        $this->autoriserRessource($ressource);
 
         // Un stagiaire OP n'a jamais le droit de télécharger, même en forçant
         // l'URL : consultation à l'écran uniquement.
-        if ($request->boolean('apercu') || auth()->user()->isStagiaireOp()) {
+        if (auth()->user()->isStagiaireOp()) {
+            return $this->lectureSeule($request, $ressource->chemin_fichier);
+        }
+
+        if ($request->boolean('apercu')) {
             return Storage::response($ressource->chemin_fichier);
         }
 
         $ressource->increment('nb_telechargement');
 
         return Storage::download($ressource->chemin_fichier, $ressource->nom_fichier_original);
+    }
+
+    /**
+     * La ressource doit être transmise via une séance réalisée de la session du
+     * stagiaire, ou rattachée à un module du référentiel d'une telle séance.
+     */
+    private function autoriserRessource(Ressource $ressource): void
+    {
+        $session = auth()->user()->sessionStagiaire();
+        abort_unless($session, 403);
+        abort_unless($this->ressourceAutorisee($ressource, $session->id), 403);
+        abort_unless(Storage::exists($ressource->chemin_fichier), 404);
+    }
+
+    /**
+     * Réponse en lecture seule pour un stagiaire OP : jamais de pièce jointe,
+     * pas de mise en cache, et refus d'une navigation directe vers le fichier
+     * (le navigateur le ferait afficher par son lecteur natif, avec boutons
+     * d'enregistrement/impression). Seuls les appels du lecteur durci passent
+     * (fetch, <video>, <img>). L'en-tête Sec-Fetch-Dest est un frein, pas une
+     * garantie : il disparaît avec un client qui ne l'envoie pas.
+     */
+    private function lectureSeule(Request $request, string $chemin): StreamedResponse
+    {
+        abort_if(
+            in_array($request->header('Sec-Fetch-Dest'), ['document', 'iframe', 'frame', 'embed', 'object'], true),
+            403,
+            'Consultation uniquement depuis le lecteur intégré.',
+        );
+
+        $reponse = Storage::response($chemin);
+        $reponse->headers->set('Cache-Control', 'no-store, private');
+
+        return $reponse;
     }
 
     private function typeDepuisExtension(string $nomFichier): string

@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Lecteur durci : contenu masqué quand la fenêtre perd le focus (frein aux outils de capture). */
+.lecteur-flou {
+    filter: blur(28px);
+    transition: filter 0.15s ease;
+}

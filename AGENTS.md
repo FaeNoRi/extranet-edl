@@ -163,13 +163,21 @@ Tout est cadré à `User::sessionStagiaire()` (1 accès = 1 session).
   (iframe, `?apercu=1` → `Storage::response`).
 - **Téléchargements** : `TelechargementController` vérifie que le document/la ressource
   appartient bien à la session du stagiaire (ou est un document commun structure).
-- **Stagiaire OP : consultation seule** : `TelechargementController` sert toujours en inline
-  (jamais de téléchargement, même en forçant l'URL). Lecteur « durci »
-  `<x-stagiaire.apercu-durci>` (page `stagiaire.documents.apercu`, shell `large`) : clic droit
-  et sélection bloqués, `#toolbar=0` pour le PDF, `controlsList="nodownload"` pour la vidéo,
-  filigrane `<x-stagiaire.filigrane>` = `config('edl.structure.nom')` (jamais le nom de
-  l'utilisateur). Dissuasion seulement : un navigateur peut ignorer `#toolbar=0` (Edge
-  affiche sa barre d'outils) et rien n'empêche une capture d'écran.
+- **Stagiaire OP : consultation seule** (dissuasion, pas un verrou). `TelechargementController`
+  ne sert jamais un OP en pièce jointe (même en forçant l'URL) et refuse la navigation directe
+  vers le fichier (`Sec-Fetch-Dest` document/iframe/embed/object → 403, `Cache-Control: no-store`) :
+  seuls les appels du lecteur passent (fetch, `<video>`, `<img>`). Lecteur
+  `<x-stagiaire.apercu-durci>` (pages `stagiaire.documents.apercu` et `stagiaire.ressources.apercu`,
+  shell `large`) : les PDF ne passent **pas** par le lecteur natif du navigateur (barre d'outils
+  avec enregistrer/imprimer) mais sont dessinés sur canvas par PDF.js
+  (`resources/js/lecteur-pdf.js`, entrée Vite dédiée, chargée uniquement sur ces pages), avec
+  le filigrane `config('edl.structure.nom')` **incrusté dans le canvas** (jamais le nom de
+  l'utilisateur). Durcissement : clic droit/sélection/copie bloqués, Ctrl+S/Ctrl+P bloqués,
+  `print:hidden`, contenu flouté si la fenêtre perd le focus ou sur « Impr. écran ». Vidéo :
+  `controlsList="nodownload"` ; types non affichables : message. Le volet de visualisation de
+  `stagiaire.ressources.show` n'existe plus que pour les FPC (qui peuvent télécharger). Limites
+  assumées : rien n'empêche une capture d'écran/photo, et les outils de développement du
+  navigateur permettent de récupérer les octets.
 - **Émargement** (`stagiaire.emargement`) : FPC distanciel uniquement, une séance réalisée
   → `Emargement` (present + signe_at).
 

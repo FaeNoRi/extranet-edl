@@ -115,6 +115,61 @@ class LecteurDurciTest extends TestCase
             ->assertDontSee('droyer-op');
     }
 
+    public function test_un_stagiaire_op_ne_peut_pas_ouvrir_le_fichier_directement_dans_le_navigateur(): void
+    {
+        Storage::fake('local');
+        $document = Document::factory()->structure()->create();
+        Storage::put($document->chemin_fichier, 'contenu');
+        $stagiaire = User::factory()->stagiaireOp()->create();
+        $url = route('stagiaire.documents.download', $document);
+
+        // Navigation directe ou iframe : le lecteur natif (avec enregistrer/imprimer) serait utilisé.
+        foreach (['document', 'iframe', 'embed', 'object'] as $destination) {
+            $this->actingAs($stagiaire)->withHeaders(['Sec-Fetch-Dest' => $destination])->get($url)->assertForbidden();
+        }
+
+        // Appels du lecteur durci (fetch PDF.js, <video>, <img>) : autorisés, jamais mis en cache.
+        foreach (['empty', 'video', 'image'] as $destination) {
+            $this->actingAs($stagiaire)->withHeaders(['Sec-Fetch-Dest' => $destination])->get($url)
+                ->assertOk()
+                ->assertHeader('Cache-Control', 'no-store, private');
+        }
+    }
+
+    public function test_le_lecteur_pdf_n_embarque_pas_le_lecteur_natif_du_navigateur(): void
+    {
+        Storage::fake('local');
+        $document = Document::factory()->structure()->create(['nom_fichier_original' => 'plan.pdf']);
+        Storage::put($document->chemin_fichier, 'contenu');
+        $stagiaire = User::factory()->stagiaireOp()->create();
+
+        $this->actingAs($stagiaire)->get(route('stagiaire.documents.apercu', $document))
+            ->assertOk()
+            ->assertSee('data-lecteur-pdf', false)
+            ->assertDontSee('<iframe', false);
+    }
+
+    public function test_un_stagiaire_op_consulte_une_ressource_dans_le_lecteur_plein_page(): void
+    {
+        Storage::fake('local');
+        $session = SessionFormation::factory()->op()->create();
+        $stagiaire = User::factory()->stagiaireOp()->create();
+        $this->inscrire($stagiaire, $session);
+        $seance = Seance::factory()->create(['session_formation_id' => $session->id, 'date' => now()->subDay()]);
+        $ressource = Ressource::factory()->create(['nom' => 'Fiche exercices', 'type_fichier' => 'pdf']);
+        Storage::put($ressource->chemin_fichier, 'contenu');
+        $seance->ressources()->attach($ressource->id, ['transmis' => true]);
+
+        $this->actingAs($stagiaire)->get(route('stagiaire.ressources.show', $seance))
+            ->assertOk()
+            ->assertSee(route('stagiaire.ressources.apercu', $ressource), false)
+            ->assertDontSee('<iframe', false);
+
+        $this->actingAs($stagiaire)->get(route('stagiaire.ressources.apercu', $ressource))
+            ->assertOk()
+            ->assertSee('data-lecteur-pdf', false);
+    }
+
     public function test_apercu_document_refuse_pour_une_autre_session(): void
     {
         Storage::fake('local');
