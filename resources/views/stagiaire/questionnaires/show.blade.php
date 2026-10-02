@@ -2,7 +2,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">{{ $questionnaire->titre }}</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">{{ $questionnaire->titre }}</h1>
     </x-slot>
 
     <x-stagiaire.shell active="questionnaires">
@@ -18,7 +18,7 @@
                     <fieldset>
                         <legend class="text-sm font-medium text-gray-800">
                             {{ $question->libelle }}
-                            @if ($question->obligatoire)<span class="text-edl-rose">*</span>@endif
+                            @if ($question->obligatoire)<span class="text-edl-rose" aria-hidden="true">*</span><span class="sr-only"> (obligatoire)</span>@endif
                         </legend>
                         <x-input-error :messages="$errors->get('reponses.'.$question->id)" class="mt-1" />
 
@@ -64,7 +64,7 @@
                                     @break
 
                                 @default
-                                    <textarea name="reponses[{{ $question->id }}]" rows="3"
+                                    <textarea name="reponses[{{ $question->id }}]" rows="3" aria-label="{{ $question->libelle }}"
                                               class="block w-full rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">{{ old("reponses.$question->id") }}</textarea>
                             @endswitch
                         </div>
@@ -73,7 +73,7 @@
 
                 <div class="flex items-center gap-3">
                     <x-primary-button>Envoyer mes réponses</x-primary-button>
-                    <a href="{{ route('stagiaire.questionnaires.index') }}" class="text-sm text-gray-500 hover:underline">Annuler</a>
+                    <a href="{{ route('stagiaire.questionnaires.index') }}" class="text-sm text-gray-600 underline">Annuler</a>
                 </div>
             </form>
         </x-admin.card>

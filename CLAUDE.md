@@ -3,8 +3,8 @@
 Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiaires FPC/OP,
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
-Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; reste effacement définitif, audit accessibilité, perf, sauvegardes).
+Le cahier des charges d'origine n'est plus dans le dépôt : les migrations font foi pour le schéma et `tailwind.config.js` pour la palette de marque. Le dossier `CLAUDE/` est un simple dossier de transfert temporaire (ignoré par git, à ne pas utiliser comme stockage permanent ; médias dans `public/img`, polices dans `resources/fonts`).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; audit d'accessibilité fait ; reste effacement définitif, perf, sauvegardes).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -253,9 +253,33 @@ Sous `/admin/rgpd` (`Admin\RgpdController`, entrée « RGPD » de la barre laté
 - **Police** : Abel hébergée dans `resources/fonts` (aucun service tiers appelé par les pages).
 - Reste (non fait) : effacement/anonymisation **définitifs** (la purge actuelle est un soft delete).
 
+## Accessibilité (phase 5)
+
+Audit du 2026-10-02 : axe-core (règles WCAG 2.1 A/AA + bonnes pratiques) piloté dans Edge headless sur
+50 pages des 4 profils + pages publiques (bureau 1366 px et 375 px), 0 anomalie après correctifs ; clavier,
+focus, 320 px et contrastes vérifiés à la main. **Pas encore fait : test avec un vrai lecteur d'écran (NVDA).**
+Conventions à garder :
+
+- **Une page = un seul `<h1>`** : le titre du bandeau de `<x-app-layout>` (`<x-slot name="header"><h1>`) ;
+  les titres de contenu sont des `<h2>`/`<h3>` sans saut de niveau. `<title>` = texte du bandeau + nom du site.
+- **Repères** : lien d'évitement « Aller au contenu » → `<main id="contenu-principal">` (ne pas réutiliser
+  l'id `contenu`, pris par des champs). Chaque `<nav>` a un `aria-label` distinct. Pages invité/légales :
+  `<header>`/`<main>`/`<footer>`.
+- **Couleurs** : texte jamais en `text-gray-400` (2,5:1) ; `text-gray-500` seulement sur fond blanc,
+  `text-gray-600` sur le fond gris de la page. Rose (`#CC1966`) et vert foncé (`#177350`) ont été assombris
+  par rapport à la charte d'origine (`#E31E73`, `#22A473`) pour atteindre 4,5:1 ; le texte sur fond orange
+  est sombre (`text-gray-900`), jamais blanc. Un test (`AccessibiliteTest`) garde ces contrastes.
+- **Focus** : `:focus-visible` forcé en bleu 2 px dans `app.css` (prime sur les `focus:outline-none`).
+- **Formulaires** : tout champ a un `<label for>` ou un `aria-label` (filtres, champs fichier) ; les erreurs
+  sont récapitulées par `<x-form-errors>` (`role="alert"`, dans les 3 shells) ; flashs `role="status"`/`alert`.
+- **Boutons à état** : `aria-expanded` (menu utilisateur, « Voir plus » / « Réduire »).
+- **Lecteur OP** : PDF dessiné sur canvas → illisible par un lecteur d'écran (compromis assumé avec la
+  protection des contenus, signalé dans `/accessibilite`) ; la zone de défilement est focusable et nommée.
+- Vues de pagination publiées dans `resources/views/vendor/pagination` (correctif ARIA du pied « Précédent »).
+
 ## Reste (phase 5-6)
 
 - RGPD : effacement/anonymisation définitifs d'un utilisateur (voir section RGPD).
-- Accessibilité : audit WCAG 2.1 AA complet.
+- Accessibilité : test avec un lecteur d'écran réel (NVDA) avant la mise en service.
 - Perf (index, chargement différé), sauvegardes + procédure de restauration.
 - Phase 6 : mise en production, évolutions (familles, fusion plann'EDL, notifications).

@@ -1,15 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Import GESCOF</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Import GESCOF</h1>
     </x-slot>
 
     <x-admin.shell active="imports">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-semibold text-edl-marron">
+                <h2 class="text-2xl font-semibold text-edl-marron">
                     {{ $import->applique ? 'Import appliqué' : 'Simulation' }}
-                </h1>
-                <p class="text-sm text-gray-500">
+                </h2>
+                <p class="text-sm text-gray-600">
                     {{ $import->fichier_nom }} · {{ $import->created_at->translatedFormat('d/m/Y à H\hi') }}
                     @if ($import->auteur) · par {{ $import->auteur->nom_complet }} @endif
                 </p>

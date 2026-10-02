@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">
             Séance du {{ $seance->date->format('d/m/Y') }}
-        </h2>
+        </h1>
     </x-slot>
 
     <x-admin.shell active="sessions">

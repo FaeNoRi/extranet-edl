@@ -19,7 +19,7 @@
 <div class="py-8">
     <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:px-8">
         <aside class="lg:w-56 lg:flex-shrink-0">
-            <nav class="flex gap-1 overflow-x-auto rounded-lg bg-white p-2 shadow-sm lg:flex-col lg:overflow-visible">
+            <nav aria-label="Rubriques de l'administration" class="flex gap-1 overflow-x-auto rounded-lg bg-white p-2 shadow-sm lg:flex-col lg:overflow-visible">
                 @foreach ($liens as $cle => $lien)
                     <a href="{{ route($lien['route']) }}"
                        @class([
@@ -35,20 +35,22 @@
 
         <div class="min-w-0 flex-1 space-y-6">
             @if ($titre)
-                <h1 class="text-2xl font-semibold text-edl-marron">{{ $titre }}</h1>
+                <h2 class="text-2xl font-semibold text-edl-marron">{{ $titre }}</h2>
             @endif
 
             @if (session('succes'))
-                <div class="rounded-md border border-edl-vert-fonce/30 bg-edl-vert-fonce/10 px-4 py-3 text-sm text-edl-vert-fonce">
+                <div role="status" class="rounded-md border border-edl-vert-fonce/30 bg-edl-vert-fonce/10 px-4 py-3 text-sm text-edl-vert-fonce">
                     {{ session('succes') }}
                 </div>
             @endif
 
             @if (session('erreur'))
-                <div class="rounded-md border border-edl-rose/30 bg-edl-rose/10 px-4 py-3 text-sm text-edl-rose">
+                <div role="alert" class="rounded-md border border-edl-rose/30 bg-edl-rose/10 px-4 py-3 text-sm text-edl-rose">
                     {{ session('erreur') }}
                 </div>
             @endif
+
+            <x-form-errors />
 
             {{ $slot }}
         </div>

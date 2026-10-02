@@ -1,16 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Session</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Session</h1>
     </x-slot>
 
     <x-admin.shell active="sessions">
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-                <h1 class="text-2xl font-semibold text-edl-marron">{{ $session->nom }}</h1>
-                <p class="text-sm text-gray-500">
+                <h2 class="text-2xl font-semibold text-edl-marron">{{ $session->nom }}</h2>
+                <p class="text-sm text-gray-600">
                     <span class="font-mono">{{ $session->num_GESCOF }}</span> ·
                     {{ $session->code_produit->value }} · {{ $session->langue }}
-                    @if ($session->distanciel) · <span class="text-edl-orange">distanciel</span> @endif
+                    @if ($session->distanciel) · <span class="font-medium text-edl-marron">distanciel</span> @endif
                 </p>
             </div>
             <div class="flex gap-2">
@@ -33,7 +33,7 @@
         <div class="grid gap-6 lg:grid-cols-3">
             <x-admin.card titre="Informations" class="lg:col-span-1">
                 <dl class="space-y-2 text-sm">
-                    <div><dt class="text-gray-500">Client</dt><dd>{{ $session->client?->nom ?? '—' }} @if($session->client?->email)<span class="text-gray-400">· {{ $session->client->email }}</span>@endif</dd></div>
+                    <div><dt class="text-gray-500">Client</dt><dd>{{ $session->client?->nom ?? '—' }} @if($session->client?->email)<span class="text-gray-500">· {{ $session->client->email }}</span>@endif</dd></div>
                     <div><dt class="text-gray-500">Formateur référent</dt><dd>{{ $session->formateur?->nom_complet ?? '— à affecter —' }}</dd></div>
                     <div><dt class="text-gray-500">Équipe</dt><dd>{{ $session->formateurs->map->nom_complet->join(', ') ?: '—' }}</dd></div>
                     @if ($session->isOp())
@@ -59,7 +59,7 @@
                                 <label @class([
                                     'flex items-center gap-1.5 rounded border px-2 py-1 text-sm',
                                     'border-edl-vert-fonce/40 bg-edl-vert-fonce/5' => $jour->actif,
-                                    'border-gray-200 bg-gray-50 text-gray-400 line-through' => ! $jour->actif,
+                                    'border-gray-200 bg-gray-50 text-gray-500 line-through' => ! $jour->actif,
                                 ])>
                                     <input type="checkbox" name="actifs[]" value="{{ $jour->id }}" @checked($jour->actif)
                                            class="rounded border-gray-300 text-edl-vert-fonce focus:ring-edl-vert-fonce">
@@ -67,7 +67,7 @@
                                 </label>
                             @endforeach
                         </div>
-                        <p class="text-xs text-gray-400">Décochez les jours sans séance (fériés, vacances).</p>
+                        <p class="text-xs text-gray-500">Décochez les jours sans séance (fériés, vacances).</p>
                     @endif
 
                     <div>
@@ -89,11 +89,11 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead class="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
-                            <tr><th class="py-2 pr-3">Nom</th><th class="py-2 pr-3">Identifiant</th><th class="py-2 pr-3">E-mail</th><th class="py-2 pr-3">Statut</th><th class="py-2"></th></tr>
+                            <tr><th class="py-2 pr-3">Nom</th><th class="py-2 pr-3">Identifiant</th><th class="py-2 pr-3">E-mail</th><th class="py-2 pr-3">Statut</th><th class="py-2"><span class="sr-only">Actions</span></th></tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @foreach ($session->stagiaires as $stagiaire)
-                                <tr @class(['text-gray-400' => $stagiaire->pivot->disparu_import_at])>
+                                <tr @class(['text-gray-500' => $stagiaire->pivot->disparu_import_at])>
                                     <td class="py-2 pr-3 font-medium">{{ $stagiaire->nom_complet }}</td>
                                     <td class="py-2 pr-3">{{ $stagiaire->login }}</td>
                                     <td class="py-2 pr-3">{{ $stagiaire->email ?: '—' }}</td>
@@ -127,7 +127,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead class="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
-                            <tr><th class="py-2 pr-3">Date</th><th class="py-2 pr-3">Formateur</th><th class="py-2 pr-3">Stagiaire</th><th class="py-2"></th></tr>
+                            <tr><th class="py-2 pr-3">Date</th><th class="py-2 pr-3">Formateur</th><th class="py-2 pr-3">Stagiaire</th><th class="py-2"><span class="sr-only">Actions</span></th></tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @foreach ($session->seances as $seance)
@@ -165,8 +165,8 @@
                     <x-input-label for="intitule-session" :value="__('Intitulé libre (facultatif, remplace le type)')" />
                     <x-text-input id="intitule-session" name="intitule" class="mt-1 block" maxlength="255" />
                 </div>
-                <input name="fichier" type="file" required
-                       class="text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">
+                <input name="fichier" type="file" required aria-label="Fichier à ajouter"
+                       class="w-full max-w-full text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">
                 <x-primary-button>Ajouter</x-primary-button>
             </form>
             <x-input-error :messages="$errors->get('fichier')" class="mb-2" />

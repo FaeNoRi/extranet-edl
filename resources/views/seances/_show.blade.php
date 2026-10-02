@@ -3,8 +3,8 @@
 
 <div class="flex flex-wrap items-start justify-between gap-3">
     <div>
-        <h1 class="text-2xl font-semibold text-edl-marron">Dossier de séance — {{ $seance->date->translatedFormat('d F Y') }}</h1>
-        <p class="text-sm text-gray-500">
+        <h2 class="text-2xl font-semibold text-edl-marron">Dossier de séance — {{ $seance->date->translatedFormat('d F Y') }}</h2>
+        <p class="text-sm text-gray-600">
             <a href="{{ route("{$prefix}.sessions.show", $seance->sessionFormation) }}" class="hover:underline">{{ $seance->sessionFormation->nom }}</a>
             @if ($seance->stagiaire) · {{ $seance->stagiaire->nom_complet }} @endif
             @if ($seance->formateur) · {{ $seance->formateur->nom_complet }} @endif
@@ -16,7 +16,7 @@
             Fiche pédagogique (PDF)
         </a>
         <a href="{{ route("{$prefix}.seances.edit", $seance) }}"
-           class="rounded-md bg-edl-orange px-3 py-2 text-sm font-semibold text-white hover:opacity-90">Modifier</a>
+           class="rounded-md bg-edl-orange px-3 py-2 text-sm font-semibold text-gray-900 hover:opacity-90">Modifier</a>
         <form method="POST" action="{{ route("{$prefix}.seances.destroy", $seance) }}"
               onsubmit="return confirm('Supprimer cette séance ?')">
             @csrf @method('DELETE')
@@ -68,7 +68,7 @@
                 <li>
                     <span class="font-mono text-xs">{{ $referentiel->code }}</span>
                     {{ $referentiel->contenu }}
-                    <span class="text-gray-400">— {{ $referentiel->module }} ({{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }})</span>
+                    <span class="text-gray-500">— {{ $referentiel->module }} ({{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }})</span>
                     @if ($referentiel->ressources->isNotEmpty())
                         <ul class="ml-4 mt-0.5 text-xs text-gray-500">
                             @foreach ($referentiel->ressources as $r)
@@ -79,7 +79,7 @@
                 </li>
             @endforeach
         </ul>
-        <p class="mt-3 text-xs text-gray-400">
+        <p class="mt-3 text-xs text-gray-500">
             Ces fiches sont automatiquement visibles dans l'espace du stagiaire pour cette séance.
         </p>
     @endif

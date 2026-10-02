@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Purges de comptes</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Purges de comptes</h1>
     </x-slot>
 
     <x-admin.shell active="purges" titre="Purges de comptes">
@@ -29,14 +29,14 @@
                     @endif
                 </x-slot>
 
-                <p class="mb-3 text-xs text-gray-400">{{ $aide }}</p>
+                <p class="mb-3 text-xs text-gray-500">{{ $aide }}</p>
 
                 @if ($comptes->isEmpty())
                     <p class="text-sm text-gray-500">Aucun compte à purger.</p>
                 @else
                     <ul class="grid gap-1 text-sm sm:grid-cols-2 lg:grid-cols-3">
                         @foreach ($comptes as $compte)
-                            <li class="text-gray-600">{{ $compte->nom_complet }} <span class="text-gray-400">({{ $compte->login }})</span></li>
+                            <li class="text-gray-600">{{ $compte->nom_complet }} <span class="text-gray-500">({{ $compte->login }})</span></li>
                         @endforeach
                     </ul>
                 @endif

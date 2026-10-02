@@ -7,7 +7,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Séance du {{ $seance->date->format('d/m/Y') }}</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Séance du {{ $seance->date->format('d/m/Y') }}</h1>
     </x-slot>
 
     <x-stagiaire.shell active="ressources">
@@ -47,16 +47,16 @@
                                         <a href="{{ route('stagiaire.ressources.apercu', $ressource) }}"
                                            class="text-left text-edl-bleu hover:underline">
                                             {{ $ressource->nom }}
-                                            <span class="text-xs text-gray-400">· {{ $ressource->type_fichier }}</span>
+                                            <span class="text-xs text-gray-500">· {{ $ressource->type_fichier }}</span>
                                         </a>
                                     @else
                                         <button type="button"
                                                 @click="apercu='{{ route('stagiaire.ressources.download', $ressource) }}?apercu=1'; titre='{{ addslashes($ressource->nom) }}'; type='{{ $ressource->type_fichier }}'"
                                                 class="text-left text-edl-bleu hover:underline">
                                             {{ $ressource->nom }}
-                                            <span class="text-xs text-gray-400">· {{ $ressource->type_fichier }}</span>
+                                            <span class="text-xs text-gray-500">· {{ $ressource->type_fichier }}</span>
                                         </button>
-                                        <a href="{{ route('stagiaire.ressources.download', $ressource) }}" class="text-xs text-gray-400 hover:text-edl-bleu">↓</a>
+                                        <a href="{{ route('stagiaire.ressources.download', $ressource) }}" class="text-xs text-gray-500 hover:text-edl-bleu">↓</a>
                                     @endif
                                 </li>
                             @endforeach
@@ -74,7 +74,7 @@
                                     <p class="font-medium text-gray-800">
                                         {{ $seance->date->format('d/m/Y') }}.{{ $referentiel->contenu }}
                                     </p>
-                                    <p class="text-xs text-gray-400">{{ $referentiel->module }} — {{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }}</p>
+                                    <p class="text-xs text-gray-500">{{ $referentiel->module }} — {{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }}</p>
                                     @foreach ($referentiel->ressources as $ressource)
                                         @if ($op)
                                             <a href="{{ route('stagiaire.ressources.apercu', $ressource) }}"
@@ -117,7 +117,7 @@
                         </div>
                     </template>
                     <template x-if="!apercu">
-                        <div class="flex flex-1 items-center justify-center p-6 text-center text-sm text-gray-400">
+                        <div class="flex flex-1 items-center justify-center p-6 text-center text-sm text-gray-500">
                             Sélectionnez un document pour l'afficher ici.
                         </div>
                     </template>

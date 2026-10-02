@@ -1,20 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Session</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Session</h1>
     </x-slot>
 
     <x-formateur.shell active="sessions">
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-                <h1 class="text-2xl font-semibold text-edl-marron">{{ $session->nom }}</h1>
-                <p class="text-sm text-gray-500">
+                <h2 class="text-2xl font-semibold text-edl-marron">{{ $session->nom }}</h2>
+                <p class="text-sm text-gray-600">
                     <span class="font-mono">{{ $session->num_GESCOF }}</span> ·
                     {{ $session->code_produit->value }} · {{ $session->langue }}
                     @if ($session->client) · {{ $session->client->nom }} @endif
                 </p>
             </div>
             <a href="{{ route('formateur.seances.create', $session) }}"
-               class="rounded-md bg-edl-orange px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
+               class="rounded-md bg-edl-orange px-4 py-2 text-sm font-semibold text-gray-900 hover:opacity-90">
                 Nouvelle fiche pédagogique
             </a>
         </div>
@@ -34,7 +34,7 @@
                         <div>
                             <p class="text-sm font-medium text-gray-800">
                                 {{ $stagiaire->nom_complet }}
-                                <span class="text-gray-400">— {{ $sesFiches->count() }} fiche(s)</span>
+                                <span class="text-gray-500">— {{ $sesFiches->count() }} fiche(s)</span>
                             </p>
                             @if ($sesFiches->isNotEmpty())
                                 <ul class="mt-1 flex flex-wrap gap-2 text-xs">
@@ -70,7 +70,7 @@
         @endif
 
         <x-admin.card titre="Ressources de la session">
-            <p class="mb-3 text-xs text-gray-400">
+            <p class="mb-3 text-xs text-gray-500">
                 Les ressources se déposent depuis la fiche pédagogique d'une séance.
             </p>
 
@@ -81,7 +81,7 @@
                 <ul class="divide-y divide-gray-100 text-sm">
                     @foreach ($ressources as $ressource)
                         <li class="flex items-center justify-between py-2">
-                            <span>{{ $ressource->nom }} <span class="text-xs text-gray-400">· {{ $ressource->type_fichier }} · {{ number_format($ressource->taille / 1024, 0, ',', ' ') }} Ko</span></span>
+                            <span>{{ $ressource->nom }} <span class="text-xs text-gray-500">· {{ $ressource->type_fichier }} · {{ number_format($ressource->taille / 1024, 0, ',', ' ') }} Ko</span></span>
                             <span class="flex gap-3">
                                 <a href="{{ route('formateur.ressources.download', $ressource) }}" class="text-edl-bleu hover:underline">Télécharger</a>
                                 <form method="POST" action="{{ route('formateur.ressources.destroy', $ressource) }}"

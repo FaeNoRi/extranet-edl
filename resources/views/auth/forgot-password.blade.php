@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout titre="Mot de passe oublié">
     <div class="mb-4 text-sm text-gray-600">
         {{ __("Saisissez votre identifiant : si un compte y correspond, vous recevrez par e-mail un lien pour définir un nouveau mot de passe.") }}
     </div>

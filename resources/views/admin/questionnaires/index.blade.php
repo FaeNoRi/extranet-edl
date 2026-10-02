@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Questionnaires</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Questionnaires</h1>
     </x-slot>
 
     <x-admin.shell active="questionnaires">
@@ -26,7 +26,7 @@
                                 <th class="py-2 pr-3">Questions</th>
                                 <th class="py-2 pr-3">Réponses</th>
                                 <th class="py-2 pr-3">Statut</th>
-                                <th class="py-2"></th>
+                                <th class="py-2"><span class="sr-only">Actions</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -41,7 +41,7 @@
                                         @if ($q->actif)
                                             <span class="rounded-full bg-edl-vert-fonce/15 px-2 py-0.5 text-xs text-edl-vert-fonce">Actif</span>
                                         @else
-                                            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">Inactif</span>
+                                            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">Inactif</span>
                                         @endif
                                     </td>
                                     <td class="py-2 text-right whitespace-nowrap">

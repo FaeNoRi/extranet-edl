@@ -2,9 +2,9 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">
             {{ $edition ? 'Modifier un formateur' : 'Nouveau formateur' }}
-        </h2>
+        </h1>
     </x-slot>
 
     <x-admin.shell active="formateurs">

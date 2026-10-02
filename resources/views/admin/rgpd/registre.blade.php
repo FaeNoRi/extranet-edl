@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Administration</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Administration</h1>
     </x-slot>
 
     <x-admin.shell active="rgpd" titre="RGPD — Registre des traitements">
@@ -20,8 +20,8 @@
             <p class="max-w-2xl text-sm text-gray-600">
                 Registre des activités de traitement (art. 30 du RGPD). Pour répondre à une demande d'accès d'une
                 personne, utilisez le bouton « Exporter » des listes
-                <a href="{{ route('admin.stagiaires.index') }}" class="text-edl-bleu hover:underline">Stagiaires</a> et
-                <a href="{{ route('admin.formateurs.index') }}" class="text-edl-bleu hover:underline">Formateurs</a>.
+                <a href="{{ route('admin.stagiaires.index') }}" class="text-edl-bleu underline">Stagiaires</a> et
+                <a href="{{ route('admin.formateurs.index') }}" class="text-edl-bleu underline">Formateurs</a>.
             </p>
             <a href="{{ route('admin.rgpd.registre.pdf') }}"
                class="rounded-md bg-edl-bleu px-4 py-2 text-sm font-semibold text-white hover:bg-edl-vert-fonce">Télécharger en PDF</a>
