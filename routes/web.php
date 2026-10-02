@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\JournalController;
 use App\Http\Controllers\Admin\PurgeController;
 use App\Http\Controllers\Admin\QuestionnaireController as AdminQuestionnaireController;
 use App\Http\Controllers\Admin\ReferentielController;
+use App\Http\Controllers\Admin\RgpdController;
 use App\Http\Controllers\Admin\SeanceController as AdminSeanceController;
 use App\Http\Controllers\Admin\SessionFormationController;
 use App\Http\Controllers\Admin\SessionJourController;
@@ -94,6 +95,10 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('questionnaires', AdminQuestionnaireController::class)->except('show');
 
         Route::get('journal', [JournalController::class, 'index'])->name('journal.index');
+
+        Route::get('rgpd/registre', [RgpdController::class, 'registre'])->name('rgpd.registre');
+        Route::get('rgpd/registre/pdf', [RgpdController::class, 'registrePdf'])->name('rgpd.registre.pdf');
+        Route::get('rgpd/export/{utilisateur}', [RgpdController::class, 'export'])->withTrashed()->name('rgpd.export');
     });
 
 Route::middleware(['auth', 'role:formateur'])

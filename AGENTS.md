@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges, la palette de marque et le schéma SQL de référence sont dans `CLAUDE/`.
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; reste audit accessibilité, RGPD export/effacement, sauvegardes).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; reste effacement définitif, audit accessibilité, perf, sauvegardes).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -215,10 +215,29 @@ Enums `TypeQuestionnaire` (satisfaction_chaud/froid, evaluation_acquis) et `Type
 - **Uploads** : `App\Rules\FichierAutorise::regles()` (allowlist d'extensions +
   `config('edl.uploads')`), appliqué aux documents et ressources.
 
+## RGPD (phase 5)
+
+Sous `/admin/rgpd` (`Admin\RgpdController`, entrée « RGPD » de la barre latérale).
+
+- **Registre des traitements** (`admin.rgpd.registre` + `.pdf`) : contenu dans
+  `App\Support\RegistreTraitements` (7 traitements établis d'après le fonctionnement réel de
+  l'appli ; durées reprises de `config('edl.legal')`). Présenté comme **projet à valider** tant que
+  `EDL_REGISTRE_VALIDE_LE` est vide. Chaque traitement porte des « points d'attention » (décisions
+  ouvertes : durée des comptes formateurs, émargements vs effacement, etc.). Garder ce fichier à jour
+  quand l'appli collecte une nouvelle donnée ou ajoute un destinataire/sous-traitant.
+- **Export des données d'un utilisateur** (`admin.rgpd.export`, bouton « Exporter » dans les listes
+  Stagiaires et Formateurs) : `ExportDonneesUtilisateurService`, JSON téléchargeable (droit d'accès
+  et portabilité). Sans secrets (mot de passe, jetons) ni données de tiers ; les modifications du
+  journal ne sont reprises que si l'utilisateur est l'*objet* de l'action, pas son auteur. Fonctionne
+  aussi pour un compte supprimé logiquement. Chaque export est journalisé (`activity('RGPD')`).
+  **À étendre** à chaque nouvelle table portant une donnée personnelle.
+- **Journal des actions** : purgé après 3 ans (`activitylog.clean_after_days` = 1095, commande
+  `activitylog:clean` planifiée à 3h30) — c'est ce que promet la politique de confidentialité.
+- Reste (non fait) : effacement/anonymisation **définitifs** (la purge actuelle est un soft delete).
+
 ## Reste (phase 5-6)
 
-- RGPD : export des données d'un utilisateur, effacement/anonymisation définitive,
-  registre des traitements.
+- RGPD : effacement/anonymisation définitifs d'un utilisateur (voir section RGPD).
 - Accessibilité : audit WCAG 2.1 AA complet.
 - Perf (index, chargement différé), sauvegardes + procédure de restauration.
 - Phase 6 : mise en production, évolutions (familles, fusion plann'EDL, notifications).

@@ -15,7 +15,7 @@ return [
      * When the clean command is executed, all recording activities older than
      * the number of days specified here will be deleted.
      */
-    'clean_after_days' => 365,
+    'clean_after_days' => (int) env('ACTIVITYLOG_CLEAN_AFTER_DAYS', 1095), // 3 ans, cf. edl.legal.conservation_journal
 
     /*
      * If no log name is passed to the activity() helper
