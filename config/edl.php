@@ -32,7 +32,8 @@ return [
 
     'legal' => [
         'hebergeur' => env('EDL_HEBERGEUR', 'OVH SAS — 2 rue Kellermann, 59100 Roubaix'),
-        'dpo_contact' => env('EDL_DPO_CONTACT', ''),      // e-mail du délégué / référent RGPD — à fournir
+        'dpo_nom' => env('EDL_DPO_NOM', 'Meggie HEMBERT'),                         // référente RGPD
+        'dpo_email' => env('EDL_DPO_EMAIL', 'mhembert@edl-grandcalais.com'),
         'conservation_op' => 'Comptes supprimés après la fermeture annuelle estivale.',
         'conservation_fpc' => 'Comptes supprimés au 31 décembre de l\'année suivant la fin de la formation.',
         'conservation_journal' => 'Journal des actions conservé 3 ans.',

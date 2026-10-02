@@ -48,7 +48,24 @@ class RgpdTest extends TestCase
             ->assertSee('Émargement')
             ->assertSee('Journal des actions')
             ->assertSee('Connexions techniques')
-            ->assertSee('Bunny Fonts');
+            ->assertSee('Meggie HEMBERT')
+            ->assertSee('mhembert@edl-grandcalais.com')
+            ->assertDontSee('Bunny Fonts');
+    }
+
+    public function test_la_politique_de_confidentialite_nomme_le_referent_rgpd(): void
+    {
+        $this->get(route('legal.confidentialite'))
+            ->assertOk()
+            ->assertSee('Meggie HEMBERT')
+            ->assertSee('mailto:mhembert@edl-grandcalais.com', false);
+    }
+
+    public function test_aucune_page_n_appelle_un_service_de_polices_externe(): void
+    {
+        foreach ([route('login'), route('legal.confidentialite'), route('accueil')] as $url) {
+            $this->get($url)->assertOk()->assertDontSee('fonts.bunny.net')->assertDontSee('fonts.googleapis.com');
+        }
     }
 
     public function test_le_registre_valide_affiche_sa_date(): void

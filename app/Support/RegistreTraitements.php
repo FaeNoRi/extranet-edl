@@ -27,7 +27,7 @@ class RegistreTraitements
                 'adresse' => $structure['adresse'],
                 'email' => $structure['email'],
                 'siret' => $structure['siret'],
-                'dpo' => $legal['dpo_contact'] ?: null,
+                'dpo' => $legal['dpo_nom'] && $legal['dpo_email'] ? $legal['dpo_nom'].' — '.$legal['dpo_email'] : null,
             ],
 
             'hebergeur' => $legal['hebergeur'],
@@ -37,8 +37,7 @@ class RegistreTraitements
 
             'destinataires_techniques' => [
                 'L\'hébergeur ci-dessus (sous-traitant) héberge l\'application et sa base de données.',
-                'Bunny Fonts (fonts.bunny.net, société européenne) sert la police de caractères : '
-                    .'l\'adresse IP du navigateur de chaque visiteur lui est transmise lors du chargement des pages.',
+                'Aucun autre service tiers n\'est appelé par les pages (la police de caractères est hébergée sur l\'extranet).',
             ],
 
             'securite' => [
@@ -55,7 +54,6 @@ class RegistreTraitements
                 'Effacement définitif : la suppression d\'un compte est aujourd\'hui « logique » (le compte disparaît '
                     .'de l\'application mais ses données restent en base) ; l\'effacement ou l\'anonymisation définitifs '
                     .'restent à mettre en place.',
-                'Hébergement de la police de caractères : la servir depuis l\'application supprimerait le transfert vers Bunny Fonts.',
             ],
 
             'traitements' => [

@@ -51,9 +51,9 @@
     <h2>Vos droits</h2>
     <p>
         Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et
-        d'opposition. Pour les exercer, contactez
-        {{ $l['dpo_contact'] ?: 'l\'administration de l\'École des Langues' }}
-        (<a href="mailto:{{ $s['email'] }}">{{ $s['email'] }}</a>). Vous pouvez également
+        d'opposition. Pour les exercer, contactez notre référent RGPD,
+        {{ $l['dpo_nom'] }}
+        (<a href="mailto:{{ $l['dpo_email'] }}">{{ $l['dpo_email'] }}</a>). Vous pouvez également
         introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr">www.cnil.fr</a>).
     </p>
 </x-legal.page>

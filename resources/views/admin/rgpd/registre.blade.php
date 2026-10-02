@@ -37,7 +37,7 @@
                 </div>
                 <div>
                     <dt class="text-gray-500">Délégué / référent à la protection des données</dt>
-                    <dd>{{ $registre['responsable']['dpo'] ?: 'Non renseigné (variable EDL_DPO_CONTACT)' }}</dd>
+                    <dd>{{ $registre['responsable']['dpo'] ?: 'Non renseigné (variables EDL_DPO_NOM et EDL_DPO_EMAIL)' }}</dd>
                 </div>
                 <div>
                     <dt class="text-gray-500">Hébergeur (sous-traitant)</dt>
