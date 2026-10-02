@@ -12,6 +12,7 @@
         'questionnaires' => ['route' => 'admin.questionnaires.index', 'label' => 'Questionnaires'],
         'purges'     => ['route' => 'admin.purges.index',     'label' => 'Purges'],
         'journal'    => ['route' => 'admin.journal.index',    'label' => 'Journal des actions'],
+        'rgpd'       => ['route' => 'admin.rgpd.registre',    'label' => 'RGPD'],
     ];
 @endphp
 

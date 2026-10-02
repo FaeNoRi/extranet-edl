@@ -12,7 +12,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Abel', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 // Palette de marque EDL (cf. CLAUDE/edl_plus_couleurs.txt)

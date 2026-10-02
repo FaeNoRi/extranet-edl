@@ -1,3 +1,13 @@
+/* Police hébergée localement (aucun appel à un service tiers). Abel n'existe qu'en graisse 400 :
+   le gras est synthétisé par le navigateur. */
+@font-face {
+    font-family: 'Abel';
+    src: url('../fonts/Abel-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
