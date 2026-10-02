@@ -70,13 +70,9 @@
         @endif
 
         <x-admin.card titre="Ressources de la session">
-            <form method="POST" action="{{ route('formateur.sessions.ressources.store', $session) }}"
-                  enctype="multipart/form-data" class="mb-4 flex flex-wrap items-end gap-3">
-                @csrf
-                <input type="file" name="fichiers[]" multiple required
-                       class="text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">
-                <x-primary-button>Déposer</x-primary-button>
-            </form>
+            <p class="mb-3 text-xs text-gray-400">
+                Les ressources se déposent depuis la fiche pédagogique d'une séance.
+            </p>
 
             @php $ressources = \App\Models\Ressource::where('session_formation_id', $session->id)->orderBy('nom')->get(); @endphp
             @if ($ressources->isEmpty())

@@ -113,6 +113,21 @@ class FichePedagogiqueTest extends TestCase
         $this->assertSame('application/pdf', $response->headers->get('content-type'));
     }
 
+    public function test_le_depot_de_ressources_n_existe_plus_au_niveau_session(): void
+    {
+        $session = $this->sessionOp();
+
+        $this->actingAs($this->formateur)->get(route('formateur.sessions.show', $session))
+            ->assertOk()
+            ->assertDontSee('name="fichiers[]"', false);
+
+        $this->actingAs($this->formateur)->post("/formateur/sessions/{$session->id}/ressources", [
+            'fichiers' => [UploadedFile::fake()->create('doc.pdf', 10, 'application/pdf')],
+        ])->assertNotFound();
+
+        $this->assertSame(0, Ressource::count());
+    }
+
     public function test_acces_refuse_aux_non_formateurs(): void
     {
         $session = $this->sessionOp();

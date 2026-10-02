@@ -5,38 +5,12 @@ namespace App\Http\Controllers\Formateur;
 use App\Http\Controllers\Controller;
 use App\Models\Ressource;
 use App\Models\SessionFormation;
-use App\Rules\FichierAutorise;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RessourceController extends Controller
 {
-    public function store(Request $request, SessionFormation $session): RedirectResponse
-    {
-        $this->autoriser($session);
-
-        $data = $request->validate([
-            'fichiers' => ['required', 'array'],
-            'fichiers.*' => FichierAutorise::regles(),
-        ], [], ['fichiers.*' => 'fichier']);
-
-        foreach ($data['fichiers'] as $fichier) {
-            Ressource::create([
-                'nom' => pathinfo($fichier->getClientOriginalName(), PATHINFO_FILENAME),
-                'type_fichier' => $this->type($fichier),
-                'chemin_fichier' => $fichier->store("sessions/{$session->id}/ressources"),
-                'nom_fichier_original' => $fichier->getClientOriginalName(),
-                'taille' => $fichier->getSize(),
-                'uploader_id' => $request->user()->id,
-                'session_formation_id' => $session->id,
-            ]);
-        }
-
-        return back()->with('succes', count($data['fichiers']).' ressource(s) déposée(s).');
-    }
-
     public function download(Ressource $ressource): StreamedResponse
     {
         abort_unless(
@@ -62,17 +36,6 @@ class RessourceController extends Controller
         return back()->with('succes', 'Ressource supprimée.');
     }
 
-    private function type($fichier): string
-    {
-        return match (true) {
-            str_starts_with((string) $fichier->getMimeType(), 'audio/') => 'audio',
-            str_starts_with((string) $fichier->getMimeType(), 'video/') => 'video',
-            str_starts_with((string) $fichier->getMimeType(), 'image/') => 'image',
-            $fichier->getClientOriginalExtension() === 'pdf' => 'pdf',
-            default => 'autre',
-        };
-    }
-
     private function encadre(?SessionFormation $session): bool
     {
         if (! $session) {
@@ -84,10 +47,5 @@ class RessourceController extends Controller
         return auth()->user()->isAdmin()
             || $session->formateur_id === auth()->id()
             || $session->formateurs()->whereKey(auth()->id())->exists();
-    }
-
-    private function autoriser(SessionFormation $session): void
-    {
-        abort_unless($this->encadre($session), 403);
     }
 }

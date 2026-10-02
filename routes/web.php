@@ -104,7 +104,6 @@ Route::middleware(['auth', 'role:formateur'])
 
         Route::get('sessions', [FormateurSessionController::class, 'index'])->name('sessions.index');
         Route::get('sessions/{session}', [FormateurSessionController::class, 'show'])->name('sessions.show');
-        Route::post('sessions/{session}/ressources', [FormateurRessourceController::class, 'store'])->name('sessions.ressources.store');
 
         Route::get('sessions/{session}/seances/creer', [FormateurSeanceController::class, 'create'])->name('seances.create');
         Route::post('seances', [FormateurSeanceController::class, 'store'])->name('seances.store');

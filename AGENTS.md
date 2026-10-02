@@ -130,8 +130,9 @@ Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU éq
 
 - **Tableau de bord** : cartes des sessions, séances récentes/à venir.
 - **Sessions** (`formateur.sessions.*`) : liste + fiche. Pour une session FPC, la fiche
-  affiche le **suivi de progression** (séances regroupées par stagiaire). Dépôt de
-  ressources de session (`formateur.sessions.ressources.store`).
+  affiche le **suivi de progression** (séances regroupées par stagiaire). Pas de dépôt de
+  ressources au niveau session : les fichiers se déposent uniquement depuis la fiche
+  pédagogique (séance) ; la carte « Ressources de la session » reste en lecture/suppression.
 - **Fiche pédagogique = séance** (`formateur.seances.*`) : formulaire complet (champs
   auto : stage, formateur, langue ; date, stagiaire si FPC, objectifs `OptionsSeance`
   + objectifs perso de la session, contenu, outils, sources, modules du référentiel,
