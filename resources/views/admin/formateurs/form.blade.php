@@ -67,7 +67,7 @@
                 <div>
                     <x-input-label for="photo" :value="__('Photo')" />
                     @if ($formateur->photo_path)
-                        <img src="{{ Storage::url($formateur->photo_path) }}" alt="" class="my-2 h-20 w-20 rounded-full object-cover">
+                        <img src="{{ Storage::url($formateur->photo_path) }}" alt="" loading="lazy" class="my-2 h-20 w-20 rounded-full object-cover">
                     @endif
                     <input id="photo" name="photo" type="file" accept="image/*" class="mt-1 block text-sm text-gray-700">
                     <x-input-error :messages="$errors->get('photo')" class="mt-1" />

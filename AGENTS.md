@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges d'origine n'est plus dans le dépôt : les migrations font foi pour le schéma et `tailwind.config.js` pour la palette de marque. Le dossier `CLAUDE/` est un simple dossier de transfert temporaire (ignoré par git, à ne pas utiliser comme stockage permanent ; médias dans `public/img`, polices dans `resources/fonts`).
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; audit d'accessibilité fait ; reste effacement définitif, perf, sauvegardes).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; audit d'accessibilité fait ; perf faite ; reste effacement définitif, sauvegardes).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -266,9 +266,23 @@ Conventions à garder :
   protection des contenus, signalé dans `/accessibilite`) ; la zone de défilement est focusable et nommée.
 - Vues de pagination publiées dans `resources/views/vendor/pagination` (correctif ARIA du pied « Précédent »).
 
+## Performance (phase 5)
+
+- **Pas de N+1** : `Model::preventLazyLoading()` est actif hors production (`AppServiceProvider`) — une
+  relation chargée à la volée dans une boucle lève une exception en dev/test. Charger les relations avec
+  `with()` / `withCount()`. `SessionFormation::finLe()` réutilise les relations `jours`/`seances` déjà
+  chargées (sinon 2 requêtes par session). `PerformanceTest` vérifie que le nombre de requêtes des pages
+  principales (admin, formateur, stagiaire) ne croît pas avec le nombre de sessions (2 → 10).
+- **Index** : migration `2026_10_06_100001_add_performance_indexes` (users role/deleted_at, code_produit,
+  seances.date, ressources.created_at, activity_log.created_at). Les clés étrangères et pivots unique
+  étaient déjà indexés.
+- **Images** : `loading="lazy"` sur les logos de pied de page et la photo formateur.
+- **En production** (à lancer à chaque déploiement) : `composer install --no-dev -o`, `npm run build`,
+  `php artisan optimize` (config, routes, vues, événements en cache), OPcache activé côté PHP.
+
 ## Reste (phase 5-6)
 
 - RGPD : effacement/anonymisation définitifs d'un utilisateur (voir section RGPD).
 - Accessibilité : test avec un lecteur d'écran réel (NVDA) avant la mise en service.
-- Perf (index, chargement différé), sauvegardes + procédure de restauration.
+- Sauvegardes + procédure de restauration.
 - Phase 6 : mise en production, évolutions (familles, fusion plann'EDL, notifications).

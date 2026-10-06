@@ -50,13 +50,17 @@ class SessionFormation extends Model
      */
     public function finLe(): ?Carbon
     {
-        $activite = array_filter([
-            $this->jours()->max('date'),
-            $this->seances()->max('date'),
-        ]);
+        // Réutilise les relations déjà chargées (évite 2 requêtes par session dans les listes).
+        $activite = array_map(
+            fn ($date) => Carbon::parse($date),
+            array_filter([
+                $this->relationLoaded('jours') ? $this->jours->max('date') : $this->jours()->max('date'),
+                $this->relationLoaded('seances') ? $this->seances->max('date') : $this->seances()->max('date'),
+            ])
+        );
 
         if ($activite !== []) {
-            return Carbon::parse(max($activite));
+            return max($activite);
         }
 
         $dernierePlanning = $this->dernieresDatesPlanning();
