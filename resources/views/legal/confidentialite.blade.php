@@ -39,6 +39,7 @@
         <li>Comptes stagiaires OP : {{ $l['conservation_op'] }}</li>
         <li>Comptes stagiaires FPC : {{ $l['conservation_fpc'] }}</li>
         <li>{{ $l['conservation_journal'] }}</li>
+        <li>{{ $l['conservation_sauvegardes'] }}</li>
     </ul>
 
     <h2>Cookies</h2>

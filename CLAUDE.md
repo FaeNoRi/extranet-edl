@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges d'origine n'est plus dans le dépôt : les migrations font foi pour le schéma et `tailwind.config.js` pour la palette de marque. Le dossier `CLAUDE/` est un simple dossier de transfert temporaire (ignoré par git, à ne pas utiliser comme stockage permanent ; médias dans `public/img`, polices dans `resources/fonts`).
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; audit d'accessibilité fait ; perf faite ; reste effacement définitif, sauvegardes).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; audit d'accessibilité fait ; perf et sauvegardes faites ; reste l'effacement définitif).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -291,9 +291,26 @@ Conventions à garder :
 - **En production** (à lancer à chaque déploiement) : `composer install --no-dev -o`, `npm run build`,
   `php artisan optimize` (config, routes, vues, événements en cache), OPcache activé côté PHP.
 
+## Sauvegardes (phase 5)
+
+`spatie/laravel-backup` (config : `config/backup.php`, procédure complète : `docs/sauvegardes.md`).
+
+- **Contenu** : dump de la base + `storage/app/private` + `storage/app/public` (hors `private/gescof`,
+  temporaire). **Pas le `.env`** (secrets à conserver à part : mot de passe d'archive, `APP_KEY`).
+- **Planification** (`routes/console.php`) : `backup:run` 2h30, `backup:clean` 2h50, `backup:monitor` 8h.
+  Alerte e-mail uniquement en cas d'échec / sauvegarde périmée (`BACKUP_NOTIFICATION_EMAIL`).
+- **Archive chiffrée AES-256** (`BACKUP_ARCHIVE_PASSWORD`, obligatoire en production). Disque local `backups`
+  (`storage/app/backups`) + disque hors-site facultatif `BACKUP_OFFSITE_DISK` (à déclarer dans `filesystems.php`).
+- **Conservation 28 jours** (7 jours complets + 21 quotidiennes) : les archives contiennent aussi des comptes
+  déjà purgés, donc durée courte, annoncée dans la politique de confidentialité (`edl.legal.conservation_sauvegardes`)
+  et le registre — à valider avec l'EDL.
+- **Windows** : `DB_DUMP_BINARY_PATH` (dossier de `mysqldump`) avec des `/`, sinon `mysqldump` échoue.
+  Les chemins de `config/backup.php` normalisent les séparateurs (sinon les chemins relatifs de l'archive sont faux).
+- Restauration testée le 2026-10-06 (30 tables, mêmes nombres de lignes) ; à refaire avant la mise en service puis
+  chaque trimestre. `SauvegardeTest` couvre config, planification et un aller-retour chiffré.
+
 ## Reste (phase 5-6)
 
 - RGPD : effacement/anonymisation définitifs d'un utilisateur (voir section RGPD).
 - Accessibilité : test avec un lecteur d'écran réel (NVDA) avant la mise en service.
-- Sauvegardes + procédure de restauration.
 - Phase 6 : mise en production, évolutions (familles, fusion plann'EDL, notifications).
