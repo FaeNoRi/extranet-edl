@@ -58,9 +58,12 @@ class SeanceService
     {
         $seance->referentiels()->sync($request->input('referentiels', []));
 
-        // Ressources existantes de la session (transmises).
+        // Ressources existantes de la session. Un fichier déjà rattaché garde son statut (un
+        // document de travail ne devient pas visible des stagiaires parce que la fiche est
+        // réenregistrée) ; un fichier réutilisé depuis une autre séance est transmis.
+        $statuts = $seance->ressources()->pluck('seances_ressources.transmis', 'ressources.id');
         $existantes = collect($request->input('ressources', []))
-            ->mapWithKeys(fn ($id) => [$id => ['transmis' => true]]);
+            ->mapWithKeys(fn ($id) => [$id => ['transmis' => (bool) ($statuts[$id] ?? true)]]);
         $seance->ressources()->sync($existantes);
 
         // Nouveaux fichiers.

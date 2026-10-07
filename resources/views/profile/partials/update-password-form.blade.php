@@ -21,7 +21,8 @@
 
         <div>
             <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
+            <x-text-input id="update_password_password" name="password" aria-describedby="aide-mot-de-passe" type="password" class="mt-1 block w-full" autocomplete="new-password" />
+            <p id="aide-mot-de-passe" class="mt-1 text-sm text-gray-600">10 caractères minimum, avec au moins une lettre et un chiffre.</p>
             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
         </div>
 

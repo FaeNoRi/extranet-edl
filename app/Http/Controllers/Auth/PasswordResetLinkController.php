@@ -46,7 +46,12 @@ class PasswordResetLinkController extends Controller
 
         $user = User::where('login', $request->string('login'))->first();
 
-        if ($user) {
+        // Limite par compte (et non seulement par adresse IP) : sinon n'importe qui peut
+        // inonder la boîte d'un stagiaire de liens. Réponse identique pour ne rien révéler.
+        $cleCompte = 'password-reset-compte:'.$user?->id;
+
+        if ($user && ! RateLimiter::tooManyAttempts($cleCompte, 3)) {
+            RateLimiter::hit($cleCompte, 1800);
             $token = PasswordResetToken::issueFor($user);
             $user->notify(new PasswordSetupLink($token));
         }

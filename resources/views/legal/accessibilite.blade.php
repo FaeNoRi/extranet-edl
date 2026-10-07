@@ -31,8 +31,9 @@
         </li>
     </ul>
     <p>
-        Un contrôle automatisé ne détecte qu'une partie des défauts : un test avec des lecteurs
-        d'écran (NVDA, VoiceOver) reste à réaliser avant la mise en service.
+        Un contrôle automatisé ne détecte qu'une partie des défauts : la navigation a donc aussi été
+        testée avec le lecteur d'écran NVDA (octobre 2026), sans blocage constaté. Un test avec
+        VoiceOver reste à réaliser.
     </p>
 
     <h2>Contenus non accessibles</h2>

@@ -41,12 +41,11 @@ class SeanceRequest extends FormRequest
 
         return [
             'session_formation_id' => ['required', 'exists:session_formations,id'],
+            // Fiche FPC individuelle : le stagiaire doit être inscrit à CETTE session.
             'user_id' => [
                 Rule::requiredIf(fn () => $session?->isFpc()),
                 'nullable',
-                Rule::exists('users', 'id')->where(
-                    fn ($q) => $q->whereIn('role', ['stagiaire_op', 'stagiaire_fpc'])
-                ),
+                Rule::exists('session_formation_user', 'user_id')->where('session_formation_id', $session?->id),
             ],
             'date' => ['required', 'date'],
             'objectifs' => ['array'],
@@ -59,7 +58,9 @@ class SeanceRequest extends FormRequest
             'referentiels' => ['array'],
             'referentiels.*' => ['exists:referentiel,id'],
             'ressources' => ['array'],
-            'ressources.*' => ['exists:ressources,id'],
+            // Réutilisation : uniquement des ressources de la même session (sinon on exposerait
+            // aux stagiaires les fichiers d'une autre formation).
+            'ressources.*' => [Rule::exists('ressources', 'id')->where('session_formation_id', $session?->id)],
             'fichiers_transmis' => ['array'],
             'fichiers_transmis.*' => FichierAutorise::regles(),
             'fichiers_internes' => ['array'],

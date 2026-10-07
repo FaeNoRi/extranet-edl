@@ -58,12 +58,12 @@ class PasswordResetTest extends TestCase
         $token = PasswordResetToken::issueFor($user);
 
         $response = $this->post(route('password.store', ['token' => $token->token]), [
-            'password' => 'nouveau-mot-de-passe',
-            'password_confirmation' => 'nouveau-mot-de-passe',
+            'password' => 'Nouveau-mot-de-passe1',
+            'password_confirmation' => 'Nouveau-mot-de-passe1',
         ]);
 
         $response->assertRedirect(route('login'))->assertSessionHasNoErrors();
-        $this->assertTrue(Hash::check('nouveau-mot-de-passe', $user->refresh()->password));
+        $this->assertTrue(Hash::check('Nouveau-mot-de-passe1', $user->refresh()->password));
         $this->assertTrue($token->refresh()->used);
     }
 
@@ -74,8 +74,8 @@ class PasswordResetTest extends TestCase
         $token->markUsed();
 
         $this->post(route('password.store', ['token' => $token->token]), [
-            'password' => 'nouveau-mot-de-passe',
-            'password_confirmation' => 'nouveau-mot-de-passe',
+            'password' => 'Nouveau-mot-de-passe1',
+            'password_confirmation' => 'Nouveau-mot-de-passe1',
         ])->assertSessionHasErrors('password');
     }
 }

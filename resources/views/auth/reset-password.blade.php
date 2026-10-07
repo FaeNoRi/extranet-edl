@@ -9,7 +9,8 @@
         <!-- Mot de passe -->
         <div>
             <x-input-label for="password" :value="__('Mot de passe')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" autofocus />
+            <x-text-input id="password" class="block mt-1 w-full" aria-describedby="aide-mot-de-passe" type="password" name="password" required autocomplete="new-password" autofocus />
+            <p id="aide-mot-de-passe" class="mt-1 text-sm text-gray-600">10 caractères minimum, avec au moins une lettre et un chiffre.</p>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
