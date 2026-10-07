@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout titre="Nouveau mot de passe">
     <div class="mb-4 text-sm text-gray-600">
         {{ __('Choisissez le mot de passe qui vous permettra de vous connecter à votre espace.') }}
     </div>

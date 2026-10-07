@@ -15,7 +15,7 @@
         'max-w-7xl' => $large,
     ])>
         <aside class="lg:w-52 lg:flex-shrink-0">
-            <nav class="flex gap-1 overflow-x-auto rounded-lg bg-white p-2 shadow-sm lg:flex-col">
+            <nav aria-label="Rubriques de mon espace" class="flex gap-1 overflow-x-auto rounded-lg bg-white p-2 shadow-sm lg:flex-col">
                 @foreach ($liens as $cle => $lien)
                     <a href="{{ route($lien['route']) }}"
                        @class([
@@ -29,10 +29,12 @@
 
         <div class="min-w-0 flex-1 space-y-6">
             @if (session('succes'))
-                <div class="rounded-md border border-edl-vert-fonce/30 bg-edl-vert-fonce/10 px-4 py-3 text-sm text-edl-vert-fonce">
+                <div role="status" class="rounded-md border border-edl-vert-fonce/30 bg-edl-vert-fonce/10 px-4 py-3 text-sm text-edl-vert-fonce">
                     {{ session('succes') }}
                 </div>
             @endif
+
+            <x-form-errors />
 
             {{ $slot }}
         </div>

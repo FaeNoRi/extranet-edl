@@ -89,6 +89,8 @@ async function lecteurPdf(racine) {
             div.className = 'relative mx-auto mb-4 bg-white shadow';
             const canvas = document.createElement('canvas');
             canvas.className = 'block';
+            canvas.setAttribute('role', 'img');
+            canvas.setAttribute('aria-label', `Page ${n} sur ${pdf.numPages} du document (contenu non lisible par un lecteur d'écran)`);
             div.appendChild(canvas);
             zone.appendChild(div);
             pages.push({ n, div, canvas, tache: null, rendue: false });

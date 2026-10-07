@@ -12,6 +12,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Focus clavier toujours visible (WCAG 2.4.7) : prime sur les `focus:outline-none` des composants. */
+:focus-visible {
+    outline: 2px solid #156c93 !important;
+    outline-offset: 2px !important;
+}
+
+/* La cible du lien d'évitement reçoit le focus par programme : pas de cadre autour de toute la page. */
+main:focus-visible {
+    outline: none !important;
+}
+
 /* Lecteur durci : contenu masqué quand la fenêtre perd le focus (frein aux outils de capture). */
 .lecteur-flou {
     filter: blur(28px);

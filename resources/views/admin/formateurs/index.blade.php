@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Formateurs</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Formateurs</h1>
     </x-slot>
 
     <x-admin.shell active="formateurs">
@@ -33,7 +33,7 @@
                                 <th class="py-2 pr-3">Identifiant</th>
                                 <th class="py-2 pr-3">Interventions</th>
                                 <th class="py-2 pr-3">Sessions</th>
-                                <th class="py-2"></th>
+                                <th class="py-2"><span class="sr-only">Actions</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">

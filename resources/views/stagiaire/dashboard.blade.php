@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Mon espace</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Mon espace</h1>
     </x-slot>
 
     <x-stagiaire.shell active="dashboard">
@@ -12,7 +12,7 @@
                 <p class="mt-2 font-medium text-edl-bleu">{{ $session->nom }}</p>
                 @if ($session->formateur)
                     <div class="mt-2 text-sm text-gray-600">
-                        <span class="text-gray-400">Formateur :</span> {{ $session->formateur->nom_complet }}
+                        <span class="text-gray-500">Formateur :</span> {{ $session->formateur->nom_complet }}
                         @if ($session->formateur->presentation)
                             <p class="mt-1 text-gray-500">{{ $session->formateur->presentation }}</p>
                         @endif
@@ -76,7 +76,7 @@
                             'rounded border px-2.5 py-1 text-sm tabular-nums',
                             'border-edl-vert-fonce/40 bg-edl-vert-fonce/5 font-medium' => $jour->date->isToday(),
                             'border-gray-200' => ! $jour->date->isToday(),
-                            'text-gray-400' => $jour->date->isPast() && ! $jour->date->isToday(),
+                            'text-gray-500' => $jour->date->isPast() && ! $jour->date->isToday(),
                         ])>
                             {{ $jour->date->translatedFormat('D d/m') }}
                         </span>

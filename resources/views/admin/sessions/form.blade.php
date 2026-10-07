@@ -2,9 +2,9 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">
             {{ $edition ? 'Modifier la session' : 'Nouvelle session' }}
-        </h2>
+        </h1>
     </x-slot>
 
     <x-admin.shell active="sessions">
@@ -92,7 +92,7 @@
                         @endforeach
                     </div>
                     @if ($edition && $session->intervenants_import)
-                        <p class="mt-2 text-xs text-gray-400">Import GESCOF : « {{ $session->intervenants_import }} »</p>
+                        <p class="mt-2 text-xs text-gray-500">Import GESCOF : « {{ $session->intervenants_import }} »</p>
                     @endif
                 </div>
 
@@ -132,7 +132,7 @@
                     <x-input-label for="dates_planning" :value="__('Dates de planning (collage depuis GESCOF, brut)')" />
                     <textarea id="dates_planning" name="dates_planning" rows="2"
                               class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">{{ old('dates_planning', $session->dates_planning) }}</textarea>
-                    <p class="mt-1 text-xs text-gray-400">Le planning jour par jour se gère depuis la fiche de la session.</p>
+                    <p class="mt-1 text-xs text-gray-500">Le planning jour par jour se gère depuis la fiche de la session.</p>
                 </div>
 
                 <div class="flex items-center gap-3">

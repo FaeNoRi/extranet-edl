@@ -20,18 +20,19 @@
                     <a class="hover:text-edl-bleu" href="mailto:{{ $edl['structure']['email'] }}">{{ $edl['structure']['email'] }}</a>
                 </p>
                 <ul class="mt-3 flex gap-4">
-                    <li><a class="hover:text-edl-bleu" href="{{ $edl['liens']['site'] }}" target="_blank" rel="noopener">Site internet</a></li>
-                    <li><a class="hover:text-edl-bleu" href="{{ $edl['liens']['facebook'] }}" target="_blank" rel="noopener">Facebook</a></li>
+                    <li><a class="hover:text-edl-bleu" href="{{ $edl['liens']['site'] }}" target="_blank" rel="noopener">Site internet<span class="sr-only"> (nouvel onglet)</span></a></li>
+                    <li><a class="hover:text-edl-bleu" href="{{ $edl['liens']['facebook'] }}" target="_blank" rel="noopener">Facebook<span class="sr-only"> (nouvel onglet)</span></a></li>
                 </ul>
             </div>
 
             <div>
                 <p class="font-semibold text-edl-marron">Horaires d'ouverture</p>
                 <table class="mt-2">
+                    <caption class="sr-only">Horaires d'ouverture</caption>
                     <tbody>
                         @foreach ($edl['horaires'] as $jour => $plage)
                             <tr>
-                                <td class="pr-4 text-gray-500">{{ $jour }}</td>
+                                <th scope="row" class="pr-4 text-left font-normal text-gray-600">{{ $jour }}</th>
                                 <td class="tabular-nums">{{ $plage ?? 'Fermé' }}</td>
                             </tr>
                         @endforeach
@@ -42,18 +43,18 @@
 
         <div class="mt-8 grid gap-8 border-t border-gray-100 pt-6 sm:grid-cols-[2fr_1fr]">
             <div>
-                <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Nos financeurs</p>
+                <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Nos financeurs</p>
                 <x-logos-partenaires :logos="$edl['financeurs']" />
             </div>
             <div>
-                <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Nos certifications</p>
+                <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Nos certifications</p>
                 <x-logos-partenaires :logos="$edl['certifications']" />
             </div>
         </div>
 
-        <div class="mt-8 flex flex-col gap-2 border-t border-gray-100 pt-4 text-xs text-gray-400 sm:flex-row sm:items-center sm:justify-between">
+        <div class="mt-8 flex flex-col gap-2 border-t border-gray-100 pt-4 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
             <p>&copy; {{ date('Y') }} {{ $edl['structure']['nom'] }}. Tous droits réservés.</p>
-            <nav class="flex flex-wrap gap-x-4 gap-y-1">
+            <nav aria-label="Informations légales" class="flex flex-wrap gap-x-4 gap-y-1">
                 <a class="hover:text-edl-bleu" href="{{ route('legal.mentions') }}">Mentions légales</a>
                 <a class="hover:text-edl-bleu" href="{{ route('legal.confidentialite') }}">Confidentialité</a>
                 <a class="hover:text-edl-bleu" href="{{ route('legal.accessibilite') }}">Accessibilité</a>

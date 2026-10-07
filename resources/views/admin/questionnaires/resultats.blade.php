@@ -2,14 +2,14 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Résultats</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Résultats</h1>
     </x-slot>
 
     <x-admin.shell active="questionnaires">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-semibold text-edl-marron">{{ $questionnaire->titre }}</h1>
-                <p class="text-sm text-gray-500">
+                <h2 class="text-2xl font-semibold text-edl-marron">{{ $questionnaire->titre }}</h2>
+                <p class="text-sm text-gray-600">
                     {{ $questionnaire->type->label() }} ·
                     {{ $questionnaire->repondants->count() }} réponse(s)
                 </p>
@@ -22,7 +22,7 @@
                 @php $valeurs = $question->reponses->pluck('valeur')->filter(fn ($v) => $v !== null && $v !== ''); @endphp
 
                 @if ($valeurs->isEmpty())
-                    <p class="text-sm text-gray-400">Aucune réponse.</p>
+                    <p class="text-sm text-gray-500">Aucune réponse.</p>
                 @elseif ($question->type === TypeQuestion::Echelle)
                     @php $moyenne = round($valeurs->map(fn ($v) => (int) $v)->avg(), 2); @endphp
                     <p class="text-sm">Moyenne : <strong>{{ $moyenne }}</strong> / 5</p>

@@ -19,3 +19,9 @@ Schedule::command('activitylog:clean')->dailyAt('03:30');
 
 // Fichiers GESCOF téléversés mais jamais appliqués : supprimés après edl.imports.conservation_fichier_jours.
 Schedule::command('edl:purge-imports')->dailyAt('03:15');
+
+// Sauvegarde quotidienne (base + fichiers déposés) avant les purges de 3h, nettoyage des anciennes
+// archives, puis contrôle qu'une sauvegarde récente existe (alerte e-mail sinon).
+Schedule::command('backup:run')->dailyAt('02:30');
+Schedule::command('backup:clean')->dailyAt('02:50');
+Schedule::command('backup:monitor')->dailyAt('08:00');

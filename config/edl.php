@@ -38,6 +38,7 @@ return [
         'conservation_op' => 'Comptes supprimés après la fermeture annuelle estivale.',
         'conservation_fpc' => 'Comptes supprimés au 31 décembre de l\'année suivant la fin de la formation.',
         'conservation_journal' => 'Journal des actions conservé 3 ans.',
+        'conservation_sauvegardes' => 'Sauvegardes techniques chiffrées conservées 28 jours.',
         // Date (AAAA-MM-JJ) à laquelle le responsable de traitement a validé le registre RGPD.
         // Tant qu'elle est vide, le registre est présenté comme un projet.
         'registre_valide_le' => env('EDL_REGISTRE_VALIDE_LE', ''),

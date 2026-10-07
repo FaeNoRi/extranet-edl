@@ -2,9 +2,9 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">
             {{ $edition ? 'Modifier un formateur' : 'Nouveau formateur' }}
-        </h2>
+        </h1>
     </x-slot>
 
     <x-admin.shell active="formateurs">
@@ -67,7 +67,7 @@
                 <div>
                     <x-input-label for="photo" :value="__('Photo')" />
                     @if ($formateur->photo_path)
-                        <img src="{{ Storage::url($formateur->photo_path) }}" alt="" class="my-2 h-20 w-20 rounded-full object-cover">
+                        <img src="{{ Storage::url($formateur->photo_path) }}" alt="" loading="lazy" class="my-2 h-20 w-20 rounded-full object-cover">
                     @endif
                     <input id="photo" name="photo" type="file" accept="image/*" class="mt-1 block text-sm text-gray-700">
                     <x-input-error :messages="$errors->get('photo')" class="mt-1" />

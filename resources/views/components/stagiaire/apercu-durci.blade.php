@@ -30,7 +30,7 @@
                 <button type="button" data-action="ajuster"
                         class="rounded px-2 py-1 hover:bg-gray-200">Ajuster à la largeur</button>
             </div>
-            <div data-zone class="relative flex-1 overflow-y-auto bg-gray-200 p-4">
+            <div data-zone role="region" tabindex="0" aria-label="Pages du document : flèches haut et bas pour défiler" class="relative flex-1 overflow-y-auto bg-gray-200 p-4">
                 <p data-etat class="py-10 text-center text-sm text-gray-500">Chargement du document…</p>
             </div>
         </div>

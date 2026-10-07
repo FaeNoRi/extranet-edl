@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Référentiel</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Référentiel</h1>
     </x-slot>
 
     <x-admin.shell active="referentiel">
@@ -14,7 +14,7 @@
             </x-slot>
 
             <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
-                <select name="module" onchange="this.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                <select name="module" aria-label="Filtrer par module" onchange="this.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                     <option value="">Tous les modules</option>
                     @foreach ($modules as $m)
                         <option value="{{ $m }}" @selected(request('module') === $m)>{{ $m }}</option>
@@ -40,7 +40,7 @@
                                             <th class="py-2 pr-3">Code</th>
                                             <th class="py-2 pr-3">Contenu</th>
                                             <th class="py-2 pr-3">Niveaux</th>
-                                            <th class="py-2"></th>
+                                            <th class="py-2"><span class="sr-only">Actions</span></th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-100">

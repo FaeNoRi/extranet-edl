@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Questionnaires</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Questionnaires</h1>
     </x-slot>
 
     <x-stagiaire.shell active="questionnaires">
@@ -12,7 +12,7 @@
                     <div class="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm">
                         <div>
                             <p class="font-medium text-gray-800">{{ $q->titre }}</p>
-                            <p class="text-xs text-gray-400">{{ $q->type->label() }} · {{ $q->questions_count }} question(s)</p>
+                            <p class="text-xs text-gray-500">{{ $q->type->label() }} · {{ $q->questions_count }} question(s)</p>
                         </div>
                         @if ($q->soumis)
                             <span class="rounded-full bg-edl-vert-fonce/15 px-3 py-1 text-xs font-medium text-edl-vert-fonce">Répondu</span>

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Espace formateur</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Espace formateur</h1>
     </x-slot>
 
     <x-formateur.shell active="dashboard" titre="Vue d'ensemble">
@@ -20,10 +20,10 @@
                                     'bg-edl-violet/15 text-edl-violet' => $session->isFpc(),
                                     'bg-edl-bleu/15 text-edl-bleu' => $session->isOp(),
                                 ])>{{ $session->code_produit->value }}</span>
-                                @if ($session->distanciel)<span class="rounded bg-edl-orange/15 px-1.5 py-0.5 text-xs text-edl-orange">distanciel</span>@endif
+                                @if ($session->distanciel)<span class="rounded bg-edl-orange/15 px-1.5 py-0.5 text-xs text-edl-marron">distanciel</span>@endif
                             </div>
                             <p class="mt-1 font-medium text-gray-800">{{ $session->nom }}</p>
-                            <p class="text-xs text-gray-400">
+                            <p class="text-xs text-gray-500">
                                 {{ $session->num_GESCOF }} · {{ $session->stagiaires_count }} stagiaire(s) · {{ $session->seances_count }} séance(s)
                             </p>
                         </a>
@@ -42,7 +42,7 @@
                             <span>
                                 <span class="font-medium tabular-nums">{{ $seance->date->format('d/m/Y') }}</span>
                                 — {{ $seance->sessionFormation->nom }}
-                                @if ($seance->stagiaire)<span class="text-gray-400">· {{ $seance->stagiaire->nom_complet }}</span>@endif
+                                @if ($seance->stagiaire)<span class="text-gray-500">· {{ $seance->stagiaire->nom_complet }}</span>@endif
                             </span>
                             <a href="{{ route('formateur.seances.show', $seance) }}" class="text-edl-bleu hover:underline">Ouvrir</a>
                         </li>

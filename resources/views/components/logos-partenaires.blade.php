@@ -13,12 +13,12 @@
                        class="{{ $cadre }} transition hover:border-edl-bleu/40 hover:shadow"
                        title="{{ $logo['nom'] }}">
                         <img src="{{ asset($logo['logo']) }}" alt="{{ $logo['nom'] }}"
-                             class="max-h-full max-w-full object-contain" loading="lazy">
+                             class="max-h-full max-w-full object-contain" loading="lazy" decoding="async">
                     </a>
                 @else
                     <span class="{{ $cadre }}" title="{{ $logo['nom'] }}">
                         <img src="{{ asset($logo['logo']) }}" alt="{{ $logo['nom'] }}"
-                             class="max-h-full max-w-full object-contain" loading="lazy">
+                             class="max-h-full max-w-full object-contain" loading="lazy" decoding="async">
                     </span>
                 @endif
             </li>

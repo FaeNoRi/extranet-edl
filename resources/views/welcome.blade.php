@@ -13,9 +13,9 @@
         <main class="flex flex-1 items-center justify-center px-4 py-16">
             <div class="w-full max-w-lg text-center">
                 <img src="{{ asset(config('edl.logo')) }}" alt="" class="mx-auto h-20 w-auto">
-                <p class="mt-3 text-3xl font-semibold text-edl-bleu">
+                <h1 class="mt-3 text-3xl font-semibold text-edl-bleu">
                     Extranet <span class="text-edl-rose">EDL+</span>
-                </p>
+                </h1>
                 <p class="mt-3 text-gray-600">
                     Espace de suivi pédagogique de l'École des Langues Grand Calais —
                     stagiaires, formateurs et administration.
@@ -35,7 +35,7 @@
                     @endauth
                 </div>
 
-                <p class="mt-6 text-xs text-gray-500">
+                <p class="mt-6 text-xs text-gray-600">
                     L'accès se fait avec l'identifiant reçu par e-mail lors de la création du compte.
                 </p>
             </div>

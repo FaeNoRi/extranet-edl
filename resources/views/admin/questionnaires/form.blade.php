@@ -13,9 +13,9 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">
             {{ $edition ? 'Modifier le questionnaire' : 'Nouveau questionnaire' }}
-        </h2>
+        </h1>
     </x-slot>
 
     <x-admin.shell active="questionnaires">
@@ -71,7 +71,7 @@
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-edl-marron">Questions</h3>
+                        <h2 class="text-sm font-semibold text-edl-marron">Questions</h2>
                         <button type="button" @click="ajouter()"
                                 class="rounded-md border border-edl-bleu px-2 py-1 text-xs font-semibold text-edl-bleu hover:bg-edl-bleu/10">
                             + Ajouter une question
@@ -88,7 +88,7 @@
                                                placeholder="Libellé de la question" required
                                                class="block w-full rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                                     </div>
-                                    <select :name="`questions[${i}][type]`" x-model="question.type"
+                                    <select :name="`questions[${i}][type]`" x-model="question.type" aria-label="Type de la question"
                                             class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                                         @foreach ($typesQuestion as $t)
                                             <option value="{{ $t->value }}">{{ $t->label() }}</option>

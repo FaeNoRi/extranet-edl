@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Import GESCOF</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Import GESCOF</h1>
     </x-slot>
 
     <x-admin.shell active="imports" titre="Import GESCOF">
@@ -16,7 +16,7 @@
                 <div>
                     <x-input-label for="fichier" :value="__('Fichier GESCOF')" />
                     <input id="fichier" name="fichier" type="file" accept=".xlsx,.csv,.txt" required
-                           class="mt-1 block text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-edl-vert-fonce" />
+                           class="mt-1 block w-full max-w-full text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-edl-vert-fonce" />
                     <x-input-error :messages="$errors->get('fichier')" class="mt-1" />
                 </div>
                 <x-primary-button>Lancer la simulation</x-primary-button>
@@ -37,7 +37,7 @@
                                 <th class="py-2 pr-3">Comptes</th>
                                 <th class="py-2 pr-3">Sessions</th>
                                 <th class="py-2 pr-3">Anomalies</th>
-                                <th class="py-2"></th>
+                                <th class="py-2"><span class="sr-only">Actions</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -49,7 +49,7 @@
                                         @if ($import->applique)
                                             <span class="rounded-full bg-edl-vert-fonce/15 px-2 py-0.5 text-xs text-edl-vert-fonce">Appliqué</span>
                                         @else
-                                            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">Simulation</span>
+                                            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">Simulation</span>
                                         @endif
                                     </td>
                                     <td class="py-2 pr-3">{{ $import->comptes_crees }}</td>

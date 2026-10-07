@@ -2,7 +2,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Documents de la structure</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Documents de la structure</h1>
     </x-slot>
 
     <x-admin.shell active="documents" titre="Documents de la structure">
@@ -32,7 +32,7 @@
                 <div>
                     <x-input-label for="fichier" :value="__('Fichier')" />
                     <input id="fichier" name="fichier" type="file" required
-                           class="mt-1 block text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">
+                           class="mt-1 block w-full max-w-full text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-edl-bleu file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white">
                 </div>
                 <x-primary-button>Ajouter</x-primary-button>
             </form>
@@ -47,7 +47,7 @@
                     @foreach ($documents as $document)
                         <li class="flex items-center justify-between py-2">
                             <span>{{ $document->nom }}
-                                <span class="text-xs text-gray-400">· {{ number_format($document->taille / 1024, 0, ',', ' ') }} Ko</span>
+                                <span class="text-xs text-gray-500">· {{ number_format($document->taille / 1024, 0, ',', ' ') }} Ko</span>
                             </span>
                             <span class="flex gap-3">
                                 <a href="{{ route('admin.documents.download', $document) }}" class="text-edl-bleu hover:underline">Télécharger</a>

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Ressources pédagogiques</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Ressources pédagogiques</h1>
     </x-slot>
 
     <x-stagiaire.shell active="ressources">
@@ -17,7 +17,7 @@
                     <a href="{{ route('stagiaire.ressources.show', $seance) }}"
                        class="rounded-lg bg-white p-4 shadow-sm transition hover:shadow">
                         <p class="text-lg font-semibold tabular-nums text-edl-marron">{{ $seance->date->format('d/m/Y') }}</p>
-                        <p class="mt-1 text-xs text-gray-400">{{ $seance->date->translatedFormat('l') }}</p>
+                        <p class="mt-1 text-xs text-gray-500">{{ $seance->date->translatedFormat('l') }}</p>
                     </a>
                 @endforeach
             </div>

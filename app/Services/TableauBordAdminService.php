@@ -40,14 +40,14 @@ class TableauBordAdminService
         $seuil = Carbon::now()->subDays($seuilJours);
 
         return SessionFormation::where('code_produit', CodeProduit::Fpc->value)
-            ->with('formateur')
+            ->with('formateur', 'jours', 'seances')
             ->get()
             ->filter(function (SessionFormation $session) use ($seuil) {
                 if ($session->finLe()?->isPast()) {
                     return false;
                 }
 
-                $derniereSeance = $session->seances()->max('date');
+                $derniereSeance = $session->seances->max('date');
 
                 return $derniereSeance ? Carbon::parse($derniereSeance)->lt($seuil) : $session->created_at->lt($seuil);
             })
@@ -92,14 +92,20 @@ class TableauBordAdminService
      */
     public function questionnairesTauxReponse(): Collection
     {
-        return Questionnaire::where('actif', true)
-            ->with('sessionFormation')
+        $questionnaires = Questionnaire::where('actif', true)
+            ->with(['sessionFormation' => fn ($q) => $q->withCount('stagiaires')])
             ->withCount('repondants')
-            ->get()
-            ->map(function (Questionnaire $questionnaire) {
+            ->get();
+
+        $tousLesStagiaires = $questionnaires->contains(fn (Questionnaire $q) => ! $q->session_formation_id)
+            ? User::stagiaires()->count()
+            : 0;
+
+        return $questionnaires
+            ->map(function (Questionnaire $questionnaire) use ($tousLesStagiaires) {
                 $eligibles = $questionnaire->session_formation_id
-                    ? $questionnaire->sessionFormation->stagiaires()->count()
-                    : User::stagiaires()->count();
+                    ? $questionnaire->sessionFormation->stagiaires_count
+                    : $tousLesStagiaires;
 
                 return [
                     'questionnaire' => $questionnaire,

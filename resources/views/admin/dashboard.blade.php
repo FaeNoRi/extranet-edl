@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-edl-marron">Administration</h2>
+        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Administration</h1>
     </x-slot>
 
     <x-admin.shell active="dashboard" titre="Vue d'ensemble">
@@ -19,7 +19,7 @@
                     <p class="text-sm text-gray-500">{{ $label }}</p>
                     <p class="mt-1 text-3xl font-semibold text-edl-bleu">{{ $valeur }}</p>
                     @if ($detail)
-                        <p class="mt-1 text-xs text-gray-400">{{ $detail }}</p>
+                        <p class="mt-1 text-xs text-gray-500">{{ $detail }}</p>
                     @endif
                 </a>
             @endforeach
@@ -62,7 +62,7 @@
                             'urlSupprimer' => route('admin.ressources.destroy', $r),
                         ])->values()) }},
                      }">
-                    <p class="mb-2 text-xs text-gray-400">{{ $nbRessourcesTotal }} ressource(s) au total</p>
+                    <p class="mb-2 text-xs text-gray-500">{{ $nbRessourcesTotal }} ressource(s) au total</p>
 
                     @if ($dernieresRessources->isEmpty())
                         <p class="text-sm text-gray-500">Aucune ressource déposée pour le moment.</p>
@@ -73,9 +73,9 @@
                                     <button type="button" @click="selection = ressource; $dispatch('open-modal', 'ressource-details')"
                                             class="text-left text-edl-bleu hover:underline">
                                         <span x-text="ressource.nom"></span>
-                                        <span class="text-xs text-gray-400" x-text="'· ' + ressource.type"></span>
+                                        <span class="text-xs text-gray-500" x-text="'· ' + ressource.type"></span>
                                     </button>
-                                    <span class="text-xs text-gray-400" x-text="ressource.date"></span>
+                                    <span class="text-xs text-gray-500" x-text="ressource.date"></span>
                                 </li>
                             </template>
                         </ul>
@@ -87,9 +87,9 @@
                                             <button type="button" @click="selection = ressource; $dispatch('open-modal', 'ressource-details')"
                                                     class="text-left text-edl-bleu hover:underline">
                                                 <span x-text="ressource.nom"></span>
-                                                <span class="text-xs text-gray-400" x-text="'· ' + ressource.type"></span>
+                                                <span class="text-xs text-gray-500" x-text="'· ' + ressource.type"></span>
                                             </button>
-                                            <span class="text-xs text-gray-400" x-text="ressource.date"></span>
+                                            <span class="text-xs text-gray-500" x-text="ressource.date"></span>
                                         </li>
                                     </template>
                                 </ul>
@@ -135,7 +135,7 @@
                         @if ($purgesOpEnAttente > 0)
                             <a href="{{ route('admin.purges.index') }}" class="font-semibold text-edl-rose hover:underline">{{ $purgesOpEnAttente }}</a>
                         @else
-                            <span class="text-gray-400">Aucune</span>
+                            <span class="text-gray-500">Aucune</span>
                         @endif
                     </li>
                     <li class="flex items-center justify-between py-2">
@@ -143,13 +143,13 @@
                         @if ($purgesFpcEnAttente > 0)
                             <a href="{{ route('admin.purges.index') }}" class="font-semibold text-edl-rose hover:underline">{{ $purgesFpcEnAttente }}</a>
                         @else
-                            <span class="text-gray-400">Aucune</span>
+                            <span class="text-gray-500">Aucune</span>
                         @endif
                     </li>
                 </ul>
 
                 <div class="mt-3">
-                    <p class="text-xs text-gray-400">
+                    <p class="text-xs text-gray-500">
                         Sessions FPC sans séance depuis 3 semaines :
                         {{ $sessionsDecrochees->isEmpty() ? 'aucune' : $sessionsDecrochees->count() }}
                     </p>
@@ -176,7 +176,7 @@
                 @if ($avancementFpc->isEmpty())
                     <p class="text-sm text-gray-500">Aucune session FPC en cours.</p>
                 @else
-                    <p class="mb-2 text-xs text-gray-400">{{ $avancementFpc->count() }} session(s) FPC en cours</p>
+                    <p class="mb-2 text-xs text-gray-500">{{ $avancementFpc->count() }} session(s) FPC en cours</p>
                     <ul class="divide-y divide-gray-100 text-sm">
                         @foreach ($avancementFpc->take(5) as $ligne)
                             @include('admin.dashboard._avancement_ligne', ['ligne' => $ligne])
@@ -198,7 +198,7 @@
                 @if ($questionnairesTaux->isEmpty())
                     <p class="text-sm text-gray-500">Aucun questionnaire actif.</p>
                 @else
-                    <p class="mb-2 text-xs text-gray-400">{{ $questionnairesTaux->count() }} questionnaire(s) actif(s)</p>
+                    <p class="mb-2 text-xs text-gray-500">{{ $questionnairesTaux->count() }} questionnaire(s) actif(s)</p>
                     <ul class="divide-y divide-gray-100 text-sm">
                         @foreach ($questionnairesTaux->take(5) as $ligne)
                             @include('admin.dashboard._questionnaire_ligne', ['ligne' => $ligne])

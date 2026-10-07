@@ -41,12 +41,12 @@
                 <ul class="mt-1 space-y-0.5 text-sm text-gray-600">
                     @foreach ($liste->take(50) as $a)
                         <li>
-                            @if ($a['ligne'])<span class="text-gray-400">L{{ $a['ligne'] }}</span>@endif
+                            @if ($a['ligne'])<span class="text-gray-500">L{{ $a['ligne'] }}</span>@endif
                             {{ $a['message'] }}
                         </li>
                     @endforeach
                     @if ($liste->count() > 50)
-                        <li class="text-gray-400">… et {{ $liste->count() - 50 }} de plus</li>
+                        <li class="text-gray-500">… et {{ $liste->count() - 50 }} de plus</li>
                     @endif
                 </ul>
             </div>

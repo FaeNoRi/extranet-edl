@@ -38,6 +38,14 @@ return [
             'report' => false,
         ],
 
+        // Sauvegardes (spatie/laravel-backup) : hors de storage/app/private, qui est lui-même sauvegardé.
+        'backups' => [
+            'driver' => 'local',
+            'root' => storage_path('app/backups'),
+            'throw' => true,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

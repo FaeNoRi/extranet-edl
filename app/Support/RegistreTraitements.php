@@ -47,10 +47,13 @@ class RegistreTraitements
                 'Connexion chiffrée (HTTPS) et en-têtes de sécurité HTTP en production.',
                 'Contrôle des fichiers déposés (types et tailles autorisés) ; stockage des fichiers hors du dossier public.',
                 'Journalisation des actions de l\'administration et des formateurs.',
+                'Sauvegarde quotidienne chiffrée de la base de données et des fichiers déposés, avec alerte par e-mail en cas d\'échec.',
             ],
 
             'points_generaux' => [
-                'Sauvegardes et procédure de restauration : à formaliser avant la mise en production.',
+                'Sauvegardes : les archives contiennent aussi les comptes déjà purgés, qui n\'en disparaissent qu\'à l\'expiration '
+                    .'de l\'archive. Durée de conservation retenue : '.config('edl.legal.conservation_sauvegardes').' À valider avec l\'EDL, '
+                    .'ainsi que le lieu de stockage hors serveur (hébergeur, pays).',
                 'Effacement définitif : la suppression d\'un compte est aujourd\'hui « logique » (le compte disparaît '
                     .'de l\'application mais ses données restent en base) ; l\'effacement ou l\'anonymisation définitifs '
                     .'restent à mettre en place.',

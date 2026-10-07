@@ -56,8 +56,15 @@ class ModeleDomaineTest extends TestCase
     public function test_scope_jours_actifs(): void
     {
         $session = SessionFormation::factory()->op()->create();
-        SessionJour::factory()->count(3)->create(['session_formation_id' => $session->id, 'actif' => true]);
-        SessionJour::factory()->count(2)->create(['session_formation_id' => $session->id, 'actif' => false]);
+        // Dates explicites et distinctes : la contrainte unique (session, date) faisait échouer
+        // ce test au hasard quand la factory tirait deux fois le même jour.
+        foreach (range(1, 5) as $i) {
+            SessionJour::factory()->create([
+                'session_formation_id' => $session->id,
+                'date' => now()->addDays($i)->toDateString(),
+                'actif' => $i <= 3,
+            ]);
+        }
 
         $this->assertSame(3, $session->jours()->actifs()->count());
     }
