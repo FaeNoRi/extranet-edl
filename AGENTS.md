@@ -4,7 +4,7 @@ Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiai
 formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
 
 Le cahier des charges d'origine n'est plus dans le dépôt : les migrations font foi pour le schéma et `tailwind.config.js` pour la palette de marque. Le dossier `CLAUDE/` est un simple dossier de transfert temporaire (ignoré par git, à ne pas utiliser comme stockage permanent ; médias dans `public/img`, polices dans `resources/fonts`).
-La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; audit d'accessibilité fait ; perf et sauvegardes faites ; reste l'effacement définitif).
+La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; audit d'accessibilité fait ; perf, sauvegardes et revue de sécurité faites ; reste l'effacement définitif, en attente des décisions de l'EDL). **Phase 6 (mise en production) : préparation faite** (`docs/deploiement.md`).
 
 ## Prérequis d'environnement (Windows / Laragon)
 
@@ -246,7 +246,7 @@ Sous `/admin/rgpd` (`Admin\RgpdController`, entrée « RGPD » de la barre laté
 
 Audit du 2026-10-02 : axe-core (règles WCAG 2.1 A/AA + bonnes pratiques) piloté dans Edge headless sur
 50 pages des 4 profils + pages publiques (bureau 1366 px et 375 px), 0 anomalie après correctifs ; clavier,
-focus, 320 px et contrastes vérifiés à la main. **Pas encore fait : test avec un vrai lecteur d'écran (NVDA).**
+focus, 320 px et contrastes vérifiés à la main. Test avec NVDA concluant (octobre 2026) ; **VoiceOver pas testé.**
 Conventions à garder :
 
 - **Une page = un seul `<h1>`** : le titre du bandeau de `<x-app-layout>` (`<x-slot name="header"><h1>`) ;
@@ -298,8 +298,52 @@ Conventions à garder :
 - Restauration testée le 2026-10-06 (30 tables, mêmes nombres de lignes) ; à refaire avant la mise en service puis
   chaque trimestre. `SauvegardeTest` couvre config, planification et un aller-retour chiffré.
 
+## Sécurité (revue du 2026-10-07)
+
+Revue du code (autorisations, uploads, authentification, en-têtes, dépendances). Garde-fous dans `SecuriteTest`.
+
+- **Fiches pédagogiques** (`SeanceRequest` / `SeanceService`) : une ressource réutilisée doit appartenir à la **même
+  session** (sinon un formateur pouvait exposer aux stagiaires les fichiers d'une autre formation en devinant un
+  id) ; le stagiaire d'une fiche FPC doit être **inscrit à la session** ; réenregistrer une fiche **conserve le
+  statut transmis / non transmis** des fichiers déjà rattachés (avant : les documents de travail devenaient
+  visibles des stagiaires à chaque modification).
+- **Fichiers affichés à l'écran** (`App\Support\ReponseFichier::enLigne`, aperçu FPC + lecteur OP) : seul un PDF,
+  une image, un son ou une vidéo **détecté dans le contenu** est servi en ligne (415 sinon) ; un HTML renommé en
+  `.jpg` ne devient plus une page de l'extranet. `nosniff` ; hors PDF, `Content-Security-Policy: sandbox`
+  (pas pour les PDF : le visualiseur du navigateur refuse un document sandboxé).
+- **CSP** (`SecurityHeaders::POLITIQUE_CONTENU`) : tout en `'self'`, aucun hôte tiers. `'unsafe-eval'` pour Alpine,
+  `'wasm-unsafe-eval'` pour PDF.js. Vérifiée dans Edge (visionneuse OP, Alpine, constructeur de questionnaires).
+  **Toute nouvelle ressource externe (CDN, police, analytics) sera bloquée** : l'ajouter consciemment à la CSP **et**
+  à la politique de confidentialité. Pas de `<script>` en ligne dans les vues (garder ainsi).
+- **Pages connectées** : `Cache-Control: no-store, private` sur le HTML (poste partagé : le bouton « Précédent »
+  après déconnexion ne ré-affiche rien).
+- **Authentification** : mots de passe **10 caractères minimum, lettres + chiffres** (`Password::defaults()`) ;
+  demandes de lien limitées **par compte** (3 / 30 min) en plus de l'IP (5 / min) ; cookie de session `Secure`
+  par défaut en production ; `TRUSTED_PROXIES` (env) pour un hébergeur derrière un reverse proxy ; https forcé en production.
+- Questionnaires : réponses texte plafonnées (5000), choix unique/multiple validés contre les options.
+- **Dépendances** : `composer audit` / `npm audit` dans la CI (job `audit`) + Dependabot hebdomadaire.
+- Vérifié sans objet : aucun `{!! !!}`, aucun SQL brut, `$request->all()` jamais passé au modèle.
+
+## Déploiement (phase 6, préparation)
+
+Procédure complète : `docs/deploiement.md` ; modèle de config : `.env.production.example`.
+
+- **`php artisan edl:preflight`** (`PreflightService`) : contrôle bloquant / à traiter avant ouverture et après
+  chaque déploiement (production, debug coupé, HTTPS, cookie sécurisé, migrations, compte de démo, e-mail réel,
+  droits d'écriture, chiffrement + `mysqldump` + hors-site des sauvegardes, cron, mentions légales, OPcache,
+  limites d'upload). Ajouter un contrôle ici quand une nouvelle exigence d'exploitation apparaît.
+- **`php artisan edl:creer-admin`** : crée le premier administrateur (mot de passe aléatoire inconnu, lien envoyé
+  par e-mail). `DatabaseSeeder` ne charge que le référentiel en production : **ne jamais lancer `UserSeeder`/`DemoSeeder`**
+  (compte `admin` / `password`).
+- **`scripts/deployer.sh <tag>`** : sauvegarde, maintenance, `git checkout`, composer, assets, migrations, caches,
+  preflight. Pas de `migrate:rollback` en production : restaurer la sauvegarde.
+- **Cron** `schedule:run` indispensable (sauvegardes, purges) ; un témoin de vie est écrit chaque minute dans le cache
+  (`edl:planificateur:dernier-passage`) et lu par le preflight.
+- Pages d'erreur françaises (`resources/views/errors`), `robots.txt` en `Disallow: /`.
+
 ## Reste (phase 5-6)
 
 - RGPD : effacement/anonymisation définitifs d'un utilisateur (voir section RGPD).
-- Accessibilité : test avec un lecteur d'écran réel (NVDA) avant la mise en service.
-- Phase 6 : mise en production, évolutions (familles, fusion plann'EDL, notifications).
+- Accessibilité : test VoiceOver (NVDA fait).
+- Stockage de sauvegarde hors serveur (pCloud envisagé, via WebDAV : à valider avec un compte de test ; sous-traitant à déclarer au registre).
+- Phase 6 : choix de l'hébergement et du service d'e-mail, déploiement, test interne EDL (1 session OP + 1 FPC), puis évolutions (familles, fusion plann'EDL, notifications).
