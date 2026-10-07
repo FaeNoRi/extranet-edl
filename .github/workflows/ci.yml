@@ -45,3 +45,28 @@ jobs:
 
       - name: Run tests
         run: php artisan test
+
+  audit:
+    name: Audit des dépendances
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Vulnérabilités connues (Composer)
+        run: composer audit --locked --no-interaction
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Vulnérabilités connues (npm, production)
+        run: npm audit --omit=dev --audit-level=high

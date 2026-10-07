@@ -1,2 +1,3 @@
+# Extranet privé : aucune page n'a vocation à être indexée.
 User-agent: *
-Disallow:
+Disallow: /

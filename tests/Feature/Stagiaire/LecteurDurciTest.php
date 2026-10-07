@@ -60,7 +60,7 @@ class LecteurDurciTest extends TestCase
 
         $seance = Seance::factory()->create(['session_formation_id' => $session->id, 'date' => now()->subDay()]);
         $ressource = Ressource::factory()->create(['nb_telechargement' => 0]);
-        Storage::put($ressource->chemin_fichier, 'contenu');
+        Storage::put($ressource->chemin_fichier, "%PDF-1.4\n%%EOF");
         $seance->ressources()->attach($ressource->id, ['transmis' => true]);
 
         // Ni le paramètre apercu, ni son absence, ne permettent un vrai téléchargement pour l'OP.
@@ -80,7 +80,7 @@ class LecteurDurciTest extends TestCase
 
         $seance = Seance::factory()->create(['session_formation_id' => $session->id, 'date' => now()->subDay()]);
         $ressource = Ressource::factory()->create(['nb_telechargement' => 0]);
-        Storage::put($ressource->chemin_fichier, 'contenu');
+        Storage::put($ressource->chemin_fichier, "%PDF-1.4\n%%EOF");
         $seance->ressources()->attach($ressource->id, ['transmis' => true]);
 
         $response = $this->actingAs($stagiaire)->get(route('stagiaire.ressources.download', $ressource));
@@ -157,7 +157,7 @@ class LecteurDurciTest extends TestCase
         $this->inscrire($stagiaire, $session);
         $seance = Seance::factory()->create(['session_formation_id' => $session->id, 'date' => now()->subDay()]);
         $ressource = Ressource::factory()->create(['nom' => 'Fiche exercices', 'type_fichier' => 'pdf']);
-        Storage::put($ressource->chemin_fichier, 'contenu');
+        Storage::put($ressource->chemin_fichier, "%PDF-1.4\n%%EOF");
         $seance->ressources()->attach($ressource->id, ['transmis' => true]);
 
         $this->actingAs($stagiaire)->get(route('stagiaire.ressources.show', $seance))

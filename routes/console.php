@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
@@ -25,3 +26,9 @@ Schedule::command('edl:purge-imports')->dailyAt('03:15');
 Schedule::command('backup:run')->dailyAt('02:30');
 Schedule::command('backup:clean')->dailyAt('02:50');
 Schedule::command('backup:monitor')->dailyAt('08:00');
+
+// Témoin de vie du planificateur : si le cron n'est pas (ou plus) en place, les sauvegardes et
+// les purges ne tournent pas, sans aucune erreur visible. `edl:preflight` lit ce témoin.
+Schedule::call(fn () => Cache::put('edl:planificateur:dernier-passage', now(), now()->addDay()))
+    ->everyMinute()
+    ->name('edl-temoin-planificateur');

@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class QuestionnaireController extends Controller
@@ -56,9 +57,16 @@ class QuestionnaireController extends Controller
                 $regles[$cle][] = 'integer';
                 $regles[$cle][] = 'between:1,5';
             }
+            if ($question->type === TypeQuestion::Texte) {
+                $regles[$cle][] = 'string';
+                $regles[$cle][] = 'max:5000';
+            }
+            if ($question->type === TypeQuestion::ChoixUnique) {
+                $regles[$cle][] = Rule::in($question->options ?? []);
+            }
             if ($question->type === TypeQuestion::ChoixMultiple) {
-                $regles["$cle"] = ['array'];
-                $regles["$cle.*"] = ['in:'.implode(',', $question->options ?? [])];
+                $regles["$cle"] = [$question->obligatoire ? 'required' : 'nullable', 'array'];
+                $regles["$cle.*"] = [Rule::in($question->options ?? [])];
             }
         }
         $request->validate($regles);

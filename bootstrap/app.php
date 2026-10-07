@@ -18,6 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => EnsureUserHasRole::class,
         ]);
 
+        // Derrière le reverse proxy de l'hébergeur : sans lui, l'appli croit être en HTTP (liens,
+        // cookies sécurisés, HSTS). TRUSTED_PROXIES = adresses/CIDR séparés par des virgules, ou « * ».
+        if ($proxies = env('TRUSTED_PROXIES')) {
+            $middleware->trustProxies(at: $proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
+        }
+
         $middleware->web(append: [SecurityHeaders::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Ressource;
 use App\Models\Seance;
+use App\Support\ReponseFichier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -75,7 +76,7 @@ class TelechargementController extends Controller
         }
 
         if ($request->boolean('apercu')) {
-            return Storage::response($ressource->chemin_fichier);
+            return ReponseFichier::enLigne($ressource->chemin_fichier);
         }
 
         $ressource->increment('nb_telechargement');
@@ -111,7 +112,7 @@ class TelechargementController extends Controller
             'Consultation uniquement depuis le lecteur intégré.',
         );
 
-        $reponse = Storage::response($chemin);
+        $reponse = ReponseFichier::enLigne($chemin);
         $reponse->headers->set('Cache-Control', 'no-store, private');
 
         return $reponse;
