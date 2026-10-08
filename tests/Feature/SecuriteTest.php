@@ -12,6 +12,7 @@ use App\Support\OptionsSeance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -178,6 +179,19 @@ class SecuriteTest extends TestCase
             $this->assertStringContainsString($directive, $csp);
         }
         $this->assertStringNotContainsString('http', $csp, 'Aucun hôte tiers ne doit être autorisé.');
+    }
+
+    public function test_aucune_vue_n_utilise_de_script_en_ligne_bloque_par_la_csp(): void
+    {
+        // La CSP refuse les gestionnaires en ligne (onclick, onsubmit…) : ils seraient ignorés en
+        // silence (déconnexion en GET, suppressions sans confirmation). Utiliser Alpine (@click, @submit).
+        $fautifs = collect(File::allFiles(resource_path('views')))
+            ->filter(fn ($f) => preg_match('/\son[a-z]+\s*=\s*["\']|<script(?![^>]*\bsrc=)[^>]*>|javascript:/i', $f->getContents()))
+            ->map(fn ($f) => $f->getRelativePathname())
+            ->values()
+            ->all();
+
+        $this->assertSame([], $fautifs, 'Script en ligne dans : '.implode(', ', $fautifs));
     }
 
     public function test_les_pages_connectees_ne_sont_pas_conservees_par_le_navigateur(): void

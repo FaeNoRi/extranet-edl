@@ -10,7 +10,7 @@
             <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
                 <input type="search" name="q" value="{{ request('q') }}" placeholder="Nom, e-mail, identifiant…"
                        class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
-                <select name="session" aria-label="Filtrer par session" onchange="this.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                <select name="session" aria-label="Filtrer par session" x-data @change="$el.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                     <option value="">Toutes les sessions</option>
                     @foreach ($sessions as $s)
                         <option value="{{ $s->id }}" @selected(request('session') == $s->id)>{{ $s->num_GESCOF }} — {{ $s->nom }}</option>
@@ -18,7 +18,7 @@
                 </select>
                 <label class="flex items-center gap-2 text-sm text-gray-600">
                     <input type="checkbox" name="disparus" value="1" @checked(request('disparus'))
-                           onchange="this.form.requestSubmit()"
+                           x-data @change="$el.form.requestSubmit()"
                            class="rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
                     Absents du dernier import
                 </label>
@@ -55,7 +55,7 @@
                                         <a href="{{ route('admin.rgpd.export', $stagiaire) }}" class="mr-3 text-edl-bleu hover:underline"
                                            title="Exporter les données personnelles (RGPD)">Exporter</a>
                                         <form method="POST" class="inline" action="{{ route('admin.stagiaires.destroy', $stagiaire) }}"
-                                              onsubmit="return confirm('Supprimer ce compte ?')">
+                                              x-data @submit="if (! confirm('Supprimer ce compte ?')) $event.preventDefault()">
                                             @csrf @method('DELETE')
                                             <button class="text-edl-rose hover:underline">Supprimer</button>
                                         </form>

@@ -18,7 +18,7 @@
         <a href="{{ route("{$prefix}.seances.edit", $seance) }}"
            class="rounded-md bg-edl-orange px-3 py-2 text-sm font-semibold text-gray-900 hover:opacity-90">Modifier</a>
         <form method="POST" action="{{ route("{$prefix}.seances.destroy", $seance) }}"
-              onsubmit="return confirm('Supprimer cette séance ?')">
+              x-data @submit="if (! confirm('Supprimer cette séance ?')) $event.preventDefault()">
             @csrf @method('DELETE')
             <button type="submit" class="rounded-md border border-edl-rose px-3 py-2 text-sm font-semibold text-edl-rose hover:bg-edl-rose/10">Supprimer</button>
         </form>

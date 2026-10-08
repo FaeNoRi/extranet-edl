@@ -23,7 +23,7 @@
                 <a href="{{ route('admin.sessions.edit', $session) }}"
                    class="rounded-md bg-edl-bleu px-3 py-2 text-sm font-semibold text-white hover:bg-edl-vert-fonce">Modifier</a>
                 <form method="POST" action="{{ route('admin.sessions.destroy', $session) }}"
-                      onsubmit="return confirm('Supprimer cette session et ses séances ?')">
+                      x-data @submit="if (! confirm('Supprimer cette session et ses séances ?')) $event.preventDefault()">
                     @csrf @method('DELETE')
                     <button class="rounded-md border border-edl-rose px-3 py-2 text-sm font-semibold text-edl-rose hover:bg-edl-rose/10">Supprimer</button>
                 </form>
@@ -106,7 +106,7 @@
                                     </td>
                                     <td class="py-2 text-right">
                                         <form method="POST" action="{{ route('admin.stagiaires.destroy', $stagiaire) }}"
-                                              onsubmit="return confirm('Supprimer ce compte stagiaire ?')">
+                                              x-data @submit="if (! confirm('Supprimer ce compte stagiaire ?')) $event.preventDefault()">
                                             @csrf @method('DELETE')
                                             <button class="text-edl-rose hover:underline">Supprimer</button>
                                         </form>
@@ -182,7 +182,7 @@
                             <span class="flex gap-3">
                                 <a href="{{ route('admin.documents.download', $doc) }}" class="text-edl-bleu hover:underline">Télécharger</a>
                                 <form method="POST" action="{{ route('admin.documents.destroy', $doc) }}"
-                                      onsubmit="return confirm('Supprimer ?')">
+                                      x-data @submit="if (! confirm('Supprimer ?')) $event.preventDefault()">
                                     @csrf @method('DELETE')
                                     <button class="text-edl-rose hover:underline">Suppr.</button>
                                 </form>

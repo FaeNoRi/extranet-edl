@@ -19,7 +19,7 @@
                 <x-slot name="actions">
                     @if ($comptes->isNotEmpty())
                         <form method="POST" action="{{ route('admin.purges.executer') }}"
-                              onsubmit="return confirm('Supprimer {{ $comptes->count() }} compte(s) {{ strtoupper($type) }} ?')">
+                              x-data @submit="if (! confirm('Supprimer {{ $comptes->count() }} compte(s) {{ strtoupper($type) }} ?')) $event.preventDefault()">
                             @csrf
                             <input type="hidden" name="type" value="{{ $type }}">
                             <button class="rounded-md border border-edl-rose px-3 py-2 text-sm font-semibold text-edl-rose hover:bg-edl-rose/10">

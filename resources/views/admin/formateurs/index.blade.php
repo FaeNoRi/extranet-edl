@@ -51,7 +51,7 @@
                                         <a href="{{ route('admin.rgpd.export', $formateur) }}" class="ml-3 text-edl-bleu hover:underline"
                                            title="Exporter les données personnelles (RGPD)">Exporter</a>
                                         <form method="POST" action="{{ route('admin.formateurs.destroy', $formateur) }}" class="ml-3 inline"
-                                              onsubmit="return confirm('Archiver ce formateur ?')">
+                                              x-data @submit="if (! confirm('Archiver ce formateur ?')) $event.preventDefault()">
                                             @csrf @method('DELETE')
                                             <button class="text-edl-rose hover:underline">Archiver</button>
                                         </form>
