@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Referentiel;
+use App\Support\NiveauxReferentiel;
 use Illuminate\Database\Seeder;
 
 /**
@@ -14,10 +15,11 @@ class ReferentielSeeder extends Seeder
 {
     public function run(): void
     {
+        // Niveaux d'origine en CECRL (A1…C2), convertis en niveaux EDL ; entrées communes à toutes les langues.
         foreach ($this->trame() as [$module, $code, $contenu, $niveaux]) {
             Referentiel::updateOrCreate(
-                ['code' => $code],
-                ['module' => $module, 'contenu' => $contenu, 'niveaux' => $niveaux],
+                ['code' => $code, 'langue' => null],
+                ['module' => $module, 'contenu' => $contenu, 'niveaux' => NiveauxReferentiel::depuisCecrl($niveaux)],
             );
         }
     }

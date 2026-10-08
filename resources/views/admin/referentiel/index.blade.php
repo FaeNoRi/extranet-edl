@@ -20,8 +20,15 @@
                         <option value="{{ $m }}" @selected(request('module') === $m)>{{ $m }}</option>
                     @endforeach
                 </select>
+                <select name="langue" aria-label="Filtrer par langue" x-data @change="$el.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                    <option value="">Toutes les entrées</option>
+                    <option value="toutes" @selected(request('langue') === 'toutes')>Communes à toutes les langues</option>
+                    @foreach ($langues as $l)
+                        <option value="{{ $l }}" @selected(request('langue') === $l)>{{ $l }}</option>
+                    @endforeach
+                </select>
                 <x-secondary-button type="submit">Filtrer</x-secondary-button>
-                @if (request()->filled('module'))
+                @if (request()->filled('module') || request()->filled('langue'))
                     <a href="{{ route('admin.referentiel.index') }}" class="text-sm text-gray-500 hover:text-edl-bleu hover:underline">Réinitialiser</a>
                 @endif
             </form>
@@ -38,8 +45,10 @@
                                     <thead class="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500">
                                         <tr>
                                             <th class="py-2 pr-3">Code</th>
+                                            <th class="py-2 pr-3">Langue</th>
                                             <th class="py-2 pr-3">Contenu</th>
                                             <th class="py-2 pr-3">Niveaux</th>
+                                            <th class="py-2 pr-3">Documents</th>
                                             <th class="py-2"><span class="sr-only">Actions</span></th>
                                         </tr>
                                     </thead>
@@ -47,8 +56,15 @@
                                         @foreach ($groupe as $entree)
                                             <tr>
                                                 <td class="py-2 pr-3 font-mono text-xs text-gray-500">{{ $entree->code }}</td>
-                                                <td class="py-2 pr-3 text-gray-800">{{ $entree->contenu }}</td>
-                                                <td class="py-2 pr-3 text-gray-500">{{ implode(', ', $entree->niveaux) ?: '—' }}</td>
+                                                <td class="py-2 pr-3 text-gray-600">{{ $entree->langueAffichee() }}</td>
+                                                <td class="py-2 pr-3 text-gray-800">
+                                                    {{ $entree->contenu }}
+                                                    @if ($entree->badge)
+                                                        <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $entree->badge }}</span>
+                                                    @endif
+                                                </td>
+                                                <td class="py-2 pr-3 text-gray-600">{{ $entree->niveauxAffiches() }}</td>
+                                                <td class="py-2 pr-3 text-gray-600">{{ $entree->ressources_count ?: '—' }}</td>
                                                 <td class="py-2 text-right whitespace-nowrap">
                                                     <a href="{{ route('admin.referentiel.edit', $entree) }}" class="text-edl-bleu hover:underline">Modifier</a>
                                                     <form method="POST" action="{{ route('admin.referentiel.destroy', $entree) }}" class="ml-3 inline"

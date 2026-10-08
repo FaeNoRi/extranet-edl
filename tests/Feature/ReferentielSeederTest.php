@@ -33,7 +33,8 @@ class ReferentielSeederTest extends TestCase
         $this->seed(ReferentielSeeder::class);
 
         $entry = Referentiel::where('code', 'C-C5')->firstOrFail();
-        $this->assertSame(['A1', 'A2', 'B1'], $entry->niveaux);
+        // A1, A2, B1 dans la trame d'origine → niveaux EDL.
+        $this->assertSame(['essentiel', 'consolidation'], $entry->niveaux);
 
         $sansNiveau = Referentiel::where('code', 'A-C1')->firstOrFail();
         $this->assertSame([], $sansNiveau->niveaux);

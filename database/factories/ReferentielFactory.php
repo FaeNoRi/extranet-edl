@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Support\NiveauxReferentiel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ReferentielFactory extends Factory
@@ -9,13 +10,15 @@ class ReferentielFactory extends Factory
     public function definition(): array
     {
         $modules = ['Bases', 'Conjugaison', 'Grammaire', 'Prononciation', 'Methodologie', 'Vocabulaire', 'Au Quotidien'];
-        $niveaux = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+        $niveaux = NiveauxReferentiel::cles();
 
         return [
             'module' => fake()->randomElement($modules),
             'code' => mb_strtoupper(fake()->unique()->bothify('REF-C##')),
             'contenu' => fake()->sentence(6),
-            'niveaux' => fake()->randomElements($niveaux, fake()->numberBetween(1, 3)),
+            'langue' => null,
+            'badge' => null,
+            'niveaux' => fake()->randomElements($niveaux, fake()->numberBetween(1, 2)),
         ];
     }
 }

@@ -113,9 +113,17 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
 - **Stagiaires** (`admin.stagiaires.index` + `destroy`) : liste filtrable (session,
   « absents du dernier import »), suppression (soft delete).
 - **Référentiel** (`admin.referentiel.*`, `resource` sans `show`) : CRUD, liste groupée
-  par module (filtrable), niveaux CECRL en cases à cocher (`App\Casts\SetCast`).
-  Suppression bloquée si l'entrée est utilisée dans une séance (`cascadeOnDelete` sur
-  `seances_referentiel`, on ne veut pas casser l'historique des fiches pédagogiques).
+  par module (filtrable par module et langue). Depuis octobre 2026 (retours de réunion) :
+  **niveaux EDL** `essentiel` (≈ A1/A2), `consolidation` (≈ B1/B2), `perfectionnement` (≈ C1/C2),
+  plusieurs possibles, clés stockées via `App\Casts\SetCast`, libellés dans `App\Support\NiveauxReferentiel`
+  (`depuisCecrl()` a converti les anciennes valeurs A1…C2) ; **langue** (`CodeStage::langues()`, nulle =
+  toutes langues ; code unique **par langue**) — le formulaire de séance ne propose que la langue de la
+  session + les entrées communes ; **badge** facultatif en texte libre (admin + formateurs, jamais le
+  stagiaire) ; **documents communs** du code (`referentiel/{id}/…`, pivot `referentiel_ressources`) :
+  déposés une fois sur la fiche de l'entrée, ils apparaissent dans chaque séance qui coche le code
+  (dossier formateur, ressources stagiaire ; tout formateur peut les télécharger). Suppression d'une
+  entrée bloquée si elle est utilisée dans une séance (`cascadeOnDelete` sur `seances_referentiel`,
+  on ne veut pas casser l'historique des fiches pédagogiques).
 - **Journal** (`admin.journal.index`) : `activity_log` paginé, filtres objet/événement,
   diff old/new.
 - **Purges** (`admin.purges.*`) : `PurgeComptesService` — comptes OP dont les sessions

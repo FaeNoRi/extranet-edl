@@ -74,7 +74,7 @@
                                     <p class="font-medium text-gray-800">
                                         {{ $seance->date->format('d/m/Y') }}.{{ $referentiel->contenu }}
                                     </p>
-                                    <p class="text-xs text-gray-500">{{ $referentiel->module }} — {{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }}</p>
+                                    <p class="text-xs text-gray-500">{{ $referentiel->module }} — {{ $referentiel->niveauxAffiches() }}</p>
                                     @foreach ($referentiel->ressources as $ressource)
                                         @if ($op)
                                             <a href="{{ route('stagiaire.ressources.apercu', $ressource) }}"

@@ -34,12 +34,12 @@ class ReferentielCrudTest extends TestCase
             'module' => 'Vocabulaire',
             'code' => 'V-C99',
             'contenu' => 'Le vocabulaire de la maison',
-            'niveaux' => ['A1', 'A2'],
-        ])->assertRedirect(route('admin.referentiel.index'));
+            'niveaux' => ['essentiel', 'consolidation'],
+        ])->assertSessionHasNoErrors();
 
         $entree = Referentiel::where('code', 'V-C99')->firstOrFail();
         $this->assertSame('Vocabulaire', $entree->module);
-        $this->assertSame(['A1', 'A2'], $entree->niveaux);
+        $this->assertSame(['essentiel', 'consolidation'], $entree->niveaux);
     }
 
     public function test_module_doit_faire_partie_de_la_liste_autorisee(): void
@@ -70,11 +70,11 @@ class ReferentielCrudTest extends TestCase
             'module' => $entree->module,
             'code' => $entree->code,
             'contenu' => 'Nouveau contenu',
-            'niveaux' => ['B1'],
+            'niveaux' => ['consolidation'],
         ])->assertRedirect(route('admin.referentiel.index'));
 
         $this->assertSame('Nouveau contenu', $entree->fresh()->contenu);
-        $this->assertSame(['B1'], $entree->fresh()->niveaux);
+        $this->assertSame(['consolidation'], $entree->fresh()->niveaux);
     }
 
     public function test_suppression_impossible_si_utilisee_dans_une_seance(): void
