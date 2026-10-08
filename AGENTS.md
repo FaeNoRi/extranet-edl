@@ -314,7 +314,7 @@ Revue du code (autorisations, uploads, authentification, en-têtes, dépendances
 - **CSP** (`SecurityHeaders::POLITIQUE_CONTENU`) : tout en `'self'`, aucun hôte tiers. `'unsafe-eval'` pour Alpine,
   `'wasm-unsafe-eval'` pour PDF.js. Vérifiée dans Edge (visionneuse OP, Alpine, constructeur de questionnaires).
   **Toute nouvelle ressource externe (CDN, police, analytics) sera bloquée** : l'ajouter consciemment à la CSP **et**
-  à la politique de confidentialité. Pas de `<script>` en ligne dans les vues (garder ainsi).
+  à la politique de confidentialité. Ni `<script>` ni gestionnaire en ligne (`onclick`, `onsubmit`, `onchange`…) dans les vues : ils sont bloqués en silence (déconnexion cassée, suppressions sans confirmation). Utiliser Alpine (`x-data @submit="if (! confirm(…)) $event.preventDefault()"`, `x-on:click.prevent`) ; un test de `SecuriteTest` le vérifie.
 - **Pages connectées** : `Cache-Control: no-store, private` sur le HTML (poste partagé : le bouton « Précédent »
   après déconnexion ne ré-affiche rien).
 - **Authentification** : mots de passe **10 caractères minimum, lettres + chiffres** (`Password::defaults()`) ;

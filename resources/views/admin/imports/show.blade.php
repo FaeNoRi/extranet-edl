@@ -29,7 +29,7 @@
                         seront réellement créés. Cette opération est journalisée.
                     </p>
                     <form method="POST" action="{{ route('admin.imports.appliquer', $import) }}"
-                          onsubmit="return confirm('Appliquer définitivement cet import ?')">
+                          x-data @submit="if (! confirm('Appliquer définitivement cet import ?')) $event.preventDefault()">
                         @csrf
                         <label class="mb-3 flex items-center gap-2 text-sm text-gray-700">
                             <input type="checkbox" name="envoyer_acces" value="1"

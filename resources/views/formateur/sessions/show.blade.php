@@ -85,7 +85,7 @@
                             <span class="flex gap-3">
                                 <a href="{{ route('formateur.ressources.download', $ressource) }}" class="text-edl-bleu hover:underline">Télécharger</a>
                                 <form method="POST" action="{{ route('formateur.ressources.destroy', $ressource) }}"
-                                      onsubmit="return confirm('Supprimer cette ressource ?')">
+                                      x-data @submit="if (! confirm('Supprimer cette ressource ?')) $event.preventDefault()">
                                     @csrf @method('DELETE')
                                     <button class="text-edl-rose hover:underline">Suppr.</button>
                                 </form>

@@ -14,7 +14,7 @@
             </x-slot>
 
             <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
-                <select name="module" aria-label="Filtrer par module" onchange="this.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                <select name="module" aria-label="Filtrer par module" x-data @change="$el.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                     <option value="">Tous les modules</option>
                     @foreach ($modules as $m)
                         <option value="{{ $m }}" @selected(request('module') === $m)>{{ $m }}</option>
@@ -52,7 +52,7 @@
                                                 <td class="py-2 text-right whitespace-nowrap">
                                                     <a href="{{ route('admin.referentiel.edit', $entree) }}" class="text-edl-bleu hover:underline">Modifier</a>
                                                     <form method="POST" action="{{ route('admin.referentiel.destroy', $entree) }}" class="ml-3 inline"
-                                                          onsubmit="return confirm('Supprimer cette entrée du référentiel ?')">
+                                                          x-data @submit="if (! confirm('Supprimer cette entrée du référentiel ?')) $event.preventDefault()">
                                                         @csrf @method('DELETE')
                                                         <button type="submit" class="text-edl-rose hover:underline">Supprimer</button>
                                                     </form>
