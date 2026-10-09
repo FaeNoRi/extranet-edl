@@ -13,9 +13,11 @@ class RessourceController extends Controller
 {
     public function download(Ressource $ressource): StreamedResponse
     {
+        // Document d'une session encadrée, ou document commun d'un code du référentiel
+        // (partagé par toutes les formations : tout formateur peut le consulter).
         abort_unless(
-            $ressource->session_formation_id
-                && $this->encadre(SessionFormation::find($ressource->session_formation_id)),
+            ($ressource->session_formation_id && $this->encadre(SessionFormation::find($ressource->session_formation_id)))
+                || $ressource->referentiels()->exists(),
             403,
         );
         abort_unless(Storage::exists($ressource->chemin_fichier), 404);

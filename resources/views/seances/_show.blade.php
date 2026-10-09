@@ -68,7 +68,10 @@
                 <li>
                     <span class="font-mono text-xs">{{ $referentiel->code }}</span>
                     {{ $referentiel->contenu }}
-                    <span class="text-gray-500">— {{ $referentiel->module }} ({{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }})</span>
+                    <span class="text-gray-500">— {{ $referentiel->module }} ({{ $referentiel->niveauxAffiches() }})</span>
+                    @if ($referentiel->badge)
+                        <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $referentiel->badge }}</span>
+                    @endif
                     @if ($referentiel->ressources->isNotEmpty())
                         <ul class="ml-4 mt-0.5 text-xs text-gray-500">
                             @foreach ($referentiel->ressources as $r)

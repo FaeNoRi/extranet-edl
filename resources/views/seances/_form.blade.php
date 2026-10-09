@@ -95,7 +95,13 @@
                             <label class="flex items-start gap-2 py-0.5 text-sm">
                                 <input type="checkbox" name="referentiels[]" value="{{ $entree->id }}" @checked(in_array($entree->id, $refSel))
                                        class="mt-0.5 rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
-                                <span><span class="font-mono text-xs">{{ $entree->code }}</span> {{ $entree->contenu }}</span>
+                                <span>
+                                    <span class="font-mono text-xs">{{ $entree->code }}</span> {{ $entree->contenu }}
+                                    <span class="text-xs text-gray-500">({{ $entree->niveauxAffiches() }})</span>
+                                    @if ($entree->badge)
+                                        <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $entree->badge }}</span>
+                                    @endif
+                                </span>
                             </label>
                         @endforeach
                     </div>

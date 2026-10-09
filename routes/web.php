@@ -82,6 +82,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::delete('stagiaires/{stagiaire}', [StagiaireController::class, 'destroy'])->name('stagiaires.destroy');
 
         Route::resource('referentiel', ReferentielController::class)->except('show');
+        Route::post('referentiel/{referentiel}/documents', [ReferentielController::class, 'ajouterDocuments'])->name('referentiel.documents.store');
+        Route::delete('referentiel/{referentiel}/documents/{ressource}', [ReferentielController::class, 'retirerDocument'])->name('referentiel.documents.destroy');
 
         Route::get('purges', [PurgeController::class, 'index'])->name('purges.index');
         Route::post('purges', [PurgeController::class, 'executer'])->name('purges.executer');
