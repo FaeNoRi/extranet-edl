@@ -157,7 +157,7 @@ Sous `/formateur` (`role:formateur`), layout `<x-formateur.shell>` (accent orang
 Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU équipe).
 
 - **Tableau de bord** : cartes des sessions, séances récentes/à venir.
-- **Sessions** (`formateur.sessions.*`) : liste + fiche. Pour une session FPC, la fiche
+- **Sessions** (`formateur.sessions.*`) : liste (carte FPC : nom du premier stagiaire, « + N autre(s) ») + fiche. Pour une session FPC, la fiche
   affiche le **suivi de progression** (séances regroupées par stagiaire). Pas de dépôt de
   ressources au niveau session : les fichiers se déposent uniquement depuis la fiche
   pédagogique (séance) ; la carte « Ressources de la session » reste en lecture/suppression.

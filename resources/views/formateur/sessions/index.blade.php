@@ -20,6 +20,14 @@
                             <span class="text-xs text-gray-500">{{ $session->langue }}</span>
                         </div>
                         <p class="mt-2 font-medium text-gray-800">{{ $session->nom }}</p>
+                        @if ($session->isFpc() && $session->stagiaires->isNotEmpty())
+                            <p class="mt-1 text-sm text-gray-700">
+                                {{ $session->stagiaires->first()->nom_complet }}
+                                @if ($session->stagiaires_count > 1)
+                                    <span class="text-xs text-gray-500">+ {{ $session->stagiaires_count - 1 }} autre(s)</span>
+                                @endif
+                            </p>
+                        @endif
                         <p class="mt-1 text-xs text-gray-500">
                             {{ $session->num_GESCOF }}<br>
                             {{ $session->stagiaires_count }} stagiaire(s) · {{ $session->seances_count }} séance(s)
