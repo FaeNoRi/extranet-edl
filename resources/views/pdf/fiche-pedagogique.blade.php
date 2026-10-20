@@ -27,7 +27,7 @@
     </div>
 
     <table class="infos">
-        <tr><td class="k">Date de la séance</td><td>{{ $s->date->translatedFormat('l d F Y') }}</td></tr>
+        <tr><td class="k">Date de la séance</td><td>{{ $s->date->translatedFormat('l d F Y') }}@if ($s->distanciel) — <strong>En distanciel</strong>@endif</td></tr>
         <tr><td class="k">Formateur</td><td>{{ $s->formateur?->nom_complet ?? '—' }}</td></tr>
         <tr><td class="k">Langue</td><td>{{ $s->langue ?? $s->sessionFormation->langue }}</td></tr>
         <tr><td class="k">Client</td><td>{{ $s->sessionFormation->client?->nom ?? '—' }}</td></tr>

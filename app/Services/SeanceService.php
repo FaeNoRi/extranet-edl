@@ -25,6 +25,7 @@ class SeanceService
         $seance->update([
             'user_id' => $session->isFpc() ? $request->input('user_id') : null,
             'date' => $request->date('date'),
+            'distanciel' => $request->boolean('distanciel'),
             'objectifs' => $request->input('objectifs', []),
             'outils' => $request->input('outils', []),
             'contenu' => $request->input('contenu'),

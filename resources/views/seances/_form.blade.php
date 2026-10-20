@@ -25,6 +25,13 @@
                 <x-text-input id="date" name="date" type="date" class="mt-1 block w-full"
                               :value="old('date', optional($seance->date)->format('Y-m-d'))" required />
                 <x-input-error :messages="$errors->get('date')" class="mt-1" />
+                {{-- Pré-cochée pour une nouvelle fiche d'une session en distanciel ; modifiable séance par séance. --}}
+                <label class="mt-3 flex items-center gap-2 text-sm">
+                    <input type="checkbox" name="distanciel" value="1"
+                           @checked(session()->hasOldInput() ? old('distanciel') : ($edition ? $seance->distanciel : $session->distanciel))
+                           class="rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
+                    Séance en distanciel
+                </label>
             </div>
 
             @if ($session->isFpc())

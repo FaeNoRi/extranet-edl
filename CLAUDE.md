@@ -157,7 +157,8 @@ Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU éq
   ressources au niveau session : les fichiers se déposent uniquement depuis la fiche
   pédagogique (séance) ; la carte « Ressources de la session » reste en lecture/suppression.
 - **Fiche pédagogique = séance** (`formateur.seances.*`) : formulaire complet (champs
-  auto : stage, formateur, langue ; date, stagiaire si FPC, objectifs `OptionsSeance`
+  auto : stage, formateur, langue ; date, case « Séance en distanciel » (pré-cochée si la session est en
+  distanciel, mention « En distanciel » sur le PDF), stagiaire si FPC, objectifs `OptionsSeance`
   + objectifs perso de la session, contenu, outils, sources, modules du référentiel,
   analyse). Fichiers déposés en `fichiers_transmis[]` / `fichiers_internes[]`
   → `Ressource` + pivot `seances_ressources.transmis`.

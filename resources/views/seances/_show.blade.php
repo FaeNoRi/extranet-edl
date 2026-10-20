@@ -8,6 +8,7 @@
             <a href="{{ route("{$prefix}.sessions.show", $seance->sessionFormation) }}" class="hover:underline">{{ $seance->sessionFormation->nom }}</a>
             @if ($seance->stagiaire) · {{ $seance->stagiaire->nom_complet }} @endif
             @if ($seance->formateur) · {{ $seance->formateur->nom_complet }} @endif
+            @if ($seance->distanciel) · <span class="font-semibold text-edl-bleu">En distanciel</span> @endif
         </p>
     </div>
     <div class="flex gap-2">
