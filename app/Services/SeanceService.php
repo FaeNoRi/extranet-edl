@@ -49,12 +49,13 @@ class SeanceService
             'seance' => $seance,
             'objectifsProposes' => OptionsSeance::objectifsPour($session),
             'outils' => OptionsSeance::OUTILS,
-            // Entrées de la langue de la session + communes ; celles déjà cochées restent visibles.
-            'modules' => Referentiel::query()
-                ->where(fn ($q) => $q->pourLangue($session->langue)
+            // Entrées actives de la langue de la session + communes ; celles déjà cochées restent
+            // visibles même archivées (ancienne trame). Modules dans l'ordre de la trame.
+            'modules' => Referentiel::grouperParModule(Referentiel::query()
+                ->where(fn ($q) => $q->where(fn ($q) => $q->actives()->pourLangue($session->langue))
                     ->when($seance->exists, fn ($q) => $q->orWhereIn('id', $seance->referentiels()->pluck('referentiel.id'))))
                 ->with('ressources')
-                ->orderBy('module')->orderBy('code')->get()->groupBy('module'),
+                ->get()->sortBy('code', SORT_NATURAL)->values()),
             'ressourcesSession' => Ressource::where('session_formation_id', $session->id)->orderBy('nom')->get(),
             'stagiaires' => $session->stagiaires()->orderBy('nom')->get(),
         ];

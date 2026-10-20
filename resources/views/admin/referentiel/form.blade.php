@@ -54,11 +54,11 @@
                 </div>
 
                 <div>
-                    <x-input-label for="badge" :value="__('Badge (facultatif)')" />
-                    <x-text-input id="badge" name="badge" class="mt-1 block w-full" aria-describedby="aide-badge"
-                                  :value="old('badge', $referentiel->badge)" maxlength="255" />
-                    <p id="aide-badge" class="mt-1 text-xs text-gray-500">Texte libre, visible de l'administration et des formateurs.</p>
-                    <x-input-error :messages="$errors->get('badge')" class="mt-1" />
+                    <x-input-label for="badges" :value="__('Badges (facultatif)')" />
+                    <x-text-input id="badges" name="badges" class="mt-1 block w-full" aria-describedby="aide-badges"
+                                  :value="old('badges', implode(', ', $referentiel->badges ?? []))" maxlength="500" />
+                    <p id="aide-badges" class="mt-1 text-xs text-gray-500">Séparés par des virgules (ex. : JUNIOR, ORAL, COM). Visibles de l'administration et des formateurs.</p>
+                    <x-input-error :messages="$errors->get('badges')" class="mt-1" />
                 </div>
 
                 <fieldset>
@@ -75,6 +75,14 @@
                     </div>
                     <x-input-error :messages="$errors->get('niveaux')" class="mt-1" />
                 </fieldset>
+
+                @if ($edition)
+                    <label class="flex items-start gap-2 text-sm">
+                        <input type="checkbox" name="archivee" value="1" @checked(old('archivee', $referentiel->estArchivee()))
+                               class="mt-0.5 rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
+                        <span>Archivée <span class="text-gray-500">— n'est plus proposée aux formateurs ; reste visible dans les fiches où elle est déjà cochée.</span></span>
+                    </label>
+                @endif
 
                 <div class="flex items-center gap-3">
                     <x-primary-button>{{ $edition ? 'Enregistrer' : 'Créer l\'entrée' }}</x-primary-button>

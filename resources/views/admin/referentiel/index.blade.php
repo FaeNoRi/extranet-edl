@@ -27,8 +27,22 @@
                         <option value="{{ $l }}" @selected(request('langue') === $l)>{{ $l }}</option>
                     @endforeach
                 </select>
+                <select name="badge" aria-label="Filtrer par badge" x-data @change="$el.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                    <option value="">Tous les badges</option>
+                    @foreach ($badges as $b)
+                        <option value="{{ $b }}" @selected(request('badge') === $b)>{{ $b }}</option>
+                    @endforeach
+                </select>
+                @if ($nbArchivees > 0)
+                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <input type="checkbox" name="archives" value="1" @checked(request()->boolean('archives'))
+                               x-data @change="$el.form.requestSubmit()"
+                               class="rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
+                        Afficher les archivées ({{ $nbArchivees }})
+                    </label>
+                @endif
                 <x-secondary-button type="submit">Filtrer</x-secondary-button>
-                @if (request()->filled('module') || request()->filled('langue'))
+                @if (request()->filled('module') || request()->filled('langue') || request()->filled('badge') || request()->boolean('archives'))
                     <a href="{{ route('admin.referentiel.index') }}" class="text-sm text-gray-500 hover:text-edl-bleu hover:underline">Réinitialiser</a>
                 @endif
             </form>
@@ -59,8 +73,11 @@
                                                 <td class="py-2 pr-3 text-gray-600">{{ $entree->langueAffichee() }}</td>
                                                 <td class="py-2 pr-3 text-gray-800">
                                                     {{ $entree->contenu }}
-                                                    @if ($entree->badge)
-                                                        <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $entree->badge }}</span>
+                                                    @foreach ($entree->badges ?? [] as $b)
+                                                        <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $b }}</span>
+                                                    @endforeach
+                                                    @if ($entree->estArchivee())
+                                                        <span class="ml-1 inline-block rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">Archivée</span>
                                                     @endif
                                                 </td>
                                                 <td class="py-2 pr-3 text-gray-600">{{ $entree->niveauxAffiches() }}</td>

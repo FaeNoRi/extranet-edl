@@ -119,9 +119,9 @@
                                         <span>
                                             <span class="font-mono text-xs">{{ $entree->code }}</span> {{ $entree->contenu }}
                                             <span class="text-xs text-gray-600">({{ $entree->niveauxAffiches() }})</span>
-                                            @if ($entree->badge)
-                                                <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $entree->badge }}</span>
-                                            @endif
+                                            @foreach ($entree->badges ?? [] as $badge)
+                                                <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $badge }}</span>
+                                            @endforeach
                                         </span>
                                     </label>
                                     {{-- Documents communs du code : consultables avant de cocher, ajoutés au dossier de séance. --}}

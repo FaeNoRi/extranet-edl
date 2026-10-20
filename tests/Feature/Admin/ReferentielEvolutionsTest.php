@@ -61,19 +61,19 @@ class ReferentielEvolutionsTest extends TestCase
     public function test_langue_et_badge_sont_enregistres(): void
     {
         $this->actingAs($this->admin)
-            ->post(route('admin.referentiel.store'), $this->donnees(['langue' => 'Espagnol', 'badge' => 'Incontournable']))
+            ->post(route('admin.referentiel.store'), $this->donnees(['langue' => 'Espagnol', 'badges' => 'com, Oral , COM']))
             ->assertSessionHasNoErrors();
 
         $entree = Referentiel::firstOrFail();
         $this->assertSame('Espagnol', $entree->langue);
-        $this->assertSame('Incontournable', $entree->badge);
+        $this->assertSame(['COM', 'ORAL'], $entree->badges);
 
         // Langue vide = toutes langues.
         $this->actingAs($this->admin)
-            ->put(route('admin.referentiel.update', $entree), $this->donnees(['langue' => '', 'badge' => '']))
+            ->put(route('admin.referentiel.update', $entree), $this->donnees(['langue' => '', 'badges' => '']))
             ->assertSessionHasNoErrors();
         $this->assertNull($entree->fresh()->langue);
-        $this->assertNull($entree->fresh()->badge);
+        $this->assertSame([], $entree->fresh()->badges);
     }
 
     public function test_un_meme_code_peut_exister_dans_plusieurs_langues_mais_pas_deux_fois_dans_la_meme(): void
@@ -107,14 +107,14 @@ class ReferentielEvolutionsTest extends TestCase
     {
         $formateur = User::factory()->formateur()->create();
         $session = SessionFormation::factory()->op()->create(['formateur_id' => $formateur->id, 'langue' => 'Anglais']);
-        Referentiel::factory()->create(['code' => 'CODE-ANG', 'langue' => 'Anglais', 'badge' => 'Badge visible']);
+        Referentiel::factory()->create(['code' => 'CODE-ANG', 'langue' => 'Anglais', 'badges' => ['BADGEVISIBLE']]);
         Referentiel::factory()->create(['code' => 'CODE-ESP', 'langue' => 'Espagnol']);
         Referentiel::factory()->create(['code' => 'CODE-COMMUN', 'langue' => null]);
 
         $this->actingAs($formateur)->get(route('formateur.seances.create', $session))
             ->assertOk()
             ->assertSee('CODE-ANG')->assertSee('CODE-COMMUN')->assertDontSee('CODE-ESP')
-            ->assertSee('Badge visible');
+            ->assertSee('BADGEVISIBLE');
     }
 
     public function test_ajout_et_retrait_de_documents_communs(): void
@@ -164,7 +164,7 @@ class ReferentielEvolutionsTest extends TestCase
 
     public function test_les_documents_communs_suivent_le_code_dans_chaque_seance(): void
     {
-        $entree = Referentiel::factory()->create(['badge' => 'Badge interne']);
+        $entree = Referentiel::factory()->create(['badges' => ['BADGEINTERNE']]);
         Storage::put('referentiel/fiche.pdf', "%PDF-1.4\n%%EOF");
         $document = Ressource::factory()->create(['nom' => 'Fiche commune', 'chemin_fichier' => 'referentiel/fiche.pdf', 'nom_fichier_original' => 'fiche.pdf', 'session_formation_id' => null]);
         $entree->ressources()->attach($document->id);
@@ -177,11 +177,11 @@ class ReferentielEvolutionsTest extends TestCase
         $seance->referentiels()->attach($entree->id);
 
         // Formateur : visible et téléchargeable, badge affiché.
-        $this->actingAs($formateur)->get(route('formateur.seances.show', $seance))->assertSee('Fiche commune')->assertSee('Badge interne');
+        $this->actingAs($formateur)->get(route('formateur.seances.show', $seance))->assertSee('Fiche commune')->assertSee('BADGEINTERNE');
         $this->actingAs($formateur)->get(route('formateur.ressources.download', $document))->assertOk();
 
         // Stagiaire : visible et consultable, sans le badge (réservé admin/formateurs).
-        $this->actingAs($stagiaire)->get(route('stagiaire.ressources.show', $seance))->assertSee('Fiche commune')->assertDontSee('Badge interne');
+        $this->actingAs($stagiaire)->get(route('stagiaire.ressources.show', $seance))->assertSee('Fiche commune')->assertDontSee('BADGEINTERNE');
         $this->actingAs($stagiaire)->get(route('stagiaire.ressources.download', $document))->assertOk();
 
         // Un stagiaire dont aucune séance ne coche ce code n'y a pas accès.
