@@ -53,6 +53,7 @@ class SeanceService
             'modules' => Referentiel::query()
                 ->where(fn ($q) => $q->pourLangue($session->langue)
                     ->when($seance->exists, fn ($q) => $q->orWhereIn('id', $seance->referentiels()->pluck('referentiel.id'))))
+                ->with('ressources')
                 ->orderBy('module')->orderBy('code')->get()->groupBy('module'),
             'ressourcesSession' => Ressource::where('session_formation_id', $session->id)->orderBy('nom')->get(),
             'stagiaires' => $session->stagiaires()->orderBy('nom')->get(),

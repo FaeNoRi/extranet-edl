@@ -165,6 +165,8 @@ Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU éq
 - À l'enregistrement : `FichePedagogiqueService` génère le **PDF** (`barryvdh/laravel-dompdf`,
   vue `pdf.fiche-pedagogique`) rangé dans `storage/app/private/seances/{id}/`. Régénéré
   à chaque modification. Téléchargement : `formateur.seances.fiche`.
+- Formulaire : référentiel en **accordéon** (un `<details>` par module, ouvert d'office si une entrée y est
+  cochée, compteur Alpine des cases) ; sous chaque code, liens vers ses documents communs.
 - Le **dossier de séance** (page show) réunit résumé, ressources (transmis/travail) et
   fiches du référentiel des modules cochés.
 

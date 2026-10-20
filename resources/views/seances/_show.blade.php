@@ -76,7 +76,7 @@
                     @if ($referentiel->ressources->isNotEmpty())
                         <ul class="ml-4 mt-0.5 text-xs text-gray-500">
                             @foreach ($referentiel->ressources as $r)
-                                <li>↳ {{ $r->nom }}</li>
+                                <li><a href="{{ route("{$prefix}.ressources.download", $r) }}" class="text-edl-bleu hover:underline">↳ {{ $r->nom }}</a></li>
                             @endforeach
                         </ul>
                     @endif
