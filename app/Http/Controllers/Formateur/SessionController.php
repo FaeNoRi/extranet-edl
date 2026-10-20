@@ -11,8 +11,10 @@ class SessionController extends Controller
     public function index(): View
     {
         return view('formateur.sessions.index', [
+            // Stagiaires triés : la carte d'une session FPC affiche le premier.
             'sessions' => auth()->user()->sessionsPourFormateur()
-                ->loadCount(['seances', 'stagiaires']),
+                ->loadCount(['seances', 'stagiaires'])
+                ->load(['stagiaires' => fn ($q) => $q->orderBy('nom')->orderBy('prenom')]),
         ]);
     }
 
