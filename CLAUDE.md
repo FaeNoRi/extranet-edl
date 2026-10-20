@@ -96,6 +96,11 @@ Schéma refondu — migrations `2026_09_02_1200xx`. Après `git pull` : `php art
   `session_formation_formateur` (équipe). Appariement souple par nom ; non-reconnus =
   anomalie, à compléter dans le formulaire admin. `intervenants_import` conserve la
   chaîne brute (colonne libre, saisie humaine).
+- **Verrou des envois aux stagiaires** : `EDL_ENVOIS_STAGIAIRES` (défaut **false**, `config('edl.envois.stagiaires')`).
+  Tant qu'il est à false, un écouteur `NotificationSending` (`AppServiceProvider`) annule toute notification vers
+  un compte stagiaire (import avec envoi d'accès, mot de passe oublié, `edl:acces`) et la journalise ; la case
+  d'envoi de l'import est masquée ; `edl:preflight` le signale. Mis en place pour le test avec un export GESCOF
+  réel : à passer à true à l'ouverture aux stagiaires. Les formateurs et administrateurs ne sont pas concernés.
 - Chaque exécution (simulation comprise) est tracée dans `gescof_imports` (rapport JSON).
 - Commande : `php artisan edl:import-gescof <fichier> [--appliquer] [--envoyer-acces]`.
 - Colonnes attendues : `Nom, Prenom, NomClient, CodeProduit, LibelleStage, NumSession,

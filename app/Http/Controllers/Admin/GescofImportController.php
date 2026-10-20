@@ -62,7 +62,8 @@ class GescofImportController extends Controller
             return back()->with('erreur', 'Le fichier de cette simulation n\'est plus disponible. Relancez une simulation.');
         }
 
-        $envoyer = $request->boolean('envoyer_acces');
+        // Envois bloqués (phase de test) : la case est ignorée même si elle est forcée.
+        $envoyer = $request->boolean('envoyer_acces') && config('edl.envois.stagiaires');
         $rapport = $importer->appliquer(
             Storage::path($import->fichier_path),
             $request->user(),
