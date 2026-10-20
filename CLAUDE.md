@@ -138,6 +138,8 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
   `edl:purge-comptes [--op] [--fpc] [--appliquer]`, planifiée quotidiennement à 3h
   (OP appliquée automatiquement, FPC seulement signalée — validée dans l'UI).
   Config : `config('edl.purges')`.
+- **Fiches pédagogiques d'une session** (`admin.sessions.fiches`, FPC et OP) : `SessionArchiveService::telechargerFiches()`,
+  ZIP à plat « AAAA-MM-JJ - stagiaire - fiche pedagogique.pdf » (suffixe (2) si même jour), PDF manquants régénérés.
 - **Archive session FPC** (`admin.sessions.archive`) : `SessionArchiveService` produit un
   ZIP (un dossier par séance, fiche + ressources `date.RPn`, `MANIFESTE.txt` des fichiers
   attendus mais absents — fiches PDF en phase 3).

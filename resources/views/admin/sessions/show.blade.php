@@ -13,11 +13,16 @@
                     @if ($session->distanciel) · <span class="font-medium text-edl-marron">distanciel</span> @endif
                 </p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('admin.sessions.fiches', $session) }}"
+                   class="rounded-md border border-edl-bleu px-3 py-2 text-sm font-semibold text-edl-bleu hover:bg-edl-bleu/10">
+                    Fiches pédagogiques (ZIP)
+                </a>
                 @if ($session->isFpc())
                     <a href="{{ route('admin.sessions.archive', $session) }}"
+                       title="Fiches et ressources, un dossier par séance"
                        class="rounded-md border border-edl-bleu px-3 py-2 text-sm font-semibold text-edl-bleu hover:bg-edl-bleu/10">
-                        Télécharger (ZIP)
+                        Dossier complet (ZIP)
                     </a>
                 @endif
                 <a href="{{ route('admin.sessions.edit', $session) }}"
