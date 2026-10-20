@@ -29,6 +29,10 @@ class ImportGescof extends Command
 
         $this->info($appliquer ? 'Import GESCOF — application' : 'Import GESCOF — simulation (aucune écriture)');
 
+        if ($this->option('envoyer-acces') && ! config('edl.envois.stagiaires')) {
+            $this->warn('Envois aux stagiaires bloqués (EDL_ENVOIS_STAGIAIRES=false) : aucun lien d\'accès ne sera envoyé.');
+        }
+
         $rapport = $appliquer
             ? $importer->appliquer($fichier, null, (bool) $this->option('envoyer-acces'))
             : $importer->simuler($fichier);

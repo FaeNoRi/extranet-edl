@@ -4,7 +4,10 @@ namespace App\Providers;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Events\NotificationSending;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -28,6 +31,23 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->isProduction()) {
             URL::forceScheme('https');
         }
+
+        // Verrou des envois aux stagiaires (config edl.envois.stagiaires) : toute notification vers
+        // un compte stagiaire est annulée, d'où qu'elle vienne (import, mot de passe oublié, commande).
+        Event::listen(NotificationSending::class, function (NotificationSending $evenement) {
+            if ($evenement->notifiable instanceof User
+                && $evenement->notifiable->isStagiaire()
+                && ! config('edl.envois.stagiaires')) {
+                Log::info('Envoi à un stagiaire bloqué (EDL_ENVOIS_STAGIAIRES=false)', [
+                    'compte' => $evenement->notifiable->login,
+                    'notification' => class_basename($evenement->notification),
+                ]);
+
+                return false;
+            }
+
+            return null;
+        });
 
         // L'administrateur a tous les droits.
         Gate::before(function (User $user) {
