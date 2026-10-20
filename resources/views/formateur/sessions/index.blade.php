@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Mes sessions</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Mes sessions</h1>
     </x-slot>
 
     <x-formateur.shell active="sessions" titre="Mes sessions">
@@ -10,7 +10,7 @@
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($sessions as $session)
                     <a href="{{ route('formateur.sessions.show', $session) }}"
-                       class="rounded-lg bg-white p-5 shadow-sm transition hover:shadow">
+                       class="rounded-xl border border-edl-sable bg-white p-5 transition hover:shadow">
                         <div class="flex items-center gap-2">
                             <span @class([
                                 'rounded px-1.5 py-0.5 text-xs',

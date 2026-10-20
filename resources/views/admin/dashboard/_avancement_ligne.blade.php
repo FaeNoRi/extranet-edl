@@ -9,8 +9,8 @@
         </span>
     </div>
     @if ($ligne['taux'] !== null)
-        <div class="mt-1 h-1.5 w-full rounded-full bg-gray-100">
-            <div class="h-1.5 rounded-full bg-edl-vert-fonce" style="width: {{ min(100, $ligne['taux']) }}%"></div>
+        <div class="mt-1 h-1.5 w-full rounded-full bg-edl-violet/10">
+            <div class="h-1.5 rounded-full bg-edl-violet" style="width: {{ min(100, $ligne['taux']) }}%"></div>
         </div>
     @endif
 </li>

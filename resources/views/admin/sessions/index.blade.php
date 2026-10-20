@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Sessions</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Sessions</h1>
     </x-slot>
 
     <x-admin.shell active="sessions">

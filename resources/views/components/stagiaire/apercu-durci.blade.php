@@ -11,7 +11,7 @@
     @vite('resources/js/lecteur-pdf.js')
 @endonce
 
-<div data-lecteur-durci class="relative overflow-hidden rounded-lg bg-white shadow-sm print:hidden"
+<div data-lecteur-durci class="relative overflow-hidden rounded-xl border border-edl-sable bg-white print:hidden"
      style="height: 82vh; min-height: 560px;">
     @if ($type === 'pdf')
         <div data-lecteur-pdf data-url="{{ $url }}" data-filigrane="{{ config('edl.structure.nom') }}"

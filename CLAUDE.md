@@ -300,6 +300,22 @@ Conventions à garder :
   protection des contenus, signalé dans `/accessibilite`) ; la zone de défilement est focusable et nommée.
 - Vues de pagination publiées dans `resources/views/vendor/pagination` (correctif ARIA du pied « Précédent »).
 
+## Charte graphique (refonte d'octobre 2026)
+
+Retour EDL « trop froid » : maquette validée (canevas « Refonte graphique EDL+ »), refonte légère sans changer
+la structure des pages.
+
+- **Fond** `bg-edl-creme`, bordures `border-edl-sable`, texte `text-edl-marron` (secondaire `text-edl-texte-doux`) ;
+  cartes `rounded-xl border border-edl-sable bg-white`, sans ombre.
+- **Liseré** `<x-lisere-marque />` (7 couleurs) en haut de toutes les pages. **Bandeau de titre** coloré par espace
+  (`AppLayout::espace()` : admin bleu, formateur orange avec texte sombre, stagiaire rose) ; le `<h1>` n'a pas de
+  couleur propre ; slot facultatif `sousTitre`.
+- **Pictogrammes** : `<x-icone nom="…">` (traits SVG, `aria-hidden`), `<x-pastille icone couleur [plein] [taille]>`.
+  Menu latéral `<x-menu-lateral>` (chaque lien : `icone` + `couleur`). `<x-admin.card icone="…" couleur="…">` teinte
+  l'en-tête ; sans `icone`, en-tête blanc. `<x-badge-fichier :fichier>` : étiquette PDF/MP3…
+- **Texte sur fond teinté** (`bg-edl-*/10` ou `/15`) : teintes `edl-*-fonce` (bleu, bleu-vert, jaune, orange, rose,
+  violet), gardées à 4,5:1 par `AccessibiliteTest`.
+
 ## Performance (phase 5)
 
 - **Pas de N+1** : `Model::preventLazyLoading()` est actif hors production (`AppServiceProvider`) — une

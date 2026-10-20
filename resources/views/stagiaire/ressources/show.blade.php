@@ -7,7 +7,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Séance du {{ $seance->date->format('d/m/Y') }}</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Séance du {{ $seance->date->format('d/m/Y') }}</h1>
     </x-slot>
 
     <x-stagiaire.shell active="ressources">
@@ -99,7 +99,7 @@
             {{-- Volet de visualisation (hors OP) --}}
             @unless ($op)
             <div class="lg:sticky lg:top-6 lg:h-[70vh]">
-                <div class="flex h-full flex-col rounded-lg bg-white shadow-sm"
+                <div class="flex h-full flex-col rounded-xl border border-edl-sable bg-white"
                      x-data @contextmenu.prevent @selectstart.prevent>
                     <p class="border-b border-gray-100 px-4 py-2 text-sm font-medium text-gray-600"
                        x-text="titre || 'Aperçu'"></p>

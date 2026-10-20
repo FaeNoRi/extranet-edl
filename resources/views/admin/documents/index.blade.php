@@ -2,7 +2,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Documents de la structure</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Documents de la structure</h1>
     </x-slot>
 
     <x-admin.shell active="documents" titre="Documents de la structure">

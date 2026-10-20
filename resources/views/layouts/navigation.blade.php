@@ -1,8 +1,9 @@
 @php
     $user = Auth::user();
+    $initiales = mb_strtoupper(mb_substr($user->prenom ?? '', 0, 1).mb_substr($user->nom ?? '', 0, 1)) ?: '?';
 @endphp
 
-<nav x-data="{ open: false }" aria-label="Navigation principale" class="border-b border-gray-100 bg-white">
+<nav x-data="{ open: false }" aria-label="Navigation principale" class="border-b border-edl-sable bg-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 justify-between">
             <div class="flex">
@@ -28,10 +29,16 @@
             <div class="hidden sm:ms-6 sm:flex sm:items-center">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button aria-haspopup="true" :aria-expanded="open.toString()" class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-600 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
+                        <button aria-haspopup="true" :aria-expanded="open.toString()" class="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-edl-sable bg-white py-1 pe-3 ps-1 text-sm font-medium leading-4 text-edl-marron transition duration-150 ease-in-out hover:bg-edl-creme focus:outline-none">
+                            <span @class([
+                                'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold',
+                                'bg-edl-bleu text-white' => $user->isAdmin(),
+                                'bg-edl-orange text-gray-900' => $user->isFormateur(),
+                                'bg-edl-rose text-white' => ! $user->isAdmin() && ! $user->isFormateur(),
+                            ]) aria-hidden="true">{{ $initiales }}</span>
                             <span>
                                 {{ $user->nom_complet }}
-                                <span class="ms-1 text-xs text-gray-500">&middot; {{ $user->role->label() }}</span>
+                                <span class="ms-1 text-xs text-edl-texte-doux">&middot; {{ $user->role->label() }}</span>
                             </span>
 
                             <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

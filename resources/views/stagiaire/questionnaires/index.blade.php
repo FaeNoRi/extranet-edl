@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Questionnaires</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Questionnaires</h1>
     </x-slot>
 
     <x-stagiaire.shell active="questionnaires">
@@ -9,7 +9,7 @@
         @else
             <div class="space-y-3">
                 @foreach ($questionnaires as $q)
-                    <div class="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm">
+                    <div class="flex items-center justify-between rounded-xl border border-edl-sable bg-white p-4">
                         <div>
                             <p class="font-medium text-gray-800">{{ $q->titre }}</p>
                             <p class="text-xs text-gray-500">{{ $q->type->label() }} · {{ $q->questions_count }} question(s)</p>
