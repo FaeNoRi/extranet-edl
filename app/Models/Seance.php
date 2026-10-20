@@ -16,7 +16,7 @@ class Seance extends Model
     protected $table = 'seances';
 
     protected $fillable = [
-        'session_formation_id', 'formateur_id', 'user_id', 'date', 'langue',
+        'session_formation_id', 'formateur_id', 'user_id', 'date', 'distanciel', 'langue',
         'objectifs', 'contenu', 'outils', 'sources', 'analyse_seance', 'fiche_pdf_path',
     ];
 
@@ -24,6 +24,7 @@ class Seance extends Model
     {
         return [
             'date' => 'date',
+            'distanciel' => 'boolean',
             'objectifs' => 'array',
             'outils' => 'array',
         ];

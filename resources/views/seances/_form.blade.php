@@ -25,6 +25,13 @@
                 <x-text-input id="date" name="date" type="date" class="mt-1 block w-full"
                               :value="old('date', optional($seance->date)->format('Y-m-d'))" required />
                 <x-input-error :messages="$errors->get('date')" class="mt-1" />
+                {{-- Pré-cochée pour une nouvelle fiche d'une session en distanciel ; modifiable séance par séance. --}}
+                <label class="mt-3 flex items-center gap-2 text-sm">
+                    <input type="checkbox" name="distanciel" value="1"
+                           @checked(session()->hasOldInput() ? old('distanciel') : ($edition ? $seance->distanciel : $session->distanciel))
+                           class="rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
+                    Séance en distanciel
+                </label>
             </div>
 
             @if ($session->isFpc())
@@ -84,27 +91,55 @@
             <x-input-error :messages="$errors->get('sources')" class="mt-1" />
         </div>
 
+        {{-- Référentiel en accordéon : un module par section (<details> natif, clavier et lecteur
+             d'écran compris). Les modules déjà cochés s'ouvrent d'office ; l'en-tête compte les cases. --}}
         <fieldset>
             <legend class="text-sm font-medium text-gray-700">Modules du référentiel vus pendant la séance</legend>
-            <div class="mt-2 grid gap-4 sm:grid-cols-2">
-                @php $refSel = old('referentiels', $edition ? $seance->referentiels->pluck('id')->all() : []); @endphp
+            @php $refSel = array_map('intval', old('referentiels', $edition ? $seance->referentiels->pluck('id')->all() : [])); @endphp
+            <div class="mt-2 divide-y divide-gray-200 rounded-md border border-gray-200">
                 @foreach ($modules as $module => $entrees)
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $module }}</p>
-                        @foreach ($entrees as $entree)
-                            <label class="flex items-start gap-2 py-0.5 text-sm">
-                                <input type="checkbox" name="referentiels[]" value="{{ $entree->id }}" @checked(in_array($entree->id, $refSel))
-                                       class="mt-0.5 rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
-                                <span>
-                                    <span class="font-mono text-xs">{{ $entree->code }}</span> {{ $entree->contenu }}
-                                    <span class="text-xs text-gray-500">({{ $entree->niveauxAffiches() }})</span>
-                                    @if ($entree->badge)
-                                        <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $entree->badge }}</span>
+                    @php $coches = $entrees->whereIn('id', $refSel)->count(); @endphp
+                    <details class="group" @if ($coches > 0) open @endif x-data="{ n: {{ $coches }} }">
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-2.5 text-sm font-semibold text-edl-marron hover:bg-gray-50">
+                            <span class="flex items-center gap-2">
+                                <svg class="h-4 w-4 shrink-0 text-gray-500 transition-transform group-open:rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.2 14.8a.75.75 0 0 1 0-1.06L10.94 10 7.2 6.26a.75.75 0 1 1 1.06-1.06l4.27 4.27a.75.75 0 0 1 0 1.06l-4.27 4.27a.75.75 0 0 1-1.06 0Z" clip-rule="evenodd"/></svg>
+                                {{ $module }}
+                            </span>
+                            <span class="text-xs font-normal text-gray-600">
+                                <span x-text="n">{{ $coches }}</span> cochée(s) sur {{ $entrees->count() }}
+                            </span>
+                        </summary>
+                        <div class="grid gap-x-6 gap-y-1 px-4 pb-3 pt-1 sm:grid-cols-2">
+                            @foreach ($entrees as $entree)
+                                <div class="py-0.5 text-sm">
+                                    <label class="flex items-start gap-2">
+                                        <input type="checkbox" name="referentiels[]" value="{{ $entree->id }}" @checked(in_array($entree->id, $refSel))
+                                               @change="n += $event.target.checked ? 1 : -1"
+                                               class="mt-0.5 rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
+                                        <span>
+                                            <span class="font-mono text-xs">{{ $entree->code }}</span> {{ $entree->contenu }}
+                                            <span class="text-xs text-gray-600">({{ $entree->niveauxAffiches() }})</span>
+                                            @foreach ($entree->badges ?? [] as $badge)
+                                                <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $badge }}</span>
+                                            @endforeach
+                                        </span>
+                                    </label>
+                                    {{-- Documents communs du code : consultables avant de cocher, ajoutés au dossier de séance. --}}
+                                    @if ($entree->ressources->isNotEmpty())
+                                        <ul class="ml-6 mt-0.5 space-y-0.5 text-xs">
+                                            @foreach ($entree->ressources as $document)
+                                                <li>
+                                                    <a href="{{ route("{$prefix}.ressources.download", $document) }}" class="text-edl-bleu hover:underline">
+                                                        ↳ {{ $document->nom }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
                                     @endif
-                                </span>
-                            </label>
-                        @endforeach
-                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </details>
                 @endforeach
             </div>
         </fieldset>

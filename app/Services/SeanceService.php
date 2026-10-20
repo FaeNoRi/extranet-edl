@@ -25,6 +25,7 @@ class SeanceService
         $seance->update([
             'user_id' => $session->isFpc() ? $request->input('user_id') : null,
             'date' => $request->date('date'),
+            'distanciel' => $request->boolean('distanciel'),
             'objectifs' => $request->input('objectifs', []),
             'outils' => $request->input('outils', []),
             'contenu' => $request->input('contenu'),
@@ -48,11 +49,13 @@ class SeanceService
             'seance' => $seance,
             'objectifsProposes' => OptionsSeance::objectifsPour($session),
             'outils' => OptionsSeance::OUTILS,
-            // Entrées de la langue de la session + communes ; celles déjà cochées restent visibles.
-            'modules' => Referentiel::query()
-                ->where(fn ($q) => $q->pourLangue($session->langue)
+            // Entrées actives de la langue de la session + communes ; celles déjà cochées restent
+            // visibles même archivées (ancienne trame). Modules dans l'ordre de la trame.
+            'modules' => Referentiel::grouperParModule(Referentiel::query()
+                ->where(fn ($q) => $q->where(fn ($q) => $q->actives()->pourLangue($session->langue))
                     ->when($seance->exists, fn ($q) => $q->orWhereIn('id', $seance->referentiels()->pluck('referentiel.id'))))
-                ->orderBy('module')->orderBy('code')->get()->groupBy('module'),
+                ->with('ressources')
+                ->get()->sortBy('code', SORT_NATURAL)->values()),
             'ressourcesSession' => Ressource::where('session_formation_id', $session->id)->orderBy('nom')->get(),
             'stagiaires' => $session->stagiaires()->orderBy('nom')->get(),
         ];

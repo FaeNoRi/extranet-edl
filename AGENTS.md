@@ -75,7 +75,12 @@ Schéma refondu — migrations `2026_09_02_1200xx`. Après `git pull` : `php art
   nul = document commun structure.
 - `emargements` (FPC distanciel), `questionnaires` + `questionnaire_questions` +
   `questionnaire_reponses` (formulaires en ligne — UI en phase 4).
-- `referentiel` : trame réelle du CDC §3 chargée par `ReferentielSeeder` (52 entrées, idempotent).
+- `referentiel` : **trame v3** (octobre 2026, fichier client « Update Référentiel v3 ») dans `ReferentielSeeder`
+  (108 entrées en anglais, 8 modules `Referentiel::MODULES`, badges JUNIOR/ORAL/COM/RH/LOG/TOUR/DEPL ; corrections
+  du fichier documentées dans le seeder). `module` est une chaîne (plus d'enum). `archive_le` : entrée d'une trame
+  précédente, gardée car cochée dans des fiches, mais plus proposée (scope `actives()`). Nouvelle version de la
+  trame → mettre à jour le seeder puis `php artisan edl:referentiel-charger [--simuler]` : crée/met à jour la trame,
+  archive les entrées hors trame utilisées (séances ou documents), supprime les autres.
 
 ## Import GESCOF (phase 2)
 
@@ -118,8 +123,8 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
   plusieurs possibles, clés stockées via `App\Casts\SetCast`, libellés dans `App\Support\NiveauxReferentiel`
   (`depuisCecrl()` a converti les anciennes valeurs A1…C2) ; **langue** (`CodeStage::langues()`, nulle =
   toutes langues ; code unique **par langue**) — le formulaire de séance ne propose que la langue de la
-  session + les entrées communes ; **badge** facultatif en texte libre (admin + formateurs, jamais le
-  stagiaire) ; **documents communs** du code (`referentiel/{id}/…`, pivot `referentiel_ressources`) :
+  session + les entrées communes ; **badges multiples** (`badges` JSON, saisis « COM, RH, ORAL », normalisés en
+  majuscules, filtrables ; admin + formateurs, jamais le stagiaire) ; **documents communs** du code (`referentiel/{id}/…`, pivot `referentiel_ressources`) :
   déposés une fois sur la fiche de l'entrée, ils apparaissent dans chaque séance qui coche le code
   (dossier formateur, ressources stagiaire ; tout formateur peut les télécharger). Suppression d'une
   entrée bloquée si elle est utilisée dans une séance (`cascadeOnDelete` sur `seances_referentiel`,
@@ -150,13 +155,16 @@ Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU éq
   ressources au niveau session : les fichiers se déposent uniquement depuis la fiche
   pédagogique (séance) ; la carte « Ressources de la session » reste en lecture/suppression.
 - **Fiche pédagogique = séance** (`formateur.seances.*`) : formulaire complet (champs
-  auto : stage, formateur, langue ; date, stagiaire si FPC, objectifs `OptionsSeance`
+  auto : stage, formateur, langue ; date, case « Séance en distanciel » (pré-cochée si la session est en
+  distanciel, mention « En distanciel » sur le PDF), stagiaire si FPC, objectifs `OptionsSeance`
   + objectifs perso de la session, contenu, outils, sources, modules du référentiel,
   analyse). Fichiers déposés en `fichiers_transmis[]` / `fichiers_internes[]`
   → `Ressource` + pivot `seances_ressources.transmis`.
 - À l'enregistrement : `FichePedagogiqueService` génère le **PDF** (`barryvdh/laravel-dompdf`,
   vue `pdf.fiche-pedagogique`) rangé dans `storage/app/private/seances/{id}/`. Régénéré
   à chaque modification. Téléchargement : `formateur.seances.fiche`.
+- Formulaire : référentiel en **accordéon** (un `<details>` par module, ouvert d'office si une entrée y est
+  cochée, compteur Alpine des cases) ; sous chaque code, liens vers ses documents communs.
 - Le **dossier de séance** (page show) réunit résumé, ressources (transmis/travail) et
   fiches du référentiel des modules cochés.
 

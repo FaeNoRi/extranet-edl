@@ -20,22 +20,29 @@ class ReferentielController extends Controller
     public function index(Request $request): View
     {
         $langue = $request->string('langue')->toString();
+        $badge = $request->string('badge')->toString();
+        $archives = $request->boolean('archives');
 
         $entrees = Referentiel::query()
             ->withCount('ressources')
+            ->when(! $archives, fn ($q) => $q->actives())
             ->when($request->string('module')->toString(), fn ($q, $m) => $q->module($m))
             ->when($langue === 'toutes', fn ($q) => $q->whereNull('langue'))
             ->when($langue !== '' && $langue !== 'toutes', fn ($q) => $q->where('langue', $langue))
-            ->orderBy('module')
-            ->orderBy('code')
+            ->orderBy('archive_le')
             ->orderBy('langue')
             ->get()
-            ->groupBy('module');
+            // Tri naturel des codes (Conj2 avant Conj10) ; filtre badge en PHP (colonne JSON portable).
+            ->when($badge !== '', fn ($c) => $c->filter(fn (Referentiel $e) => in_array($badge, $e->badges ?? [], true)))
+            ->sortBy('code', SORT_NATURAL)
+            ->values();
 
         return view('admin.referentiel.index', [
-            'entrees' => $entrees,
-            'modules' => ReferentielRequest::MODULES,
+            'entrees' => Referentiel::grouperParModule($entrees),
+            'modules' => Referentiel::MODULES,
             'langues' => CodeStage::langues(),
+            'badges' => Referentiel::actives()->pluck('badges')->flatten()->filter()->unique()->sort()->values(),
+            'nbArchivees' => Referentiel::whereNotNull('archive_le')->count(),
         ]);
     }
 
@@ -58,7 +65,7 @@ class ReferentielController extends Controller
     {
         $referentiel->load('ressources');
 
-        return view('admin.referentiel.form', compact('referentiel') + $this->options());
+        return view('admin.referentiel.form', compact('referentiel') + $this->options($referentiel));
     }
 
     public function update(ReferentielRequest $request, Referentiel $referentiel): RedirectResponse
@@ -140,10 +147,11 @@ class ReferentielController extends Controller
         }
     }
 
-    private function options(): array
+    private function options(?Referentiel $referentiel = null): array
     {
         return [
-            'modules' => ReferentielRequest::MODULES,
+            // Le module d'une entrée archivée (ancienne trame) reste sélectionnable pour elle.
+            'modules' => array_values(array_unique(array_filter([...Referentiel::MODULES, $referentiel?->module]))),
             'niveaux' => NiveauxReferentiel::cles(),
             'langues' => CodeStage::langues(),
         ];
