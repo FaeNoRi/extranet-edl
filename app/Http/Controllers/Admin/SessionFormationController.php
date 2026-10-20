@@ -90,6 +90,16 @@ class SessionFormationController extends Controller
     /**
      * Téléchargement groupé (fiches pédagogiques + ressources) d'une session FPC.
      */
+    /** Toutes les fiches pédagogiques de la session (FPC ou OP), en un ZIP. */
+    public function fiches(SessionFormation $session, SessionArchiveService $archive): StreamedResponse|RedirectResponse
+    {
+        if (! $session->seances()->exists()) {
+            return back()->with('erreur', 'Cette session n\'a encore aucune fiche pédagogique.');
+        }
+
+        return $archive->telechargerFiches($session);
+    }
+
     public function archive(SessionFormation $session, SessionArchiveService $archive): StreamedResponse
     {
         abort_unless($session->isFpc(), 404);

@@ -67,6 +67,7 @@ Route::middleware(['auth', 'role:admin'])
             ->parameters(['sessions' => 'session']);
         Route::post('sessions/{session}/planning', [SessionJourController::class, 'sync'])->name('sessions.planning.sync');
         Route::get('sessions/{session}/archive', [SessionFormationController::class, 'archive'])->name('sessions.archive');
+        Route::get('sessions/{session}/fiches', [SessionFormationController::class, 'fiches'])->name('sessions.fiches');
 
         // Fiche pédagogique (séance) : consultation/modification depuis l'administration.
         // Création réservée au formateur (attribution automatique de l'auteur).
