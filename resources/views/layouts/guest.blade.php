@@ -11,7 +11,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-4 py-10">
+        <x-lisere-marque />
+        <div class="flex min-h-screen flex-col items-center justify-center bg-edl-creme px-4 py-10">
             <header>
                 <a href="{{ route('accueil') }}" class="flex items-center gap-3">
                     <img src="{{ asset(config('edl.logo')) }}" alt="" class="h-12 w-auto">

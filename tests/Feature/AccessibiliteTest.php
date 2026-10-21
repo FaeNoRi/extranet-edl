@@ -73,10 +73,49 @@ class AccessibiliteTest extends TestCase
         $config = file_get_contents(base_path('tailwind.config.js'));
 
         foreach (['rose', 'vert-fonce', 'bleu', 'marron'] as $couleur) {
-            preg_match("/'?{$couleur}'?: '(#[0-9A-Fa-f]{6})'/", $config, $m);
-            $this->assertNotEmpty($m, "Couleur {$couleur} introuvable");
-            $this->assertGreaterThanOrEqual(4.5, $this->contraste($m[1], '#FFFFFF'), "Contraste insuffisant pour {$couleur} ({$m[1]}) sur blanc");
+            $hex = $this->couleur($config, $couleur);
+            $this->assertGreaterThanOrEqual(4.5, $this->contraste($hex, '#FFFFFF'), "Contraste insuffisant pour {$couleur} ({$hex}) sur blanc");
         }
+    }
+
+    public function test_les_teintes_de_texte_de_la_refonte_restent_lisibles_sur_leur_fond(): void
+    {
+        $config = file_get_contents(base_path('tailwind.config.js'));
+
+        // [texte, couleur du fond teinté, opacité du fond sur blanc] (`bg-edl-*/10` ou `/15`).
+        $paires = [
+            ['bleu-fonce', 'bleu', 0.10],
+            ['bleu-vert-fonce', 'bleu-vert', 0.15],
+            ['vert-fonce', 'vert', 0.15],
+            ['jaune-fonce', 'jaune', 0.15],
+            ['orange-fonce', 'orange', 0.15],
+            ['rose-fonce', 'rose', 0.10],
+            ['violet-fonce', 'violet', 0.10],
+            ['texte-doux', 'creme', 1.0],
+            ['marron', 'creme', 1.0],
+        ];
+
+        foreach ($paires as [$texte, $fond, $opacite]) {
+            $hexTexte = $this->couleur($config, $texte);
+            $hexFond = $this->surBlanc($this->couleur($config, $fond), $opacite);
+            $this->assertGreaterThanOrEqual(4.5, $this->contraste($hexTexte, $hexFond), "Contraste insuffisant : {$texte} sur {$fond}/{$opacite}");
+        }
+    }
+
+    private function couleur(string $config, string $nom): string
+    {
+        preg_match("/[\s{]'?{$nom}'?: '(#[0-9A-Fa-f]{6})'/", $config, $m);
+        $this->assertNotEmpty($m, "Couleur {$nom} introuvable");
+
+        return $m[1];
+    }
+
+    /** Couleur obtenue en posant `$hex` à l'opacité donnée sur un fond blanc. */
+    private function surBlanc(string $hex, float $opacite): string
+    {
+        $canaux = array_map(fn ($c) => (int) round(255 - (255 - hexdec($c)) * $opacite), str_split(ltrim($hex, '#'), 2));
+
+        return sprintf('#%02X%02X%02X', ...$canaux);
     }
 
     private function luminance(string $hex): float

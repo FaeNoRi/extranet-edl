@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Purges de comptes</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Purges de comptes</h1>
     </x-slot>
 
     <x-admin.shell active="purges" titre="Purges de comptes">

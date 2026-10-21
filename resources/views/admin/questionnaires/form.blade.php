@@ -13,7 +13,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">
             {{ $edition ? 'Modifier le questionnaire' : 'Nouveau questionnaire' }}
         </h1>
     </x-slot>

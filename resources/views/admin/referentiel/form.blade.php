@@ -2,7 +2,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">
             {{ $edition ? 'Modifier une entrée du référentiel' : 'Nouvelle entrée du référentiel' }}
         </h1>
     </x-slot>

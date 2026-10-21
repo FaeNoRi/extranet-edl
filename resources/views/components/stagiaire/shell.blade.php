@@ -2,9 +2,9 @@
 
 @php
     $liens = [
-        'dashboard'  => ['route' => 'stagiaire.dashboard',       'label' => 'Mon espace'],
-        'ressources' => ['route' => 'stagiaire.ressources.index', 'label' => 'Ressources pédagogiques'],
-        'questionnaires' => ['route' => 'stagiaire.questionnaires.index', 'label' => 'Questionnaires'],
+        'dashboard'  => ['route' => 'stagiaire.dashboard',       'label' => 'Mon espace', 'icone' => 'accueil', 'couleur' => 'rose'],
+        'ressources' => ['route' => 'stagiaire.ressources.index', 'label' => 'Ressources pédagogiques', 'icone' => 'dossier', 'couleur' => 'bleu-vert'],
+        'questionnaires' => ['route' => 'stagiaire.questionnaires.index', 'label' => 'Questionnaires', 'icone' => 'questionnaire', 'couleur' => 'jaune'],
     ];
 @endphp
 
@@ -14,17 +14,8 @@
         'max-w-5xl' => ! $large,
         'max-w-7xl' => $large,
     ])>
-        <aside class="lg:w-52 lg:flex-shrink-0">
-            <nav aria-label="Rubriques de mon espace" class="flex gap-1 overflow-x-auto rounded-lg bg-white p-2 shadow-sm lg:flex-col">
-                @foreach ($liens as $cle => $lien)
-                    <a href="{{ route($lien['route']) }}"
-                       @class([
-                           'whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition',
-                           'bg-edl-rose text-white' => $active === $cle,
-                           'text-gray-600 hover:bg-gray-100' => $active !== $cle,
-                       ])>{{ $lien['label'] }}</a>
-                @endforeach
-            </nav>
+        <aside class="lg:w-60 lg:flex-shrink-0">
+            <x-menu-lateral :liens="$liens" :active="$active" espace="stagiaire" label="Rubriques de mon espace" />
         </aside>
 
         <div class="min-w-0 flex-1 space-y-6">
