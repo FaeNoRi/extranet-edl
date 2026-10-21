@@ -3,108 +3,54 @@
     $initiales = mb_strtoupper(mb_substr($user->prenom ?? '', 0, 1).mb_substr($user->nom ?? '', 0, 1)) ?: '?';
 @endphp
 
-<nav x-data="{ open: false }" aria-label="Navigation principale" class="border-b border-edl-sable bg-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 justify-between">
-            <div class="flex">
-                <div class="flex shrink-0 items-center">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-lg font-semibold text-edl-bleu">
-                        <img src="{{ asset(config('edl.logo')) }}" alt="" class="h-9 w-auto">
-                        Extranet <span class="text-edl-rose">EDL+</span>
-                    </a>
-                </div>
+{{-- Barre du haut : logo (retour au tableau de bord) et menu utilisateur. La navigation entre rubriques
+     se fait par le menu latéral de chaque espace. --}}
+<nav aria-label="Navigation principale" class="border-b border-edl-sable bg-white">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <a href="{{ route('dashboard') }}" class="flex shrink-0 items-center gap-2 text-lg font-semibold text-edl-bleu">
+            <img src="{{ asset(config('edl.logo')) }}" alt="" class="h-9 w-auto">
+            <span>Extranet <span class="text-edl-rose">EDL+</span><span class="sr-only"> — tableau de bord</span></span>
+        </a>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('formateur.*') || request()->routeIs('stagiaire.*')">
-                        {{ __('Tableau de bord') }}
-                    </x-nav-link>
-                    @if ($user->isAdmin())
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                            {{ __('Administration') }}
-                        </x-nav-link>
-                    @endif
-                </div>
-            </div>
+        <x-dropdown align="right" width="w-56">
+            <x-slot name="trigger">
+                <button aria-haspopup="true" :aria-expanded="open.toString()" class="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-edl-sable bg-white py-1 pe-3 ps-1 text-sm font-medium leading-4 text-edl-marron transition duration-150 ease-in-out hover:bg-edl-creme focus:outline-none">
+                    <span @class([
+                        'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold',
+                        'bg-edl-bleu text-white' => $user->isAdmin(),
+                        'bg-edl-orange text-gray-900' => $user->isFormateur(),
+                        'bg-edl-rose text-white' => ! $user->isAdmin() && ! $user->isFormateur(),
+                    ]) aria-hidden="true">{{ $initiales }}</span>
+                    {{-- Sur petit écran, seules les initiales s'affichent : le nom reste lu par les lecteurs d'écran. --}}
+                    <span class="sr-only sm:not-sr-only">
+                        {{ $user->nom_complet }}
+                        <span class="ms-1 text-xs text-edl-texte-doux">&middot; {{ $user->role->label() }}</span>
+                    </span>
 
-            <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button aria-haspopup="true" :aria-expanded="open.toString()" class="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-edl-sable bg-white py-1 pe-3 ps-1 text-sm font-medium leading-4 text-edl-marron transition duration-150 ease-in-out hover:bg-edl-creme focus:outline-none">
-                            <span @class([
-                                'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold',
-                                'bg-edl-bleu text-white' => $user->isAdmin(),
-                                'bg-edl-orange text-gray-900' => $user->isFormateur(),
-                                'bg-edl-rose text-white' => ! $user->isAdmin() && ! $user->isFormateur(),
-                            ]) aria-hidden="true">{{ $initiales }}</span>
-                            <span>
-                                {{ $user->nom_complet }}
-                                <span class="ms-1 text-xs text-edl-texte-doux">&middot; {{ $user->role->label() }}</span>
-                            </span>
-
-                            <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profil') }}
-                        </x-dropdown-link>
-
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                    x-on:click.prevent="$el.closest('form').submit()">
-                                {{ __('Se déconnecter') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" aria-label="Menu" :aria-expanded="open.toString()" class="inline-flex items-center justify-center rounded-md p-2 text-gray-600 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none">
-                    <svg class="h-6 w-6" aria-hidden="true" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                 </button>
-            </div>
-        </div>
-    </div>
+            </x-slot>
 
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="space-y-1 pb-3 pt-2">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('formateur.*') || request()->routeIs('stagiaire.*')">
-                {{ __('Tableau de bord') }}
-            </x-responsive-nav-link>
-            @if ($user->isAdmin())
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                    {{ __('Administration') }}
-                </x-responsive-nav-link>
-            @endif
-        </div>
+            <x-slot name="content">
+                <div class="border-b border-edl-sable px-4 py-2 sm:hidden">
+                    <p class="font-medium text-edl-marron">{{ $user->nom_complet }}</p>
+                    <p class="text-sm text-edl-texte-doux">{{ $user->role->label() }}</p>
+                </div>
 
-        <div class="border-t border-gray-200 pb-1 pt-4">
-            <div class="px-4">
-                <div class="text-base font-medium text-gray-800">{{ $user->nom_complet }}</div>
-                <div class="text-sm font-medium text-gray-500">{{ $user->role->label() }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
+                <x-dropdown-link :href="route('profile.edit')">
                     {{ __('Profil') }}
-                </x-responsive-nav-link>
+                </x-dropdown-link>
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <x-responsive-nav-link :href="route('logout')"
+                    <x-dropdown-link :href="route('logout')"
                             x-on:click.prevent="$el.closest('form').submit()">
                         {{ __('Se déconnecter') }}
-                    </x-responsive-nav-link>
+                    </x-dropdown-link>
                 </form>
-            </div>
-        </div>
+            </x-slot>
+        </x-dropdown>
     </div>
 </nav>
