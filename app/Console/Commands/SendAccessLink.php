@@ -27,6 +27,13 @@ class SendAccessLink extends Command
         $token = PasswordResetToken::issueFor($user);
         $user->notify(new PasswordSetupLink($token, nouveauCompte: (bool) $this->option('nouveau')));
 
+        // Le verrou (AppServiceProvider) a annulé l'envoi : ne pas annoncer un e-mail parti.
+        if ($user->isStagiaire() && ! config('edl.envois.stagiaires')) {
+            $this->warn("Envoi bloqué : les envois aux stagiaires sont désactivés (EDL_ENVOIS_STAGIAIRES=false). Aucun e-mail n'est parti vers {$user->email}.");
+
+            return self::SUCCESS;
+        }
+
         $this->info("Lien envoyé à {$user->email} (identifiant {$user->login}).");
 
         return self::SUCCESS;
