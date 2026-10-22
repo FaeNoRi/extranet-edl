@@ -104,7 +104,8 @@ Schéma refondu — migrations `2026_09_02_1200xx`. Après `git pull` : `php art
 - Chaque exécution (simulation comprise) est tracée dans `gescof_imports` (rapport JSON).
 - Commande : `php artisan edl:import-gescof <fichier> [--appliquer] [--envoyer-acces]`.
 - Colonnes attendues : `Nom, Prenom, NomClient, CodeProduit, LibelleStage, NumSession,
-  Email, ListeItv, AccesPlateforme` (compat. ancien `NomParticipant` unique).
+  Email, ListeItv, AccesPlateforme` (compat. ancien `NomParticipant` unique). L'export réel (octobre 2026)
+  porte `NomStagiaire`, `PrenomStagiaire`, `AccesPlatforme` et pas de `NomClient` : accepté aussi.
 
 ## Back-office admin (phase 2)
 

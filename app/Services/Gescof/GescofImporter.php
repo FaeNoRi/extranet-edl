@@ -25,6 +25,8 @@ use Illuminate\Support\Str;
  * Colonnes attendues (en-têtes insensibles à la casse/accents) :
  *   Nom, Prenom, NomClient, CodeProduit, LibelleStage, NumSession, Email,
  *   ListeItv, AccesPlateforme
+ * L'export réel (octobre 2026) nomme les deux premières NomStagiaire / PrenomStagiaire,
+ * écrit « AccesPlatforme » et n'a pas de NomClient : les deux variantes sont acceptées.
  *
  * Ne gère que les inscriptions : les séances, le planning et les détails de
  * session sont saisis via les formulaires admin/formateur.
@@ -112,8 +114,8 @@ class GescofImporter
     {
         $rapport->lignesLues++;
 
-        $nom = trim($ligne['nom'] ?? '');
-        $prenom = trim($ligne['prenom'] ?? '');
+        $nom = trim($ligne['nom'] ?? $ligne['nomstagiaire'] ?? '');
+        $prenom = trim($ligne['prenom'] ?? $ligne['prenomstagiaire'] ?? '');
 
         // Rétro-compatibilité : ancien gabarit avec une seule colonne
         // « NomParticipant » (format « NOM Prénom »).

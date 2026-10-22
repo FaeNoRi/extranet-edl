@@ -51,7 +51,10 @@ class VerrouEnvoisStagiairesTest extends TestCase
     {
         $stagiaire = User::factory()->stagiaireFpc()->create(['email' => 'stagiaire@example.test']);
 
-        $this->artisan('edl:acces', ['login' => $stagiaire->login])->assertSuccessful();
+        $this->artisan('edl:acces', ['login' => $stagiaire->login])
+            ->expectsOutputToContain('Envoi bloqué')
+            ->doesntExpectOutputToContain('Lien envoyé')
+            ->assertSuccessful();
 
         $this->assertSame([], $this->destinataires());
     }

@@ -153,6 +153,25 @@ class GescofImportTest extends TestCase
         );
     }
 
+    public function test_format_de_l_export_reel(): void
+    {
+        // En-têtes de l'export GESCOF réel : BOM UTF-8, fins de ligne Windows,
+        // NomStagiaire / PrenomStagiaire, « AccesPlatforme », pas de NomClient.
+        $chemin = sys_get_temp_dir().'/gescof_reel_'.uniqid().'.csv';
+        file_put_contents($chemin, "\xEF\xBB\xBF".implode("\r\n", [
+            'NomStagiaire;PrenomStagiaire;CodeProduit;LibelleStage;NumSession;Email;ListeItv;AccesPlatforme',
+            'MARTIN;Léa;AN-OP-6-7;Anglais : Session enfants 6/7 ans;260500A;famille.martin@example.test;Nicolas ROUSSEL -  Thème de la séance;Oui',
+            'MARTIN;Hugo;AN-OP-ST;Anglais : Stage;260501A;famille.martin@example.test;Nicolas ROUSSEL;Oui',
+        ])."\r\n");
+        $this->seedFormateurs();
+
+        $rapport = app(GescofImporter::class)->appliquer($chemin);
+
+        $this->assertSame(1, $rapport->comptesCrees);
+        $this->assertDatabaseHas('users', ['nom' => 'MARTIN', 'prenom' => 'Léa', 'role' => 'stagiaire_op']);
+        $this->assertSame('ROUSSEL', SessionFormation::where('num_GESCOF', '260500A')->first()->formateur->nom);
+    }
+
     private function fixtureSans(string $prefixeLigne): string
     {
         $lignes = file($this->fixture);
