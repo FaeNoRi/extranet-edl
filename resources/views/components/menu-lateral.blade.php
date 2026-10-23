@@ -17,7 +17,7 @@
            @class([
                'flex items-center gap-3 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm font-medium transition',
                $actif => $active === $cle,
-               'text-edl-marron hover:bg-edl-creme' => $active !== $cle,
+               'text-edl-marron hover:bg-edl-fond' => $active !== $cle,
            ])>
             @if ($active === $cle)
                 <span class="inline-flex h-8 w-8 flex-none items-center justify-center" aria-hidden="true">

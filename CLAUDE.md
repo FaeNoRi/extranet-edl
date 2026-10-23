@@ -306,12 +306,14 @@ Conventions à garder :
 Retour EDL « trop froid » : maquette validée (canevas « Refonte graphique EDL+ »), refonte légère sans changer
 la structure des pages.
 
-- **Fond** `bg-edl-creme`, bordures `border-edl-sable`, texte `text-edl-marron` (secondaire `text-edl-texte-doux`) ;
+- **Fond** `bg-edl-fond` (bleu très clair `#EDF4F8`, retenu face au gris : même lisibilité, plus proche du logo ; le crème du
+  premier jet a été écarté), bordures `border-edl-sable`, texte `text-edl-marron` (secondaire `text-edl-texte-doux`) ;
   cartes `rounded-xl border border-edl-sable bg-white`, sans ombre.
-- **Liseré** `<x-lisere-marque />` (7 couleurs) en haut de toutes les pages. **Bandeau de titre** coloré par espace
+- **Liseré** `<x-lisere-marque />` (7 couleurs) en haut de toutes les pages. **Barre du haut** réduite au logo (retour au tableau de bord) et au menu utilisateur (Profil, déconnexion ; initiales seules sur mobile) : la navigation passe par le menu latéral. **Bandeau de titre** coloré par espace
   (`AppLayout::espace()` : admin bleu, formateur orange avec texte sombre, stagiaire rose) ; le `<h1>` n'a pas de
   couleur propre ; slot facultatif `sousTitre`.
-- **Pictogrammes** : `<x-icone nom="…">` (traits SVG, `aria-hidden`), `<x-pastille icone couleur [plein] [taille]>`.
+- **Pictogrammes** : `<x-icone nom="…">` (traits SVG, `aria-hidden`), `<x-pastille icone couleur [plein] [taille]>`
+  (picto blanc sur fond plein, de la couleur sur fond teinté).
   Menu latéral `<x-menu-lateral>` (chaque lien : `icone` + `couleur`). `<x-admin.card icone="…" couleur="…">` teinte
   l'en-tête ; sans `icone`, en-tête blanc. `<x-badge-fichier :fichier>` : étiquette PDF/MP3…
 - **Texte sur fond teinté** (`bg-edl-*/10` ou `/15`) : teintes `edl-*-fonce` (bleu, bleu-vert, jaune, orange, rose,

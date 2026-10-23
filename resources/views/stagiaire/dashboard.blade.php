@@ -113,7 +113,7 @@
                     <ul class="-my-2 text-sm">
                         @foreach ($documentsStructure as $doc)
                             <li>
-                                <a href="{{ route($routeDocument, $doc) }}" class="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-edl-creme">
+                                <a href="{{ route($routeDocument, $doc) }}" class="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-edl-fond">
                                     <x-badge-fichier :fichier="$doc->nom_fichier_original ?: $doc->chemin_fichier" />
                                     <span class="flex-1 text-edl-bleu">{{ $doc->nom }}</span>
                                     <x-icone nom="chevron" class="h-4 w-4 text-edl-bleu" />
@@ -131,7 +131,7 @@
                     <ul class="-my-2 text-sm">
                         @foreach ($mesDocuments as $doc)
                             <li>
-                                <a href="{{ route($routeDocument, $doc) }}" class="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-edl-creme">
+                                <a href="{{ route($routeDocument, $doc) }}" class="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-edl-fond">
                                     <x-badge-fichier :fichier="$doc->nom_fichier_original ?: $doc->chemin_fichier" />
                                     <span class="flex-1 text-edl-bleu">{{ $doc->nom }}</span>
                                     <x-icone nom="chevron" class="h-4 w-4 text-edl-bleu" />

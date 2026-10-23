@@ -27,9 +27,9 @@ export default {
                     marron: '#544741',
                     gris: '#58595C',
                     'vert-fonce': '#177350', // assombri depuis #22A473 (contraste, WCAG 1.4.3)
-                    // Refonte d'octobre 2026 (« trop froid ») : fond chaud et teintes de texte foncées,
+                    // Refonte d'octobre 2026 (« trop froid ») : fond de page et teintes de texte foncées,
                     // lisibles (4,5:1) sur blanc comme sur les fonds teintés `bg-edl-*/10`.
-                    creme: '#FAF6F1',
+                    fond: '#EDF4F8', // fond de page bleu très clair (retour EDL : le crème a été écarté)
                     sable: '#EDE4DA',
                     'texte-doux': '#6B5F58',
                     'bleu-fonce': '#0F5272',

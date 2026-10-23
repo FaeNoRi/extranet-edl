@@ -1,14 +1,15 @@
 {{-- Pastille colorée portant un pictogramme. `plein` : fond de la couleur (titres de carte) ; sinon fond
-     teinté (menus, tuiles). Le texte sur jaune, orange, bleu-vert et vert reste sombre (contraste). --}}
+     teinté (menus, tuiles). Pictogramme toujours blanc sur fond plein (retour EDL) : décoratif et placé à
+     côté de son libellé, il n'est pas soumis au contraste 3:1 des éléments graphiques. --}}
 @props(['icone', 'couleur' => 'bleu', 'plein' => false, 'taille' => 'md'])
 
 @php
     $teintes = [
         'bleu' => ['bg-edl-bleu/10 text-edl-bleu', 'bg-edl-bleu text-white'],
-        'bleu-vert' => ['bg-edl-bleu-vert/15 text-edl-bleu-vert-fonce', 'bg-edl-bleu-vert text-gray-900'],
-        'vert' => ['bg-edl-vert/15 text-edl-vert-fonce', 'bg-edl-vert text-gray-900'],
-        'jaune' => ['bg-edl-jaune/15 text-edl-jaune-fonce', 'bg-edl-jaune text-gray-900'],
-        'orange' => ['bg-edl-orange/15 text-edl-orange-fonce', 'bg-edl-orange text-gray-900'],
+        'bleu-vert' => ['bg-edl-bleu-vert/15 text-edl-bleu-vert-fonce', 'bg-edl-bleu-vert text-white'],
+        'vert' => ['bg-edl-vert/15 text-edl-vert-fonce', 'bg-edl-vert text-white'],
+        'jaune' => ['bg-edl-jaune/15 text-edl-jaune-fonce', 'bg-edl-jaune text-white'],
+        'orange' => ['bg-edl-orange/15 text-edl-orange-fonce', 'bg-edl-orange text-white'],
         'rose' => ['bg-edl-rose/10 text-edl-rose', 'bg-edl-rose text-white'],
         'violet' => ['bg-edl-violet/10 text-edl-violet', 'bg-edl-violet text-white'],
         'marron' => ['bg-edl-marron/10 text-edl-marron', 'bg-edl-marron text-white'],
