@@ -12,7 +12,7 @@
     </head>
     <body class="font-sans text-gray-900 antialiased">
         <x-lisere-marque />
-        <div class="flex min-h-screen flex-col items-center justify-center bg-edl-creme px-4 py-10">
+        <div class="flex min-h-screen flex-col items-center justify-center bg-edl-fond px-4 py-10">
             <header>
                 <a href="{{ route('accueil') }}" class="flex items-center gap-3">
                     <img src="{{ asset(config('edl.logo')) }}" alt="" class="h-12 w-auto">

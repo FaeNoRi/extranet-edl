@@ -14,7 +14,7 @@
 
         <x-dropdown align="right" width="w-56">
             <x-slot name="trigger">
-                <button aria-haspopup="true" :aria-expanded="open.toString()" class="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-edl-sable bg-white py-1 pe-3 ps-1 text-sm font-medium leading-4 text-edl-marron transition duration-150 ease-in-out hover:bg-edl-creme focus:outline-none">
+                <button aria-haspopup="true" :aria-expanded="open.toString()" class="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-edl-sable bg-white py-1 pe-3 ps-1 text-sm font-medium leading-4 text-edl-marron transition duration-150 ease-in-out hover:bg-edl-fond focus:outline-none">
                     <span @class([
                         'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold',
                         'bg-edl-bleu text-white' => $user->isAdmin(),

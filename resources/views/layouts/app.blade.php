@@ -12,7 +12,7 @@
     </head>
     <body class="font-sans antialiased">
         <a href="#contenu-principal" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:font-semibold focus:text-edl-bleu focus:shadow-lg">Aller au contenu</a>
-        <div class="flex min-h-screen flex-col bg-edl-creme text-edl-marron">
+        <div class="flex min-h-screen flex-col bg-edl-fond text-edl-marron">
             <x-lisere-marque />
             @include('layouts.navigation')
 

@@ -69,7 +69,7 @@
                         @php
                             $etat = $seance->date->isToday() ? 'jour' : ($seance->date->isPast() ? 'passee' : 'avenir');
                         @endphp
-                        <li class="flex flex-wrap items-center gap-4 rounded-xl border border-edl-sable/70 bg-edl-creme/60 p-2.5 sm:flex-nowrap">
+                        <li class="flex flex-wrap items-center gap-4 rounded-xl border border-edl-sable/70 bg-edl-fond/60 p-2.5 sm:flex-nowrap">
                             <span @class([
                                 'w-14 flex-none rounded-lg py-1.5 text-center',
                                 'bg-edl-orange text-gray-900' => $etat === 'jour',

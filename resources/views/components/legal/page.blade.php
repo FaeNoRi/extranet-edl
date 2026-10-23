@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" href="{{ asset(config('edl.favicon')) }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-edl-creme font-sans text-gray-800">
+<body class="bg-edl-fond font-sans text-gray-800">
     <x-lisere-marque />
     <div class="mx-auto max-w-3xl px-4 py-12">
         <header>

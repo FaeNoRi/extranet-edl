@@ -91,8 +91,8 @@ class AccessibiliteTest extends TestCase
             ['orange-fonce', 'orange', 0.15],
             ['rose-fonce', 'rose', 0.10],
             ['violet-fonce', 'violet', 0.10],
-            ['texte-doux', 'creme', 1.0],
-            ['marron', 'creme', 1.0],
+            ['texte-doux', 'fond', 1.0],
+            ['marron', 'fond', 1.0],
         ];
 
         foreach ($paires as [$texte, $fond, $opacite]) {
