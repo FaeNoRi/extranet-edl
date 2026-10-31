@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Session</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Session</h1>
     </x-slot>
 
     <x-formateur.shell active="sessions">
@@ -85,7 +85,7 @@
                             <span class="flex gap-3">
                                 <a href="{{ route('formateur.ressources.download', $ressource) }}" class="text-edl-bleu hover:underline">Télécharger</a>
                                 <form method="POST" action="{{ route('formateur.ressources.destroy', $ressource) }}"
-                                      onsubmit="return confirm('Supprimer cette ressource ?')">
+                                      x-data @submit="if (! confirm('Supprimer cette ressource ?')) $event.preventDefault()">
                                     @csrf @method('DELETE')
                                     <button class="text-edl-rose hover:underline">Suppr.</button>
                                 </form>

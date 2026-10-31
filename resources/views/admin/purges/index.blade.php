@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Purges de comptes</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Purges de comptes</h1>
     </x-slot>
 
     <x-admin.shell active="purges" titre="Purges de comptes">
@@ -19,7 +19,7 @@
                 <x-slot name="actions">
                     @if ($comptes->isNotEmpty())
                         <form method="POST" action="{{ route('admin.purges.executer') }}"
-                              onsubmit="return confirm('Supprimer {{ $comptes->count() }} compte(s) {{ strtoupper($type) }} ?')">
+                              x-data @submit="if (! confirm('Supprimer {{ $comptes->count() }} compte(s) {{ strtoupper($type) }} ?')) $event.preventDefault()">
                             @csrf
                             <input type="hidden" name="type" value="{{ $type }}">
                             <button class="rounded-md border border-edl-rose px-3 py-2 text-sm font-semibold text-edl-rose hover:bg-edl-rose/10">

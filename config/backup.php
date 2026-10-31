@@ -62,7 +62,7 @@ return [
         'temporary_directory' => storage_path('app/backup-temp'),
 
         // L'archive contient des données personnelles : chiffrée (AES-256) dès qu'un mot de passe est défini.
-        'password' => env('BACKUP_ARCHIVE_PASSWORD'),
+        'password' => env('BACKUP_ARCHIVE_PASSWORD') ?: null,
         'encryption' => 'default',
 
         'verify_backup' => false,
@@ -79,10 +79,12 @@ return [
         ],
         'notifiable' => Notifiable::class,
         'mail' => [
-            'to' => env('BACKUP_NOTIFICATION_EMAIL', env('EDL_EMAIL', 'contact@edl-grandcalais.com')),
+            // « ?: » et non une valeur par défaut d'env() : une variable déclarée vide (.env.example, CI)
+            // vaut '' et non null, ce que spatie refuse comme adresse.
+            'to' => env('BACKUP_NOTIFICATION_EMAIL') ?: env('EDL_EMAIL') ?: 'contact@edl-grandcalais.com',
             'from' => [
-                'address' => env('MAIL_FROM_ADDRESS', 'no-reply@edl-grandcalais.fr'),
-                'name' => env('MAIL_FROM_NAME', 'Extranet EDL+'),
+                'address' => env('MAIL_FROM_ADDRESS') ?: 'no-reply@edl-grandcalais.fr',
+                'name' => env('MAIL_FROM_NAME') ?: 'Extranet EDL+',
             ],
         ],
         'slack' => ['webhook_url' => '', 'channel' => null, 'username' => null, 'icon' => null],

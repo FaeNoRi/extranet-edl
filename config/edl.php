@@ -128,6 +128,13 @@ return [
     |
     */
 
+    // Envois aux stagiaires (liens d'accès, réinitialisation de mot de passe). Bloqués par défaut :
+    // pendant la phase de test (import GESCOF réel), aucun e-mail ne doit partir vers un stagiaire,
+    // quelle que soit l'action ou la configuration du serveur d'e-mail. À passer à true à l'ouverture.
+    'envois' => [
+        'stagiaires' => (bool) env('EDL_ENVOIS_STAGIAIRES', false),
+    ],
+
     'uploads' => [
         'extensions' => [
             'pdf', 'doc', 'docx', 'odt', 'rtf', 'txt',

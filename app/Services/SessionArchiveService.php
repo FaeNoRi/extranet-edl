@@ -19,6 +19,48 @@ use ZipArchive;
  */
 class SessionArchiveService
 {
+    public function __construct(private FichePedagogiqueService $fiches) {}
+
+    /**
+     * Toutes les fiches pédagogiques d'une session (FPC ou OP) dans un ZIP à plat, une par séance,
+     * dans l'ordre chronologique : « AAAA-MM-JJ - stagiaire - fiche pedagogique.pdf ». Une fiche dont
+     * le PDF manque (ou n'a jamais été généré) est régénérée à la volée.
+     */
+    public function telechargerFiches(SessionFormation $session): StreamedResponse
+    {
+        $session->load(['seances' => fn ($q) => $q->orderBy('date')->orderBy('id'), 'seances.stagiaire']);
+
+        $chemin = tempnam(sys_get_temp_dir(), 'edlfiches').'.zip';
+        $zip = new ZipArchive;
+        if ($zip->open($chemin, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            throw new RuntimeException('Impossible de créer l\'archive.');
+        }
+
+        $noms = [];
+        foreach ($session->seances as $seance) {
+            if (! $seance->fiche_pdf_path || ! Storage::exists($seance->fiche_pdf_path)) {
+                $this->fiches->generer($seance);
+            }
+
+            $base = $seance->date->format('Y-m-d')
+                .($seance->stagiaire ? ' - '.Str::slug($seance->stagiaire->nom_complet) : '')
+                .' - fiche pedagogique';
+            // Deux séances le même jour (même stagiaire ou groupe OP) : suffixe (2), (3)…
+            $noms[$base] = ($noms[$base] ?? 0) + 1;
+            $nom = $base.($noms[$base] > 1 ? " ({$noms[$base]})" : '').'.pdf';
+
+            $zip->addFromString($nom, Storage::get($seance->fiche_pdf_path));
+        }
+        $zip->close();
+
+        $nom = 'fiches-pedagogiques-'.Str::slug($session->num_GESCOF).'-'.now()->format('Ymd').'.zip';
+
+        return response()->streamDownload(function () use ($chemin) {
+            readfile($chemin);
+            @unlink($chemin);
+        }, $nom, ['Content-Type' => 'application/zip']);
+    }
+
     public function telecharger(SessionFormation $session): StreamedResponse
     {
         $chemin = $this->construire($session);

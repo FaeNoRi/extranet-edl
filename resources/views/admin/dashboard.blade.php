@@ -1,53 +1,56 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Administration</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Administration</h1>
     </x-slot>
 
     <x-admin.shell active="dashboard" titre="Vue d'ensemble">
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @php
+                // [libellé, valeur, détail, route, pictogramme, couleur, couleur du chiffre]
                 $tuiles = [
-                    ['Sessions', $nbSessions, "{$nbSessionsFpc} FPC · {$nbSessionsOp} OP", 'admin.sessions.index'],
-                    ['Stagiaires', $nbStagiaires, $nbStagiairesDisparus ? "{$nbStagiairesDisparus} disparu(s) de l'import" : 'à jour', 'admin.stagiaires.index'],
-                    ['Formateurs', $nbFormateurs, null, 'admin.formateurs.index'],
-                    ['Sessions sans référent', $sessionsSansFormateur, 'formateur à affecter', 'admin.sessions.index'],
+                    ['Sessions', $nbSessions, "{$nbSessionsFpc} FPC · {$nbSessionsOp} OP", 'admin.sessions.index', 'calendrier', 'bleu', 'text-edl-bleu'],
+                    ['Stagiaires', $nbStagiaires, $nbStagiairesDisparus ? "{$nbStagiairesDisparus} disparu(s) de l'import" : 'à jour', 'admin.stagiaires.index', 'groupe', 'rose', 'text-edl-rose'],
+                    ['Formateurs', $nbFormateurs, null, 'admin.formateurs.index', 'personne', 'orange', 'text-edl-orange-fonce'],
+                    ['Sessions sans référent', $sessionsSansFormateur, 'formateur à affecter', 'admin.sessions.index', 'alerte', 'jaune', 'text-edl-jaune-fonce'],
                 ];
             @endphp
 
-            @foreach ($tuiles as [$label, $valeur, $detail, $route])
-                <a href="{{ route($route) }}" class="rounded-lg bg-white p-5 shadow-sm transition hover:shadow">
-                    <p class="text-sm text-gray-500">{{ $label }}</p>
-                    <p class="mt-1 text-3xl font-semibold text-edl-bleu">{{ $valeur }}</p>
+            @foreach ($tuiles as [$label, $valeur, $detail, $route, $icone, $couleur, $teinteChiffre])
+                <a href="{{ route($route) }}" class="rounded-xl border border-edl-sable bg-white p-5 transition hover:shadow-sm">
+                    <x-pastille :icone="$icone" :couleur="$couleur" taille="lg" />
+                    <p class="mt-3 text-sm text-edl-texte-doux">{{ $label }}</p>
+                    <p class="text-3xl font-semibold {{ $teinteChiffre }}">{{ $valeur }}</p>
                     @if ($detail)
-                        <p class="mt-1 text-xs text-gray-500">{{ $detail }}</p>
+                        <p class="mt-1 text-xs text-edl-texte-doux">{{ $detail }}</p>
                     @endif
                 </a>
             @endforeach
         </div>
 
-        <x-admin.card titre="Import GESCOF">
-            @if ($dernierImport)
-                <p class="text-sm text-gray-600">
-                    Dernier import appliqué le
-                    <strong>{{ $dernierImport->created_at->translatedFormat('d/m/Y à H\hi') }}</strong>
-                    ({{ $dernierImport->fichier_nom }}) —
-                    {{ $dernierImport->comptes_crees }} compte(s) créé(s),
-                    {{ $dernierImport->sessions_creees }} session(s) créée(s).
-                </p>
-            @else
-                <p class="text-sm text-gray-500">Aucun import appliqué pour le moment.</p>
-            @endif
-
-            <div class="mt-4">
-                <a href="{{ route('admin.imports.index') }}"
-                   class="inline-flex rounded-md bg-edl-bleu px-4 py-2 text-sm font-semibold text-white hover:bg-edl-vert-fonce">
-                    Nouvel import
-                </a>
+        <section class="flex flex-wrap items-center gap-4 rounded-xl border border-edl-jaune/40 bg-edl-jaune/15 p-5">
+            <x-pastille icone="import" couleur="jaune" plein taille="lg" />
+            <div class="min-w-0 flex-[1_1_20rem] text-edl-jaune-fonce">
+                <h2 class="font-semibold">Import GESCOF</h2>
+                @if ($dernierImport)
+                    <p class="text-sm">
+                        Dernier import appliqué le
+                        <strong>{{ $dernierImport->created_at->translatedFormat('d/m/Y à H\hi') }}</strong>
+                        ({{ $dernierImport->fichier_nom }}) —
+                        {{ $dernierImport->comptes_crees }} compte(s) créé(s),
+                        {{ $dernierImport->sessions_creees }} session(s) créée(s).
+                    </p>
+                @else
+                    <p class="text-sm">Aucun import appliqué pour le moment.</p>
+                @endif
             </div>
-        </x-admin.card>
+            <a href="{{ route('admin.imports.index') }}"
+               class="inline-flex rounded-lg bg-edl-bleu px-4 py-2.5 text-sm font-semibold text-white hover:bg-edl-vert-fonce">
+                Nouvel import
+            </a>
+        </section>
 
         <div class="grid items-start gap-4 lg:grid-cols-2">
-            <x-admin.card titre="Dernières ressources importées">
+            <x-admin.card titre="Dernières ressources importées" icone="dossier" couleur="bleu-vert">
                 <div x-data="{
                         selection: null,
                         ressources: {{ Illuminate\Support\Js::from($dernieresRessources->map(fn ($r) => [
@@ -128,7 +131,7 @@
                 </div>
             </x-admin.card>
 
-            <x-admin.card titre="Alertes">
+            <x-admin.card titre="Alertes" icone="alerte" couleur="rose">
                 <ul class="divide-y divide-gray-100 text-sm">
                     <li class="flex items-center justify-between py-2">
                         <span>Purges OP en attente de validation</span>
@@ -172,7 +175,7 @@
                 </div>
             </x-admin.card>
 
-            <x-admin.card titre="Avancement des sessions FPC en cours">
+            <x-admin.card titre="Avancement des sessions FPC en cours" icone="graphique" couleur="violet">
                 @if ($avancementFpc->isEmpty())
                     <p class="text-sm text-gray-500">Aucune session FPC en cours.</p>
                 @else
@@ -194,7 +197,7 @@
                 @endif
             </x-admin.card>
 
-            <x-admin.card titre="Questionnaires actifs — taux de réponse">
+            <x-admin.card titre="Questionnaires actifs — taux de réponse" icone="questionnaire" couleur="vert">
                 @if ($questionnairesTaux->isEmpty())
                     <p class="text-sm text-gray-500">Aucun questionnaire actif.</p>
                 @else

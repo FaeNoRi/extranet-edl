@@ -9,7 +9,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased">
-    <div class="flex min-h-screen flex-col bg-gray-100">
+    <x-lisere-marque />
+    <div class="flex min-h-screen flex-col bg-edl-fond">
         <main class="flex flex-1 items-center justify-center px-4 py-16">
             <div class="w-full max-w-lg text-center">
                 <img src="{{ asset(config('edl.logo')) }}" alt="" class="mx-auto h-20 w-auto">

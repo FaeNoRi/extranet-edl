@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Import GESCOF</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Import GESCOF</h1>
     </x-slot>
 
     <x-admin.shell active="imports">
@@ -29,13 +29,19 @@
                         seront réellement créés. Cette opération est journalisée.
                     </p>
                     <form method="POST" action="{{ route('admin.imports.appliquer', $import) }}"
-                          onsubmit="return confirm('Appliquer définitivement cet import ?')">
+                          x-data @submit="if (! confirm('Appliquer définitivement cet import ?')) $event.preventDefault()">
                         @csrf
-                        <label class="mb-3 flex items-center gap-2 text-sm text-gray-700">
-                            <input type="checkbox" name="envoyer_acces" value="1"
-                                   class="rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
-                            Envoyer immédiatement le lien d'accès aux comptes créés
-                        </label>
+                        @if (config('edl.envois.stagiaires'))
+                            <label class="mb-3 flex items-center gap-2 text-sm text-gray-700">
+                                <input type="checkbox" name="envoyer_acces" value="1"
+                                       class="rounded border-gray-300 text-edl-bleu focus:ring-edl-bleu">
+                                Envoyer immédiatement le lien d'accès aux comptes créés
+                            </label>
+                        @else
+                            <p class="mb-3 rounded-md bg-edl-jaune/20 px-3 py-2 text-sm text-gray-800" role="status">
+                                Envois aux stagiaires bloqués (phase de test) : aucun lien d'accès ne sera envoyé.
+                            </p>
+                        @endif
                         <x-primary-button>Appliquer l'import</x-primary-button>
                     </form>
                 @else

@@ -2,7 +2,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Documents de la structure</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Documents de la structure</h1>
     </x-slot>
 
     <x-admin.shell active="documents" titre="Documents de la structure">
@@ -52,7 +52,7 @@
                             <span class="flex gap-3">
                                 <a href="{{ route('admin.documents.download', $document) }}" class="text-edl-bleu hover:underline">Télécharger</a>
                                 <form method="POST" action="{{ route('admin.documents.destroy', $document) }}"
-                                      onsubmit="return confirm('Supprimer ce document ?')">
+                                      x-data @submit="if (! confirm('Supprimer ce document ?')) $event.preventDefault()">
                                     @csrf @method('DELETE')
                                     <button class="text-edl-rose hover:underline">Suppr.</button>
                                 </form>

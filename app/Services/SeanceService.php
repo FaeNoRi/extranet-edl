@@ -25,6 +25,7 @@ class SeanceService
         $seance->update([
             'user_id' => $session->isFpc() ? $request->input('user_id') : null,
             'date' => $request->date('date'),
+            'distanciel' => $request->boolean('distanciel'),
             'objectifs' => $request->input('objectifs', []),
             'outils' => $request->input('outils', []),
             'contenu' => $request->input('contenu'),
@@ -48,7 +49,13 @@ class SeanceService
             'seance' => $seance,
             'objectifsProposes' => OptionsSeance::objectifsPour($session),
             'outils' => OptionsSeance::OUTILS,
-            'modules' => Referentiel::orderBy('module')->orderBy('code')->get()->groupBy('module'),
+            // Entrées actives de la langue de la session + communes ; celles déjà cochées restent
+            // visibles même archivées (ancienne trame). Modules dans l'ordre de la trame.
+            'modules' => Referentiel::grouperParModule(Referentiel::query()
+                ->where(fn ($q) => $q->where(fn ($q) => $q->actives()->pourLangue($session->langue))
+                    ->when($seance->exists, fn ($q) => $q->orWhereIn('id', $seance->referentiels()->pluck('referentiel.id'))))
+                ->with('ressources')
+                ->get()->sortBy('code', SORT_NATURAL)->values()),
             'ressourcesSession' => Ressource::where('session_formation_id', $session->id)->orderBy('nom')->get(),
             'stagiaires' => $session->stagiaires()->orderBy('nom')->get(),
         ];
@@ -79,23 +86,12 @@ class SeanceService
     {
         return Ressource::create([
             'nom' => pathinfo($fichier->getClientOriginalName(), PATHINFO_FILENAME),
-            'type_fichier' => $this->typeFichier($fichier),
+            'type_fichier' => Ressource::typeDepuisFichier($fichier),
             'chemin_fichier' => $fichier->store("seances/{$seance->id}/ressources"),
             'nom_fichier_original' => $fichier->getClientOriginalName(),
             'taille' => $fichier->getSize(),
             'uploader_id' => auth()->id(),
             'session_formation_id' => $seance->session_formation_id,
         ]);
-    }
-
-    private function typeFichier(UploadedFile $fichier): string
-    {
-        return match (true) {
-            str_starts_with((string) $fichier->getMimeType(), 'audio/') => 'audio',
-            str_starts_with((string) $fichier->getMimeType(), 'video/') => 'video',
-            str_starts_with((string) $fichier->getMimeType(), 'image/') => 'image',
-            $fichier->getClientOriginalExtension() === 'pdf' => 'pdf',
-            default => 'autre',
-        };
     }
 }

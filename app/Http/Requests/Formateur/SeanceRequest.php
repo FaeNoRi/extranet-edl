@@ -48,6 +48,7 @@ class SeanceRequest extends FormRequest
                 Rule::exists('session_formation_user', 'user_id')->where('session_formation_id', $session?->id),
             ],
             'date' => ['required', 'date'],
+            'distanciel' => ['nullable', 'boolean'],
             'objectifs' => ['array'],
             'objectifs.*' => [Rule::in($objectifsAutorises)],
             'contenu' => ['required', 'string', 'max:10000'],

@@ -11,7 +11,13 @@ class DashboardController extends Controller
     public function __invoke(): View
     {
         $sessions = auth()->user()->sessionsPourFormateur()
-            ->loadCount(['seances', 'stagiaires'])
+            ->loadCount([
+                'seances',
+                'stagiaires',
+                // Avancement de la carte : jours de planning actifs passés / prévus.
+                'jours as jours_prevus_count' => fn ($q) => $q->where('actif', true),
+                'jours as jours_realises_count' => fn ($q) => $q->where('actif', true)->whereDate('date', '<=', today()),
+            ])
             ->sortByDesc('gescof_importe_at');
 
         $prochainesSeances = Seance::whereIn('session_formation_id', $sessions->pluck('id'))

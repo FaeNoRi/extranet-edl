@@ -75,7 +75,12 @@ Schéma refondu — migrations `2026_09_02_1200xx`. Après `git pull` : `php art
   nul = document commun structure.
 - `emargements` (FPC distanciel), `questionnaires` + `questionnaire_questions` +
   `questionnaire_reponses` (formulaires en ligne — UI en phase 4).
-- `referentiel` : trame réelle du CDC §3 chargée par `ReferentielSeeder` (52 entrées, idempotent).
+- `referentiel` : **trame v3** (octobre 2026, fichier client « Update Référentiel v3 ») dans `ReferentielSeeder`
+  (108 entrées en anglais, 8 modules `Referentiel::MODULES`, badges JUNIOR/ORAL/COM/RH/LOG/TOUR/DEPL ; corrections
+  du fichier documentées dans le seeder). `module` est une chaîne (plus d'enum). `archive_le` : entrée d'une trame
+  précédente, gardée car cochée dans des fiches, mais plus proposée (scope `actives()`). Nouvelle version de la
+  trame → mettre à jour le seeder puis `php artisan edl:referentiel-charger [--simuler]` : crée/met à jour la trame,
+  archive les entrées hors trame utilisées (séances ou documents), supprime les autres.
 
 ## Import GESCOF (phase 2)
 
@@ -91,6 +96,11 @@ Schéma refondu — migrations `2026_09_02_1200xx`. Après `git pull` : `php art
   `session_formation_formateur` (équipe). Appariement souple par nom ; non-reconnus =
   anomalie, à compléter dans le formulaire admin. `intervenants_import` conserve la
   chaîne brute (colonne libre, saisie humaine).
+- **Verrou des envois aux stagiaires** : `EDL_ENVOIS_STAGIAIRES` (défaut **false**, `config('edl.envois.stagiaires')`).
+  Tant qu'il est à false, un écouteur `NotificationSending` (`AppServiceProvider`) annule toute notification vers
+  un compte stagiaire (import avec envoi d'accès, mot de passe oublié, `edl:acces`) et la journalise ; la case
+  d'envoi de l'import est masquée ; `edl:preflight` le signale. Mis en place pour le test avec un export GESCOF
+  réel : à passer à true à l'ouverture aux stagiaires. Les formateurs et administrateurs ne sont pas concernés.
 - Chaque exécution (simulation comprise) est tracée dans `gescof_imports` (rapport JSON).
 - Commande : `php artisan edl:import-gescof <fichier> [--appliquer] [--envoyer-acces]`.
 - Colonnes attendues : `Nom, Prenom, NomClient, CodeProduit, LibelleStage, NumSession,
@@ -112,6 +122,18 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
   `SessionFormationRequest` : rythme OP obligatoire si `code_produit=OP`.
 - **Stagiaires** (`admin.stagiaires.index` + `destroy`) : liste filtrable (session,
   « absents du dernier import »), suppression (soft delete).
+- **Référentiel** (`admin.referentiel.*`, `resource` sans `show`) : CRUD, liste groupée
+  par module (filtrable par module et langue). Depuis octobre 2026 (retours de réunion) :
+  **niveaux EDL** `essentiel` (≈ A1/A2), `consolidation` (≈ B1/B2), `perfectionnement` (≈ C1/C2),
+  plusieurs possibles, clés stockées via `App\Casts\SetCast`, libellés dans `App\Support\NiveauxReferentiel`
+  (`depuisCecrl()` a converti les anciennes valeurs A1…C2) ; **langue** (`CodeStage::langues()`, nulle =
+  toutes langues ; code unique **par langue**) — le formulaire de séance ne propose que la langue de la
+  session + les entrées communes ; **badges multiples** (`badges` JSON, saisis « COM, RH, ORAL », normalisés en
+  majuscules, filtrables ; admin + formateurs, jamais le stagiaire) ; **documents communs** du code (`referentiel/{id}/…`, pivot `referentiel_ressources`) :
+  déposés une fois sur la fiche de l'entrée, ils apparaissent dans chaque séance qui coche le code
+  (dossier formateur, ressources stagiaire ; tout formateur peut les télécharger). Suppression d'une
+  entrée bloquée si elle est utilisée dans une séance (`cascadeOnDelete` sur `seances_referentiel`,
+  on ne veut pas casser l'historique des fiches pédagogiques).
 - **Journal** (`admin.journal.index`) : `activity_log` paginé, filtres objet/événement,
   diff old/new.
 - **Purges** (`admin.purges.*`) : `PurgeComptesService` — comptes OP dont les sessions
@@ -121,6 +143,8 @@ Sous `/admin` (`role:admin`), layout `<x-admin.shell active="…">` (barre laté
   `edl:purge-comptes [--op] [--fpc] [--appliquer]`, planifiée quotidiennement à 3h
   (OP appliquée automatiquement, FPC seulement signalée — validée dans l'UI).
   Config : `config('edl.purges')`.
+- **Fiches pédagogiques d'une session** (`admin.sessions.fiches`, FPC et OP) : `SessionArchiveService::telechargerFiches()`,
+  ZIP à plat « AAAA-MM-JJ - stagiaire - fiche pedagogique.pdf » (suffixe (2) si même jour), PDF manquants régénérés.
 - **Archive session FPC** (`admin.sessions.archive`) : `SessionArchiveService` produit un
   ZIP (un dossier par séance, fiche + ressources `date.RPn`, `MANIFESTE.txt` des fichiers
   attendus mais absents — fiches PDF en phase 3).
@@ -133,18 +157,21 @@ Sous `/formateur` (`role:formateur`), layout `<x-formateur.shell>` (accent orang
 Accès limité par `SeancePolicy` / `sessionsPourFormateur()` (référent OU équipe).
 
 - **Tableau de bord** : cartes des sessions, séances récentes/à venir.
-- **Sessions** (`formateur.sessions.*`) : liste + fiche. Pour une session FPC, la fiche
+- **Sessions** (`formateur.sessions.*`) : liste (carte FPC : nom du premier stagiaire, « + N autre(s) ») + fiche. Pour une session FPC, la fiche
   affiche le **suivi de progression** (séances regroupées par stagiaire). Pas de dépôt de
   ressources au niveau session : les fichiers se déposent uniquement depuis la fiche
   pédagogique (séance) ; la carte « Ressources de la session » reste en lecture/suppression.
 - **Fiche pédagogique = séance** (`formateur.seances.*`) : formulaire complet (champs
-  auto : stage, formateur, langue ; date, stagiaire si FPC, objectifs `OptionsSeance`
+  auto : stage, formateur, langue ; date, case « Séance en distanciel » (pré-cochée si la session est en
+  distanciel, mention « En distanciel » sur le PDF), stagiaire si FPC, objectifs `OptionsSeance`
   + objectifs perso de la session, contenu, outils, sources, modules du référentiel,
   analyse). Fichiers déposés en `fichiers_transmis[]` / `fichiers_internes[]`
   → `Ressource` + pivot `seances_ressources.transmis`.
 - À l'enregistrement : `FichePedagogiqueService` génère le **PDF** (`barryvdh/laravel-dompdf`,
   vue `pdf.fiche-pedagogique`) rangé dans `storage/app/private/seances/{id}/`. Régénéré
   à chaque modification. Téléchargement : `formateur.seances.fiche`.
+- Formulaire : référentiel en **accordéon** (un `<details>` par module, ouvert d'office si une entrée y est
+  cochée, compteur Alpine des cases) ; sous chaque code, liens vers ses documents communs.
 - Le **dossier de séance** (page show) réunit résumé, ressources (transmis/travail) et
   fiches du référentiel des modules cochés.
 
@@ -314,7 +341,7 @@ Revue du code (autorisations, uploads, authentification, en-têtes, dépendances
 - **CSP** (`SecurityHeaders::POLITIQUE_CONTENU`) : tout en `'self'`, aucun hôte tiers. `'unsafe-eval'` pour Alpine,
   `'wasm-unsafe-eval'` pour PDF.js. Vérifiée dans Edge (visionneuse OP, Alpine, constructeur de questionnaires).
   **Toute nouvelle ressource externe (CDN, police, analytics) sera bloquée** : l'ajouter consciemment à la CSP **et**
-  à la politique de confidentialité. Pas de `<script>` en ligne dans les vues (garder ainsi).
+  à la politique de confidentialité. Ni `<script>` ni gestionnaire en ligne (`onclick`, `onsubmit`, `onchange`…) dans les vues : ils sont bloqués en silence (déconnexion cassée, suppressions sans confirmation). Utiliser Alpine (`x-data @submit="if (! confirm(…)) $event.preventDefault()"`, `x-on:click.prevent`) ; un test de `SecuriteTest` le vérifie.
 - **Pages connectées** : `Cache-Control: no-store, private` sur le HTML (poste partagé : le bouton « Précédent »
   après déconnexion ne ré-affiche rien).
 - **Authentification** : mots de passe **10 caractères minimum, lettres + chiffres** (`Password::defaults()`) ;

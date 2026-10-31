@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Questionnaires</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Questionnaires</h1>
     </x-slot>
 
     <x-admin.shell active="questionnaires">
@@ -48,7 +48,7 @@
                                         <a href="{{ route('admin.questionnaires.resultats', $q) }}" class="text-edl-bleu hover:underline">Résultats</a>
                                         <a href="{{ route('admin.questionnaires.edit', $q) }}" class="ml-3 text-edl-bleu hover:underline">Modifier</a>
                                         <form method="POST" action="{{ route('admin.questionnaires.destroy', $q) }}" class="ml-3 inline"
-                                              onsubmit="return confirm('Supprimer ce questionnaire et ses réponses ?')">
+                                              x-data @submit="if (! confirm('Supprimer ce questionnaire et ses réponses ?')) $event.preventDefault()">
                                             @csrf @method('DELETE')
                                             <button class="text-edl-rose hover:underline">Suppr.</button>
                                         </form>

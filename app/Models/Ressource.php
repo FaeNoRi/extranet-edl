@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Http\UploadedFile;
 
 class Ressource extends Model
 {
@@ -40,6 +41,20 @@ class Ressource extends Model
     {
         return $this->belongsToMany(Seance::class, 'seances_ressources', 'ressource_id', 'seance_id')
             ->withPivot('transmis');
+    }
+
+    /** Type affiché/lu par les lecteurs, déduit du fichier téléversé. */
+    public static function typeDepuisFichier(UploadedFile $fichier): string
+    {
+        $mime = (string) $fichier->getMimeType();
+
+        return match (true) {
+            str_starts_with($mime, 'audio/') => 'audio',
+            str_starts_with($mime, 'video/') => 'video',
+            str_starts_with($mime, 'image/') => 'image',
+            strtolower($fichier->getClientOriginalExtension()) === 'pdf' => 'pdf',
+            default => 'autre',
+        };
     }
 
     public function referentiels(): BelongsToMany

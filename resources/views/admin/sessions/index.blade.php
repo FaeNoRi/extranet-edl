@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Sessions</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Sessions</h1>
     </x-slot>
 
     <x-admin.shell active="sessions">
@@ -16,7 +16,7 @@
             <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
                 <input type="search" name="q" value="{{ request('q') }}" placeholder="Libellé, n° GESCOF…"
                        class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
-                <select name="produit" aria-label="Filtrer par produit" onchange="this.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
+                <select name="produit" aria-label="Filtrer par produit" x-data @change="$el.form.requestSubmit()" class="rounded-md border-gray-300 text-sm focus:border-edl-bleu focus:ring-edl-bleu">
                     <option value="">Tous produits</option>
                     <option value="FPC" @selected(request('produit') === 'FPC')>FPC</option>
                     <option value="OP" @selected(request('produit') === 'OP')>OP</option>

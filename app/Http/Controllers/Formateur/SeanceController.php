@@ -37,6 +37,7 @@ class SeanceController extends Controller
                 'formateur_id' => $request->user()->id,
                 'user_id' => $session->isFpc() ? $request->input('user_id') : null,
                 'date' => $request->date('date'),
+                'distanciel' => $request->boolean('distanciel'),
                 'langue' => $session->langue,
                 'objectifs' => $request->input('objectifs', []),
                 'outils' => $request->input('outils', []),

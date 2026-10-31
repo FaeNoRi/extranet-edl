@@ -52,6 +52,8 @@ class PreflightService
         // --- Courrier --------------------------------------------------------------------------
         $ajouter('Envoi d\'e-mails réel', ! in_array(config('mail.default'), ['log', 'array'], true), 'MAIL_MAILER = '.config('mail.default').' : les liens d\'accès ne seraient pas envoyés.');
 
+        $ajouter('Envois aux stagiaires activés', (bool) config('edl.envois.stagiaires'), 'EDL_ENVOIS_STAGIAIRES=false : verrou de la phase de test, les stagiaires ne recevraient pas leur lien d\'accès. Passer à true à l\'ouverture.', self::AVERTISSEMENT);
+
         // --- Fichiers ----------------------------------------------------------------------------
         foreach (['storage/app', 'storage/framework/cache', 'storage/logs'] as $dossier) {
             $ajouter("Écriture dans {$dossier}", is_writable(base_path($dossier)), "Le dossier {$dossier} doit être accessible en écriture par le serveur web.");

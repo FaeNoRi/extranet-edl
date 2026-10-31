@@ -7,7 +7,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-xl font-semibold leading-tight text-edl-marron">Séance du {{ $seance->date->format('d/m/Y') }}</h1>
+        <h1 class="text-2xl font-semibold leading-tight sm:text-3xl">Séance du {{ $seance->date->format('d/m/Y') }}</h1>
     </x-slot>
 
     <x-stagiaire.shell active="ressources">
@@ -74,7 +74,7 @@
                                     <p class="font-medium text-gray-800">
                                         {{ $seance->date->format('d/m/Y') }}.{{ $referentiel->contenu }}
                                     </p>
-                                    <p class="text-xs text-gray-500">{{ $referentiel->module }} — {{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }}</p>
+                                    <p class="text-xs text-gray-500">{{ $referentiel->module }} — {{ $referentiel->niveauxAffiches() }}</p>
                                     @foreach ($referentiel->ressources as $ressource)
                                         @if ($op)
                                             <a href="{{ route('stagiaire.ressources.apercu', $ressource) }}"
@@ -99,14 +99,14 @@
             {{-- Volet de visualisation (hors OP) --}}
             @unless ($op)
             <div class="lg:sticky lg:top-6 lg:h-[70vh]">
-                <div class="flex h-full flex-col rounded-lg bg-white shadow-sm"
-                     oncontextmenu="return false" onselectstart="return false">
+                <div class="flex h-full flex-col rounded-xl border border-edl-sable bg-white"
+                     x-data @contextmenu.prevent @selectstart.prevent>
                     <p class="border-b border-gray-100 px-4 py-2 text-sm font-medium text-gray-600"
                        x-text="titre || 'Aperçu'"></p>
                     <template x-if="apercu && (type === 'video' || type === 'audio')">
                         <div class="relative min-h-[300px] flex-1">
                             <video :src="apercu" controls controlsList="nodownload noremoteplayback" disablepictureinpicture
-                                   oncontextmenu="return false" class="h-full w-full rounded-b-lg bg-black"></video>
+                                   @contextmenu.prevent class="h-full w-full rounded-b-lg bg-black"></video>
                             <x-stagiaire.filigrane :nombre="12" couleur="text-white" />
                         </div>
                     </template>

@@ -8,6 +8,7 @@
             <a href="{{ route("{$prefix}.sessions.show", $seance->sessionFormation) }}" class="hover:underline">{{ $seance->sessionFormation->nom }}</a>
             @if ($seance->stagiaire) · {{ $seance->stagiaire->nom_complet }} @endif
             @if ($seance->formateur) · {{ $seance->formateur->nom_complet }} @endif
+            @if ($seance->distanciel) · <span class="font-semibold text-edl-bleu">En distanciel</span> @endif
         </p>
     </div>
     <div class="flex gap-2">
@@ -18,7 +19,7 @@
         <a href="{{ route("{$prefix}.seances.edit", $seance) }}"
            class="rounded-md bg-edl-orange px-3 py-2 text-sm font-semibold text-gray-900 hover:opacity-90">Modifier</a>
         <form method="POST" action="{{ route("{$prefix}.seances.destroy", $seance) }}"
-              onsubmit="return confirm('Supprimer cette séance ?')">
+              x-data @submit="if (! confirm('Supprimer cette séance ?')) $event.preventDefault()">
             @csrf @method('DELETE')
             <button type="submit" class="rounded-md border border-edl-rose px-3 py-2 text-sm font-semibold text-edl-rose hover:bg-edl-rose/10">Supprimer</button>
         </form>
@@ -68,11 +69,14 @@
                 <li>
                     <span class="font-mono text-xs">{{ $referentiel->code }}</span>
                     {{ $referentiel->contenu }}
-                    <span class="text-gray-500">— {{ $referentiel->module }} ({{ implode('/', $referentiel->niveaux ?: []) ?: 'tous niveaux' }})</span>
+                    <span class="text-gray-500">— {{ $referentiel->module }} ({{ $referentiel->niveauxAffiches() }})</span>
+                    @foreach ($referentiel->badges ?? [] as $badge)
+                        <span class="ml-1 inline-block rounded-full bg-edl-jaune/20 px-2 py-0.5 text-xs font-medium text-gray-800">{{ $badge }}</span>
+                    @endforeach
                     @if ($referentiel->ressources->isNotEmpty())
                         <ul class="ml-4 mt-0.5 text-xs text-gray-500">
                             @foreach ($referentiel->ressources as $r)
-                                <li>↳ {{ $r->nom }}</li>
+                                <li><a href="{{ route("{$prefix}.ressources.download", $r) }}" class="text-edl-bleu hover:underline">↳ {{ $r->nom }}</a></li>
                             @endforeach
                         </ul>
                     @endif
