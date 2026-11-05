@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 /**
@@ -147,5 +148,37 @@ class DeploiementTest extends TestCase
         $evenements = collect(app(Schedule::class)->events())->map->description;
 
         $this->assertTrue($evenements->contains('edl-temoin-planificateur'));
+    }
+
+    /**
+     * Les proxys de confiance passent par la configuration (et non par env() dans bootstrap/app.php,
+     * qui renvoie null une fois la configuration en cache) : l'adresse du visiteur est retrouvée.
+     */
+    public function test_les_proxys_de_confiance_sont_lus_dans_la_configuration(): void
+    {
+        Route::get('/_test-ip', fn () => request()->ip().'|'.request()->getScheme());
+        $proxy = ['REMOTE_ADDR' => '10.0.0.1'];
+        $entetes = ['X-Forwarded-For' => '203.0.113.5', 'X-Forwarded-Proto' => 'https'];
+
+        config(['trustedproxy.proxies' => null]);
+        $this->withServerVariables($proxy)->withHeaders($entetes)->get('/_test-ip')->assertSeeText('10.0.0.1|http');
+
+        config(['trustedproxy.proxies' => '10.0.0.1, 10.0.0.2']);
+        $this->withServerVariables($proxy)->withHeaders($entetes)->get('/_test-ip')->assertSeeText('203.0.113.5|https');
+    }
+
+    public function test_le_controle_prealable_lit_la_configuration_et_non_l_environnement(): void
+    {
+        config(['trustedproxy.proxies' => '*', 'backup.backup.destination.disks' => ['backups', 'hors-site']]);
+
+        $statuts = $this->statuts();
+        $this->assertSame(PreflightService::OK, $statuts['Proxy de confiance']);
+        $this->assertSame(PreflightService::OK, $statuts['Sauvegarde hors serveur']);
+
+        config(['trustedproxy.proxies' => null, 'backup.backup.destination.disks' => ['backups']]);
+
+        $statuts = $this->statuts();
+        $this->assertSame(PreflightService::AVERTISSEMENT, $statuts['Proxy de confiance']);
+        $this->assertSame(PreflightService::AVERTISSEMENT, $statuts['Sauvegarde hors serveur']);
     }
 }

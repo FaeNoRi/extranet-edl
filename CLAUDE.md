@@ -372,7 +372,10 @@ Revue du code (autorisations, uploads, authentification, en-têtes, dépendances
   après déconnexion ne ré-affiche rien).
 - **Authentification** : mots de passe **10 caractères minimum, lettres + chiffres** (`Password::defaults()`) ;
   demandes de lien limitées **par compte** (3 / 30 min) en plus de l'IP (5 / min) ; cookie de session `Secure`
-  par défaut en production ; `TRUSTED_PROXIES` (env) pour un hébergeur derrière un reverse proxy ; https forcé en production.
+  par défaut en production ; `TRUSTED_PROXIES` (env, lu par `config/trustedproxy.php`) pour un hébergeur derrière un
+  reverse proxy ; https forcé en production.
+- **`env()` uniquement dans `config/`** : après `php artisan optimize` (configuration en cache), le `.env` n'est plus
+  chargé et `env()` renvoie null ailleurs (`bootstrap/app.php`, services). Passer par une clé de configuration.
 - Questionnaires : réponses texte plafonnées (5000), choix unique/multiple validés contre les options.
 - **Dépendances** : `composer audit` / `npm audit` dans la CI (job `audit`) + Dependabot hebdomadaire.
 - Vérifié sans objet : aucun `{!! !!}`, aucun SQL brut, `$request->all()` jamais passé au modèle.
