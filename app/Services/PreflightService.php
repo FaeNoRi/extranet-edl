@@ -22,6 +22,9 @@ class PreflightService
 
     public const BLOQUANT = 'bloquant';
 
+    /** Extensions PHP nécessaires (PDF, archives ZIP, images, base MySQL…). */
+    public const EXTENSIONS = ['bcmath', 'ctype', 'curl', 'dom', 'fileinfo', 'gd', 'intl', 'mbstring', 'openssl', 'pdo_mysql', 'tokenizer', 'xml', 'zip'];
+
     /** @return array<int, array{nom: string, statut: string, detail: string}> */
     public function controles(): array
     {
@@ -42,7 +45,7 @@ class PreflightService
         try {
             DB::connection()->getPdo();
             $ajouter('Base de données', true, '');
-            $ajouter('Migrations à jour', $this->migrationsAJour(), 'Des migrations ne sont pas appliquées (php artisan migrate --force).');
+            $ajouter('Migrations à jour', $this->migrationsAJour(), 'Des migrations ne sont pas appliquées : bouton « Mettre à jour la base » de la page Serveur (ou php artisan migrate --force).');
             $ajouter('Aucun compte de démonstration', ! $this->compteAvecMotDePasseParDefaut(), 'Un compte administrateur utilise le mot de passe par défaut des données de démonstration.');
             $ajouter('Au moins un administrateur', User::where('role', 'admin')->exists(), 'Créer le premier administrateur : php artisan edl:creer-admin.');
         } catch (Throwable $e) {
@@ -58,13 +61,14 @@ class PreflightService
         foreach (['storage/app', 'storage/framework/cache', 'storage/logs'] as $dossier) {
             $ajouter("Écriture dans {$dossier}", is_writable(base_path($dossier)), "Le dossier {$dossier} doit être accessible en écriture par le serveur web.");
         }
-        $ajouter('Lien public/storage', is_link(public_path('storage')) || is_dir(public_path('storage')), 'Créer le lien : php artisan storage:link (photos des formateurs).');
+        $manquantes = array_values(array_filter(self::EXTENSIONS, fn (string $e) => ! extension_loaded($e)));
+        $ajouter('Extensions PHP', $manquantes === [], 'Extensions manquantes : '.implode(', ', $manquantes).'.');
 
         // --- Sauvegardes -----------------------------------------------------------------------
         $ajouter('Chiffrement des sauvegardes', filled(config('backup.backup.password')), 'BACKUP_ARCHIVE_PASSWORD est vide : les archives contiendraient des données personnelles non chiffrées.');
         $ajouter('mysqldump disponible', $this->mysqldumpDisponible(), 'mysqldump est introuvable (DB_DUMP_BINARY_PATH) : la sauvegarde de la base échouera.');
         $ajouter('Sauvegarde hors serveur', count(config('backup.backup.destination.disks', [])) > 1, 'BACKUP_OFFSITE_DISK est vide : une panne du serveur emporterait aussi les sauvegardes.', self::AVERTISSEMENT);
-        $ajouter('Planificateur actif', $this->planificateurActif(), 'Aucun passage récent du planificateur : ajouter le cron « * * * * * php artisan schedule:run » (sauvegardes, purges). Normal juste après la mise en place.', self::AVERTISSEMENT);
+        $ajouter('Planificateur actif', $this->planificateurActif(), 'Aucun passage du planificateur depuis 2 h : cron « * * * * * php artisan schedule:run », ou sur l\'hébergement mutualisé OVH tâche horaire « extranet/cron.php » (sauvegardes, purges). Normal juste après la mise en place.', self::AVERTISSEMENT);
 
         // --- Informations légales ------------------------------------------------------------
         $ajouter('Référent RGPD renseigné', filled(config('edl.legal.dpo_nom')) && filled(config('edl.legal.dpo_email')), 'EDL_DPO_NOM / EDL_DPO_EMAIL manquants (politique de confidentialité).', self::AVERTISSEMENT);
@@ -73,7 +77,7 @@ class PreflightService
         $ajouter('Registre RGPD validé', filled(config('edl.legal.registre_valide_le')), 'EDL_REGISTRE_VALIDE_LE vide : le registre est encore présenté comme un projet.', self::AVERTISSEMENT);
 
         // --- Performance et serveur ------------------------------------------------------------
-        $ajouter('Configuration en cache', app()->configurationIsCached(), 'Lancer php artisan optimize après chaque déploiement.', self::AVERTISSEMENT);
+        $ajouter('Configuration en cache', app()->configurationIsCached(), 'Lancer php artisan optimize après chaque déploiement (sans objet sur l\'hébergement mutualisé sans SSH : OPcache suffit).', self::AVERTISSEMENT);
         $ajouter('OPcache', (bool) ini_get('opcache.enable'), 'Activer OPcache dans php.ini.', self::AVERTISSEMENT);
         $ajouter('Limites de téléversement PHP', $this->limitesUploadSuffisantes(), 'upload_max_filesize / post_max_size inférieurs à EDL_UPLOAD_MAX_KO ('.config('edl.uploads.taille_max_ko').' Ko).', self::AVERTISSEMENT);
         $ajouter('Proxy de confiance', filled(config('trustedproxy.proxies')), 'TRUSTED_PROXIES vide : à renseigner si l\'hébergeur place l\'extranet derrière un reverse proxy (sinon les liens peuvent être générés en http://).', self::AVERTISSEMENT);
@@ -95,10 +99,16 @@ class PreflightService
 
     private function migrationsAJour(): bool
     {
+        return $this->migrationsEnAttente() === [];
+    }
+
+    /** @return list<string> migrations présentes dans le code mais pas encore appliquées à la base */
+    public function migrationsEnAttente(): array
+    {
         $fichiers = collect(glob(database_path('migrations/*.php')))->map(fn ($f) => basename($f, '.php'));
         $appliquees = DB::table('migrations')->pluck('migration');
 
-        return $fichiers->diff($appliquees)->isEmpty();
+        return $fichiers->diff($appliquees)->sort()->values()->all();
     }
 
     private function compteAvecMotDePasseParDefaut(): bool
@@ -125,9 +135,10 @@ class PreflightService
 
     private function planificateurActif(): bool
     {
-        $dernier = Cache::get('edl:planificateur:dernier-passage');
+        // Cron chaque minute (schedule:run) ou une fois par heure (edl:taches, hébergement mutualisé).
+        $dernier = Cache::get(TachesPlanifieesService::TEMOIN);
 
-        return $dernier && now()->diffInMinutes($dernier, true) <= 5;
+        return $dernier && now()->diffInMinutes($dernier, true) <= 120;
     }
 
     private function limitesUploadSuffisantes(): bool

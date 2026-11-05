@@ -1,15 +1,18 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdministrateurController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\FormateurController;
 use App\Http\Controllers\Admin\GescofImportController;
 use App\Http\Controllers\Admin\JournalController;
+use App\Http\Controllers\Admin\LienAccesController;
 use App\Http\Controllers\Admin\PurgeController;
 use App\Http\Controllers\Admin\QuestionnaireController as AdminQuestionnaireController;
 use App\Http\Controllers\Admin\ReferentielController;
 use App\Http\Controllers\Admin\RgpdController;
 use App\Http\Controllers\Admin\SeanceController as AdminSeanceController;
+use App\Http\Controllers\Admin\ServeurController;
 use App\Http\Controllers\Admin\SessionFormationController;
 use App\Http\Controllers\Admin\SessionJourController;
 use App\Http\Controllers\Admin\StagiaireController;
@@ -19,6 +22,7 @@ use App\Http\Controllers\Formateur\RessourceController as FormateurRessourceCont
 use App\Http\Controllers\Formateur\SeanceController as FormateurSeanceController;
 use App\Http\Controllers\Formateur\SessionController as FormateurSessionController;
 use App\Http\Controllers\PageLegaleController;
+use App\Http\Controllers\PhotoFormateurController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Stagiaire\DashboardController as StagiaireDashboardController;
 use App\Http\Controllers\Stagiaire\EmargementController as StagiaireEmargementController;
@@ -41,6 +45,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Photo d'un formateur (tableau de bord stagiaire, fiche admin), sans lien public/storage.
+    Route::get('/photos/formateurs/{formateur}', PhotoFormateurController::class)->name('photos.formateur');
 });
 
 /*
@@ -102,6 +109,14 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('rgpd/registre', [RgpdController::class, 'registre'])->name('rgpd.registre');
         Route::get('rgpd/registre/pdf', [RgpdController::class, 'registrePdf'])->name('rgpd.registre.pdf');
         Route::get('rgpd/export/{utilisateur}', [RgpdController::class, 'export'])->withTrashed()->name('rgpd.export');
+
+        // Comptes administrateurs et liens d'accès affichés (pas de SSH ni d'e-mail pendant le test).
+        Route::resource('administrateurs', AdministrateurController::class)->except('show');
+        Route::post('utilisateurs/{utilisateur}/lien-acces', LienAccesController::class)->name('lien-acces');
+
+        // État du serveur et mise à jour de la base (hébergement mutualisé sans SSH).
+        Route::get('serveur', [ServeurController::class, 'index'])->name('serveur.index');
+        Route::post('serveur/migrer', [ServeurController::class, 'migrer'])->name('serveur.migrer');
     });
 
 Route::middleware(['auth', 'role:formateur'])
