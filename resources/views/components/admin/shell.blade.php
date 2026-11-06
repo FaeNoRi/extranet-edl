@@ -13,6 +13,8 @@
         'purges'     => ['route' => 'admin.purges.index',     'label' => 'Purges', 'icone' => 'corbeille', 'couleur' => 'marron'],
         'journal'    => ['route' => 'admin.journal.index',    'label' => 'Journal des actions', 'icone' => 'journal', 'couleur' => 'violet'],
         'rgpd'       => ['route' => 'admin.rgpd.registre',    'label' => 'RGPD', 'icone' => 'bouclier', 'couleur' => 'vert'],
+        'administrateurs' => ['route' => 'admin.administrateurs.index', 'label' => 'Administrateurs', 'icone' => 'cle', 'couleur' => 'violet'],
+        'serveur'    => ['route' => 'admin.serveur.index',    'label' => 'Serveur', 'icone' => 'serveur', 'couleur' => 'marron'],
     ];
 @endphp
 
@@ -38,6 +40,8 @@
                     {{ session('erreur') }}
                 </div>
             @endif
+
+            <x-admin.lien-acces />
 
             <x-form-errors />
 

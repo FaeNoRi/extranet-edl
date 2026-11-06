@@ -4,6 +4,9 @@ Ce document décrit comment installer l'extranet sur un serveur, le mettre à jo
 Il complète [`sauvegardes.md`](sauvegardes.md) (sauvegardes et restauration) et le modèle de
 configuration [`.env.production.example`](../.env.production.example).
 
+> **Hébergement retenu par l'EDL : OVH mutualisé Perso, sans SSH** — suivre
+> [`deploiement-ovh.md`](deploiement-ovh.md) (paquet FTP, script SQL, page Serveur, cron horaire).
+
 ## 1. Ce qu'il faut sur le serveur
 
 | Élément | Exigence |
@@ -43,7 +46,6 @@ php artisan key:generate --force   # à conserver : voir sauvegardes.md
 
 php artisan migrate --force
 php artisan db:seed --force        # en production : charge SEULEMENT le référentiel pédagogique
-php artisan storage:link
 
 php artisan edl:creer-admin <identifiant> <email> <NOM> <Prénom>   # le lien de création du mot de passe part par e-mail
 php artisan optimize

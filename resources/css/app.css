@@ -28,3 +28,8 @@ main:focus-visible {
     filter: blur(28px);
     transition: filter 0.15s ease;
 }
+
+/* Éléments Alpine masqués jusqu'à l'initialisation (x-cloak). */
+[x-cloak] {
+    display: none !important;
+}

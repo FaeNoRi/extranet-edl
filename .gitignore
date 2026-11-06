@@ -36,3 +36,6 @@ Thumbs.db
 # Base SQLite locale (dev = MySQL, tests = :memory:)
 /database/*.sqlite
 /edl_plus
+
+# Paquets FTP et scripts SQL générés pour l'hébergement OVH (scripts/paquet-ovh.sh, sql-installation.sh)
+/paquets/

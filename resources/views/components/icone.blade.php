@@ -25,5 +25,7 @@
         @case('graphique')<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>@break
         @case('chevron')<path d="m9 18 6-6-6-6"/>@break
         @case('fleche')<path d="M5 12h14M13 6l6 6-6 6"/>@break
+        @case('cle')<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 9.2-9.2M17 6l3 3M14 9l2 2"/>@break
+        @case('serveur')<rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/>@break
     @endswitch
 </svg>
