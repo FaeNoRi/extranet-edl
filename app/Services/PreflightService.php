@@ -63,7 +63,7 @@ class PreflightService
         // --- Sauvegardes -----------------------------------------------------------------------
         $ajouter('Chiffrement des sauvegardes', filled(config('backup.backup.password')), 'BACKUP_ARCHIVE_PASSWORD est vide : les archives contiendraient des données personnelles non chiffrées.');
         $ajouter('mysqldump disponible', $this->mysqldumpDisponible(), 'mysqldump est introuvable (DB_DUMP_BINARY_PATH) : la sauvegarde de la base échouera.');
-        $ajouter('Sauvegarde hors serveur', filled(env('BACKUP_OFFSITE_DISK')), 'BACKUP_OFFSITE_DISK est vide : une panne du serveur emporterait aussi les sauvegardes.', self::AVERTISSEMENT);
+        $ajouter('Sauvegarde hors serveur', count(config('backup.backup.destination.disks', [])) > 1, 'BACKUP_OFFSITE_DISK est vide : une panne du serveur emporterait aussi les sauvegardes.', self::AVERTISSEMENT);
         $ajouter('Planificateur actif', $this->planificateurActif(), 'Aucun passage récent du planificateur : ajouter le cron « * * * * * php artisan schedule:run » (sauvegardes, purges). Normal juste après la mise en place.', self::AVERTISSEMENT);
 
         // --- Informations légales ------------------------------------------------------------
@@ -76,7 +76,7 @@ class PreflightService
         $ajouter('Configuration en cache', app()->configurationIsCached(), 'Lancer php artisan optimize après chaque déploiement.', self::AVERTISSEMENT);
         $ajouter('OPcache', (bool) ini_get('opcache.enable'), 'Activer OPcache dans php.ini.', self::AVERTISSEMENT);
         $ajouter('Limites de téléversement PHP', $this->limitesUploadSuffisantes(), 'upload_max_filesize / post_max_size inférieurs à EDL_UPLOAD_MAX_KO ('.config('edl.uploads.taille_max_ko').' Ko).', self::AVERTISSEMENT);
-        $ajouter('Proxy de confiance', ! empty(env('TRUSTED_PROXIES')), 'TRUSTED_PROXIES vide : à renseigner si l\'hébergeur place l\'extranet derrière un reverse proxy (sinon les liens peuvent être générés en http://).', self::AVERTISSEMENT);
+        $ajouter('Proxy de confiance', filled(config('trustedproxy.proxies')), 'TRUSTED_PROXIES vide : à renseigner si l\'hébergeur place l\'extranet derrière un reverse proxy (sinon les liens peuvent être générés en http://).', self::AVERTISSEMENT);
 
         return $c;
     }
@@ -112,7 +112,8 @@ class PreflightService
             return true; // Pas de dump MySQL à réaliser.
         }
 
-        $dossier = rtrim((string) env('DB_DUMP_BINARY_PATH'), '/\\');
+        // Lu dans la configuration (DB_DUMP_BINARY_PATH) : env() renvoie null une fois la configuration en cache.
+        $dossier = rtrim((string) config('database.connections.'.config('database.default').'.dump.dump_binary_path'), '/\\');
         $binaire = $dossier !== '' ? $dossier.DIRECTORY_SEPARATOR.'mysqldump' : 'mysqldump';
 
         try {
