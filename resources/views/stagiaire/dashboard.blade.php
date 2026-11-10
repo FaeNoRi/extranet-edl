@@ -36,7 +36,7 @@
             @if ($session?->formateur)
                 <div class="flex flex-[1_1_16rem] items-start gap-4 rounded-xl bg-edl-orange/15 p-4">
                     @if ($session->formateur->photo_path)
-                        <img src="{{ Storage::url($session->formateur->photo_path) }}" alt="" loading="lazy" class="h-14 w-14 flex-none rounded-full object-cover">
+                        <img src="{{ route('photos.formateur', [$session->formateur, 'v' => substr(md5($session->formateur->photo_path), 0, 8)]) }}" alt="" loading="lazy" class="h-14 w-14 flex-none rounded-full object-cover">
                     @else
                         <span class="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-edl-orange text-xl font-semibold text-gray-900" aria-hidden="true">
                             {{ mb_strtoupper(mb_substr($session->formateur->prenom ?? '', 0, 1).mb_substr($session->formateur->nom ?? '', 0, 1)) }}

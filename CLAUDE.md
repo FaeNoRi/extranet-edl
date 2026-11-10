@@ -384,6 +384,25 @@ Revue du code (autorisations, uploads, authentification, en-têtes, dépendances
 
 Procédure complète : `docs/deploiement.md` ; modèle de config : `.env.production.example`.
 
+**Hébergement retenu : OVH mutualisé Perso, sans SSH** (multisite, dossier `extranet`, racine `extranet/public`) —
+procédure `docs/deploiement-ovh.md`. Rien ne s'exécute en ligne de commande sur le serveur :
+
+- **Paquet FTP** `scripts/paquet-ovh.sh <tag> [--htpasswd <chemin absolu>]` (composer `--no-dev` + `npm run build` sur le
+  poste, `.ovhconfig` PHP 8.4, redirection https, Basic Auth du test) → `paquets/` (ignoré). Variable `COMPOSER_CMD`
+  (pas `COMPOSER`, lue par Composer comme nom du composer.json).
+- **Base** : `scripts/sql-installation.sh <e-mail>` (MySQL local) → SQL de première installation (tables, référentiel,
+  admin `installation` au mot de passe affiché une fois) importé dans phpMyAdmin ; mises à jour ensuite par
+  Admin > **Serveur** (`ServeurController@migrer`, sauvegarde `--only-db` avant). Cette page reprend aussi les contrôles
+  du préflight, le dernier rapport des tâches, les archives, l'IP/HTTPS vus par l'appli (pour `TRUSTED_PROXIES`).
+- **Comptes** : Admin > **Administrateurs** (CRUD, pas d'archivage de son propre compte) ; bouton **Lien d'accès**
+  (`admin.lien-acces`, `<x-admin.bouton-lien-acces>`) sur formateurs, stagiaires, admins : lien de mot de passe affiché
+  à l'admin (`<x-admin.lien-acces>` dans le shell), journalisé (`activity('Accès')`).
+- **Cron OVH horaire à minute imposée** : `cron.php` (racine, hors `public`) → `edl:taches` (`TachesPlanifieesService`) qui
+  rattrape chaque tâche de `routes/console.php` dont l'échéance est passée, dans l'ordre de déclaration (garder
+  l'ordre chronologique), dans le même processus. Témoin du préflight : 2 h.
+- **Photos des formateurs** servies par `PhotoFormateurController` (route `photos.formateur`, utilisateurs connectés) :
+  plus de lien `public/storage`.
+
 - **`php artisan edl:preflight`** (`PreflightService`) : contrôle bloquant / à traiter avant ouverture et après
   chaque déploiement (production, debug coupé, HTTPS, cookie sécurisé, migrations, compte de démo, e-mail réel,
   droits d'écriture, chiffrement + `mysqldump` + hors-site des sauvegardes, cron, mentions légales, OPcache,
@@ -402,4 +421,4 @@ Procédure complète : `docs/deploiement.md` ; modèle de config : `.env.product
 - RGPD : effacement/anonymisation définitifs d'un utilisateur (voir section RGPD).
 - Accessibilité : test VoiceOver (NVDA fait).
 - Stockage de sauvegarde hors serveur (pCloud envisagé, via WebDAV : à valider avec un compte de test ; sous-traitant à déclarer au registre).
-- Phase 6 : choix de l'hébergement et du service d'e-mail, déploiement, test interne EDL (1 session OP + 1 FPC), puis évolutions (familles, fusion plann'EDL, notifications).
+- Phase 6 : service d'e-mail (Brevo envisagé), déploiement sur OVH (sauvegarde de la base à vérifier sur place : `mysqldump`), test interne EDL (1 session OP + 1 FPC), puis évolutions (familles, fusion plann'EDL, notifications).

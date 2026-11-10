@@ -52,6 +52,7 @@
                                     <td class="py-2 pr-3 text-xs">{{ $stagiaire->role->label() }}</td>
                                     <td class="py-2 pr-3 text-gray-500">{{ $stagiaire->sessionFormations->pluck('num_GESCOF')->join(', ') }}</td>
                                     <td class="whitespace-nowrap py-2 text-right">
+                                        <x-admin.bouton-lien-acces :utilisateur="$stagiaire" class="mr-3" />
                                         <a href="{{ route('admin.rgpd.export', $stagiaire) }}" class="mr-3 text-edl-bleu hover:underline"
                                            title="Exporter les données personnelles (RGPD)">Exporter</a>
                                         <form method="POST" class="inline" action="{{ route('admin.stagiaires.destroy', $stagiaire) }}"

@@ -74,7 +74,7 @@ class DeploiementTest extends TestCase
         Cache::put('edl:planificateur:dernier-passage', now());
         $this->assertSame(PreflightService::OK, $this->statuts()['Planificateur actif']);
 
-        Cache::put('edl:planificateur:dernier-passage', now()->subMinutes(30));
+        Cache::put('edl:planificateur:dernier-passage', now()->subHours(3));
         $this->assertSame(PreflightService::AVERTISSEMENT, $this->statuts()['Planificateur actif']);
     }
 
