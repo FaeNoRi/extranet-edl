@@ -1,7 +1,7 @@
 # Extranet EDL+ — guide de contribution
 
 Extranet de suivi pédagogique de l'**École des Langues Grand Calais** (stagiaires FPC/OP,
-formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3.
+formateurs, administration). Application **Laravel 13**, front Blade + Alpine + Tailwind CSS v3 (la v4 change la configuration : migration à faire à la main, Dependabot l'ignore).
 
 Le cahier des charges d'origine n'est plus dans le dépôt : les migrations font foi pour le schéma et `tailwind.config.js` pour la palette de marque. Le dossier `CLAUDE/` est un simple dossier de transfert temporaire (ignoré par git, à ne pas utiliser comme stockage permanent ; médias dans `public/img`, polices dans `resources/fonts`).
 La feuille de route est découpée en 7 phases (voir l'audit initial). **Phases 0 à 4 terminées**, **phase 5 en cours** (questionnaires + socle conformité faits ; export et registre RGPD faits ; audit d'accessibilité fait ; perf, sauvegardes et revue de sécurité faites ; reste l'effacement définitif, en attente des décisions de l'EDL). **Phase 6 (mise en production) : préparation faite** (`docs/deploiement.md`).
@@ -42,7 +42,7 @@ avant d'utiliser l'appli. Les tests tournent sur SQLite `:memory:` — garder le
 ## Conventions
 
 - **Style** : Laravel Pint (`pint.json`, preset `laravel`). `vendor/bin/pint` avant chaque commit.
-- **Tests** : PHPUnit 12. Attributs (`#[DataProvider]`), pas d'annotations. `RefreshDatabase`.
+- **Tests** : PHPUnit 13. Attributs (`#[DataProvider]`), pas d'annotations. `RefreshDatabase`.
 - **Rôles** : enum `App\Enums\Role`. Cast sur `User::role`. Helpers `isAdmin()`, `isStagiaireFpc()`…
   Middleware `role:` (`->middleware('role:admin')`). `Gate::before` : l'admin a tous les droits.
 - **Autorisations** : Policies dans `app/Policies` (auto-découvertes). Aucune suppression de

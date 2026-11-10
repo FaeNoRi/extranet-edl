@@ -11,6 +11,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # Tailwind 4 change la configuration (plugin PostCSS séparé, config en CSS) : la mise à jour
+      # automatique casse la compilation des assets. Migration à faire à la main, sur une branche dédiée.
+      - dependency-name: tailwindcss
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
