@@ -81,7 +81,7 @@
 
             <p class="text-sm text-gray-700">
                 Dernier passage du planificateur :
-                {{ $temoin ? \Illuminate\Support\Carbon::parse($temoin)->format('d/m/Y à H:i') : 'aucun' }}.
+                {{ $temoin ? $temoin->format('d/m/Y à H:i') : 'aucun' }}.
             </p>
 
             @if ($rapport)

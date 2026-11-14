@@ -33,7 +33,7 @@ class TachesPlanifieesService
      */
     public function rattraper(): array
     {
-        Cache::put(self::TEMOIN, now(), now()->addDay());
+        self::marquerPassage();
 
         $executees = [];
 
@@ -65,6 +65,23 @@ class TachesPlanifieesService
         }
 
         return $executees;
+    }
+
+    /**
+     * Témoin de vie du planificateur. Stocké en texte : le cache refuse de désérialiser les objets
+     * (`cache.serializable_classes` = false), un Carbon y redeviendrait un __PHP_Incomplete_Class.
+     */
+    public static function marquerPassage(): void
+    {
+        Cache::put(self::TEMOIN, now()->toIso8601String(), now()->addDay());
+    }
+
+    /** Date du dernier passage du planificateur, null si aucun (ou valeur illisible). */
+    public static function dernierPassage(): ?Carbon
+    {
+        $valeur = Cache::get(self::TEMOIN);
+
+        return is_string($valeur) || $valeur instanceof \DateTimeInterface ? Carbon::parse($valeur) : null;
     }
 
     /** @return array{le: string, taches: list<array{commande: string, ok: bool, sortie: string}>}|null */

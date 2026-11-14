@@ -9,7 +9,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Throwable;
@@ -25,7 +24,7 @@ class ServeurController extends Controller
         return view('admin.serveur.index', [
             'controles' => $preflight->controles(),
             'migrations' => $this->migrationsEnAttente($preflight),
-            'temoin' => Cache::get(TachesPlanifieesService::TEMOIN),
+            'temoin' => TachesPlanifieesService::dernierPassage(),
             'rapport' => $taches->dernierRapport(),
             'sauvegardes' => $this->sauvegardes(),
             'requete' => [
