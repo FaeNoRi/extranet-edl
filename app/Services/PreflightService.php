@@ -136,9 +136,9 @@ class PreflightService
     private function planificateurActif(): bool
     {
         // Cron chaque minute (schedule:run) ou une fois par heure (edl:taches, hébergement mutualisé).
-        $dernier = Cache::get(TachesPlanifieesService::TEMOIN);
+        $dernier = TachesPlanifieesService::dernierPassage();
 
-        return $dernier && now()->diffInMinutes($dernier, true) <= 120;
+        return $dernier !== null && now()->diffInMinutes($dernier, true) <= 120;
     }
 
     private function limitesUploadSuffisantes(): bool

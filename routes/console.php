@@ -3,7 +3,6 @@
 use App\Services\TachesPlanifieesService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
@@ -36,6 +35,6 @@ Schedule::command('backup:monitor')->dailyAt('08:00');
 // Témoin de vie du planificateur : si le cron n'est pas (ou plus) en place, les sauvegardes et
 // les purges ne tournent pas, sans aucune erreur visible. `edl:preflight` lit ce témoin
 // (également écrit par `edl:taches` à chaque passage horaire).
-Schedule::call(fn () => Cache::put(TachesPlanifieesService::TEMOIN, now(), now()->addDay()))
+Schedule::call(fn () => TachesPlanifieesService::marquerPassage())
     ->everyMinute()
     ->name('edl-temoin-planificateur');

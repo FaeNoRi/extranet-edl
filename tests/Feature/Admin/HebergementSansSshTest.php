@@ -76,6 +76,29 @@ class HebergementSansSshTest extends TestCase
         $this->assertNotNull(Cache::get(TachesPlanifieesService::TEMOIN));
     }
 
+    /**
+     * En production le cache (base de données) ne désérialise aucun objet : un Carbon stocké tel quel
+     * revenait en __PHP_Incomplete_Class et la page Serveur tombait en erreur 500.
+     */
+    public function test_le_temoin_reste_lisible_par_un_cache_qui_refuse_les_objets(): void
+    {
+        config(['cache.default' => 'file', 'cache.serializable_classes' => false]);
+        Cache::flush();
+        $admin = User::factory()->admin()->create();
+
+        // Valeur héritée de la version précédente (objet illisible) : signalée, sans erreur.
+        Cache::put(TachesPlanifieesService::TEMOIN, now());
+        $this->assertNull(TachesPlanifieesService::dernierPassage());
+        $this->actingAs($admin)->get(route('admin.serveur.index'))->assertOk()->assertSee('aucun');
+
+        $this->taches(new Schedule)->rattraper();
+        $this->assertIsString(Cache::get(TachesPlanifieesService::TEMOIN));
+        $this->assertTrue(TachesPlanifieesService::dernierPassage()->isToday());
+        $this->get(route('admin.serveur.index'))->assertOk()->assertSee(now()->format('d/m/Y'));
+
+        Cache::flush();
+    }
+
     public function test_les_taches_de_l_application_sont_reconnues_dans_l_ordre_chronologique(): void
     {
         $commandes = collect(app(Schedule::class)->events())
